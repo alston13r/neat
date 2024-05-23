@@ -207,7 +207,6 @@ class Species {
               }
             }
           }
-          offspring.firstName = generateFirstName()
         }
       }
     }

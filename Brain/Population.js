@@ -44,6 +44,8 @@ class Population {
       if (this.fittestEver == null || fittest.fitness > this.fittestEver.fitness) this.fittestEver = fittest
     }
 
+    this.fittest = this.members.reduce((best, curr) => curr.fitness > best.fitness ? curr : best)
+
     return fittest
   }
 
@@ -149,13 +151,14 @@ class Population {
     graphics.bg()
     let popHeader = new GraphicsText(`Generation: ${this.generationCounter} <${this.members.length}>`, 0, 0)
 
-    let getMemberText = brain => {
-      let b = brain.name
+    let getMemberText = (brain, i) => {
+      let b = i
       let c = round(brain.fitness, 5)
       let d = round(brain.fitnessAdjusted, 5)
       return `${b}: ${c} -> ${d}`
     }
-    let members = this.members.map((b, i) => new GraphicsText(getMemberText(b), 0, i * 10))
+    let members = [...this.members].sort((a, b) => b.fitness - a.fitness)
+      .map((b, i) => new GraphicsText(getMemberText(b, i), 0, i * 10))
     graphics.listText(5, 5, members, '#fff', 10, popHeader, '#fff', 20)
 
     let speciesOffset = 250

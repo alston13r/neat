@@ -5,19 +5,10 @@ const ReenableConnectionChance = 0.25
 const AddANodeChance = 0.03
 
 class Brain {
-  constructor(firstName, lastName) {
+  constructor() {
     this.fitness = 0
     this.fitnessAdjusted = 0
     this.species = null
-    this.firstName = firstName || generateFirstName()
-    this.lastName = lastName || generateLastName()
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return this.firstName + ' ' + this.lastName
   }
 
   /**
@@ -205,8 +196,6 @@ class Brain {
       return
     }
 
-    this.firstName = generateFirstName()
-
     // mutate weights
     for (let connection of this.connections) {
       connection.mutate()
@@ -221,10 +210,6 @@ class Brain {
     // mutate activation functions and bias
     for (let node of this.nodes) {
       node.mutate()
-    }
-
-    if (Math.random() < 0.01) {
-      this.lastName = generateLastName()
     }
   }
 
@@ -263,7 +248,7 @@ class Brain {
    * @returns {Brain}
    */
   clone() {
-    let b = new Brain(this.firstName, this.lastName)
+    let b = new Brain()
 
     // species
     b.species = this.species
@@ -354,5 +339,7 @@ class Brain {
       ytemp += 10
     }
     graphics.listText(5, 5, weightsInfo, '#fff', 10, new GraphicsText('Weights', 0, 0), '#fff', 20)
+
+    graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top')
   }
 }

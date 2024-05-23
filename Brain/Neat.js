@@ -58,8 +58,14 @@ class NeatSolutionValues {
     this.values = values || []
   }
 
+  /**
+   * @param {number[]} inputs 
+   * @param {number[]} outputs 
+   * @returns {NeatSolutionValues}
+   */
   addValue(inputs, outputs) {
     this.values.push({ inputs, outputs })
+    return this
   }
 
   *ordered() {
@@ -172,10 +178,15 @@ class Neat {
 
     return new Promise((resolve) => {
       let iterate = () => {
-        population.draw(this.graphics)
+        this.graphics.bg()
+        // population.draw(this.graphics)
+        if (population.fittest != null) {
+          population.fittest.draw(this.graphics)
+        }
+        // this.graphics.circle(200, 200, 50, '#fff', false, 2)
         if (population.fittestEver == null || population.fittestEver.fitness >= desiredFitness) {
           let solution = population.fittestEver
-          console.log(`Solution found by <${solution.name}>`)
+          console.log(`Solution found`)
           solution.loadInputs([0, 0])
           solution.runTheNetwork()
           console.log(`[0, 0] -> [${solution.getOutput().join(', ')}]`)
