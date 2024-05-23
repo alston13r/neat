@@ -177,16 +177,11 @@ class Neat {
     let population = new Population(1000, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
     population.generation(fitnessFunction)
     population.step2()
-    tempPop = population
 
     return new Promise((resolve) => {
       let iterate = () => {
         this.graphics.bg()
         population.draw(this.graphics)
-        // if (population.fittest != null) {
-        //   population.fittest.draw(this.graphics)
-        // }
-        // this.graphics.circle(200, 200, 50, '#fff', false, 2)
         if (population.fittestEver == null || population.fittestEver.fitness >= desiredFitness) {
           let solution = population.fittestEver
           console.log(`Solution found`)
