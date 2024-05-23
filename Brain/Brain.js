@@ -275,6 +275,33 @@ class Brain {
     return b
   }
 
+  static Crossover(a, b) {
+    if (a == b) a.clone()
+    else {
+      let offspring
+      let other
+      if (a.fitness >= b.fitness) {
+        offspring = a.clone()
+        other = b
+      } else {
+        offspring = b.clone()
+        other = a
+      }
+      let t = []
+      for (let c of other.connections) {
+        t[c.innovationID] = c
+      }
+      for (let c of offspring.connections) {
+        let oc = t[c.innovationID]
+        if (oc != undefined) {
+          if (Math.random() > 0.5) {
+            c.weight = oc.weight
+          }
+        }
+      }
+    }
+  }
+
   /**
    * @param {Graphics} graphics 
    */
