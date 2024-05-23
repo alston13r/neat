@@ -125,11 +125,43 @@ class Population {
   }
 
   step2() {
+    // this falls under species stuff
     Species.Speciate(this)
     this.updateGensSinceImproved()
     this.adjustThreshold()
     this.adjustFitness()
+    // this doesn't
     this.calculateAllowedOffspring()
+  }
+
+  /**
+   * @param {Brain[]} list 
+   * @param {number} count 
+   */
+  static GeneratePairings(list, count) {
+    if (count == 0) return []
+    const parents = rouletteWheel(list, 'fitness', count * 2)
+    const res = new Array(count).fill(0).map(() => {
+      return { p1: parents.pop(), p2: parents.pop() }
+    })
+    return res
+  }
+
+  /**
+   * @param {Brain[]} list 
+   * @param {number} softLimit 
+   */
+  static GetElites(list, softLimit) {
+    if (softLimit == 0) return []
+    const res = []
+    const sorted = [...list].sort((a, b) => b.fitness - a.fitness)
+    const count = Math.min(Math.round(Population.ElitePercent * list.length), softLimit)
+    for (let i = 0; i < count; i++) {
+      const eliteMember = sorted[i]
+      eliteMember.isElite = true
+      res.push(eliteMember)
+    }
+    return res
   }
 
   /**
@@ -160,8 +192,7 @@ class Population {
       let a = species.members.length
       let b = round(species.getAverageFitness(), 5)
       let c = round(species.getAverageFitnessAdjusted(), 5)
-      let d = species.allowedOffspring
-      return `<${a} -> ${d}> ${b} -> ${c}`
+      return `<${a}> ${b} -> ${c}`
     }
     this.speciesList.map((s, i) => new GraphicsText(graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
       .forEach(species => species.draw())

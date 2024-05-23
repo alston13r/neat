@@ -139,76 +139,13 @@ class Species {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > GenerationPenalization) {
       this.members = []
     } else {
-      let t = this.members.map(x => { return { brain: x, fitness: x.fitness } })
-        .sort((a, b) => a.fitness - b.fitness)
-      let max = t.reduce((sum, curr) => {
-        curr.sum = sum + curr.fitness
-        return curr.sum
-      }, 0)
+      const copyOfMembers = [...this.members]
+      this.members = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
 
-      let elites = []
-      if (Population.Elitism) {
-        const eliteN = Math.min(Math.ceil(Population.ElitePercent * this.members.length), this.allowedOffspring)
-        for (let i = t.length - 1; elites.length < eliteN; i--) {
-          elites.push(t[i].brain)
-        }
-        for (let x of elites) {
-          x.isElite = true
-        }
-      }
+      const remainingCount = this.allowedOffspring - this.members.length
+      const pairings = Population.GeneratePairings(copyOfMembers, remainingCount)
 
-      this.members = [...elites]
-
-      let pairings = []
-
-      const count = this.allowedOffspring - this.members.length
-
-      while (pairings.length < count) {
-        let p1Val = Math.floor(Math.random() * max)
-        let p2Val = Math.floor(Math.random() * max)
-        let p1
-        let p2
-        for (let p of t) {
-          if (p1 == null && p1Val <= p.sum) p1 = p.brain
-          if (p2 == null && p2Val <= p.sum) p2 = p.brain
-          if (!(p1 == null || p2 == null)) break
-        }
-        if (p1 == null || p2 == null) {
-          let fittest = t.reduce((best, curr) => curr.fitness > best.fitness ? curr : best).brain
-          p1 ||= fittest
-          p2 ||= fittest
-        }
-        pairings.push({ p1, p2 })
-      }
-
-      for (let pairing of pairings) {
-        let a = pairing.p1
-        let b = pairing.p2
-        if (a == b) a.clone()
-        else {
-          let offspring
-          let other
-          if (a.fitness >= b.fitness) {
-            offspring = a.clone()
-            other = b
-          } else {
-            offspring = b.clone()
-            other = a
-          }
-          let t = []
-          for (let c of other.connections) {
-            t[c.innovationID] = c
-          }
-          for (let c of offspring.connections) {
-            let oc = t[c.innovationID]
-            if (oc != undefined) {
-              if (Math.random() > 0.5) {
-                c.weight = oc.weight
-              }
-            }
-          }
-        }
-      }
+      pairings.forEach(({ p1, p2 }) => Brain.Crossover(p1, p2))
     }
   }
 }

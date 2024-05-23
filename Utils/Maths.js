@@ -91,3 +91,25 @@ function gauss() {
   }
   return s / 6
 }
+
+/**
+ * @param {object[]} items 
+ * @param {string} param 
+ * @param {number} count 
+ * @returns 
+ */
+function rouletteWheel(items, param, count) {
+  if (count == 0) return []
+  const list = items.map(item => { return { item } })
+  const max = list.reduce((sum, curr) => {
+    curr.sum = sum + curr.item[param]
+    return curr.sum
+  }, 0)
+  const res = new Array(count).fill(0).map(() => {
+    const value = Math.random() * max
+    for (let x of list) {
+      if (value < x.sum) return x.item
+    }
+  })
+  return res
+}
