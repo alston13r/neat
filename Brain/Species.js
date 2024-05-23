@@ -148,7 +148,7 @@ class Species {
 
       let elites = []
       if (Population.Elitism) {
-        let eliteN = Math.ceil(Population.ElitePercent * this.members.length)
+        const eliteN = Math.min(Math.ceil(Population.ElitePercent * this.members.length), this.allowedOffspring)
         for (let i = t.length - 1; elites.length < eliteN; i--) {
           elites.push(t[i].brain)
         }

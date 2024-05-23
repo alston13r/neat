@@ -74,37 +74,27 @@ class Population {
   }
 
   calculateAllowedOffspring() {
-    const globalAvg = this.getAverageFitnessAdjusted()
-
     const max = this.popSize
-
-    let arr = this.speciesList.map(species => {
-      return { species, temp: species.getAverageFitnessAdjusted() / globalAvg * species.members.length }
+    const avg = this.getAverageFitnessAdjusted()
+    const list = [...this.speciesList]
+    list.forEach(x => x.temp = x.getAverageFitnessAdjusted() / avg * x.members.length)
+    list.sort((a, b) => {
+      const c = a.temp - Math.floor(a.temp)
+      const d = b.temp - Math.floor(b.temp)
+      if (c == d) return b.temp - a.temp
+      return d - c
     })
-    let maxCalculated = arr.reduce((sum, curr) => sum + curr.temp, 0)
-    arr.forEach(x => {
-      x.temp = max * x.temp / maxCalculated
-    })
-    arr.sort((a, b) => {
-      let c = a.temp - Math.floor(a.temp)
-      let d = b.temp - Math.floor(b.temp)
-      if (c == d) return a.temp - b.temp
-      return c - d
-    })
-
-    const min = arr.reduce((sum, curr) => sum + Math.floor(curr.temp), 0)
-    const diff = max - min
-    for (let i = 0; i < diff && arr.length > 0; i++) {
-      let t = arr.pop()
-      t.species.allowedOffspring = Math.ceil(t.temp)
+    const min = list.reduce((sum, curr) => sum + Math.floor(curr.temp), 0)
+    const roundUpCount = max - min
+    for (let i = 0; i < roundUpCount; i++) {
+      const x = list.shift()
+      x.allowedOffspring = Math.ceil(x.temp)
+      delete x.temp
     }
-    arr.forEach(t => t.species.allowedOffspring = Math.floor(t.temp))
-
-    // let sumCalculated = arr.reduce((sum, curr) => sum + curr.species.allowedOffspring, 0)
-    // for (let i = max; i < sumCalculated; i++) {
-    //   let largest = arr.reduce((largest, curr) => curr.species.allowedOffspring > largest.species.allowedOffspring ? curr : largest)
-    //   largest.species.allowedOffspring--
-    // }
+    for (let x of list) {
+      x.allowedOffspring = Math.floor(x.temp)
+      delete x.temp
+    }
   }
 
   produceOffspring() {
@@ -149,7 +139,8 @@ class Population {
     const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
     graphics.bg()
-    let popHeader = new GraphicsText(`Generation: ${this.generationCounter} <${this.members.length}>`, 0, 0)
+    new GraphicsText(graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
+      5, 5, '#fff', 20, 'left', 'top').draw()
 
     let getMemberText = (brain, i) => {
       let b = i
@@ -157,20 +148,22 @@ class Population {
       let d = round(brain.fitnessAdjusted, 5)
       return `${b}: ${c} -> ${d}`
     }
-    let members = [...this.members].sort((a, b) => b.fitness - a.fitness)
-      .map((b, i) => new GraphicsText(getMemberText(b, i), 0, i * 10))
-    graphics.listText(5, 5, members, '#fff', 10, popHeader, '#fff', 20)
+    this.members.slice().sort((a, b) => b.fitness - a.fitness).slice(0, 50)
+      .map((b, i) => new GraphicsText(graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
+      .forEach(member => member.draw())
 
-    let speciesOffset = 250
-    let speciesHeader = new GraphicsText(`Species (Threshold: ${Species.DynamicThreshold})`, 0, 0)
+    new GraphicsText(graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
+      250, 5, '#fff', 20, 'left', 'top')
+      .draw()
 
     let getSpeciesText = species => {
-      let b = species.members.length
-      let c = round(species.getAverageFitness(), 5)
-      let d = round(species.getAverageFitnessAdjusted(), 5)
-      return `Members: ${b}, Average Fitness: ${c}, Average Fitness Adjusted: ${d}`
+      let a = species.members.length
+      let b = round(species.getAverageFitness(), 5)
+      let c = round(species.getAverageFitnessAdjusted(), 5)
+      let d = species.allowedOffspring
+      return `<${a} -> ${d}> ${b} -> ${c}`
     }
-    let speciesList = this.speciesList.map((s, i) => new GraphicsText(getSpeciesText(s), 0, i * 10))
-    graphics.listText(speciesOffset, 5, speciesList, '#fff', 10, speciesHeader, '#fff', 20)
+    this.speciesList.map((s, i) => new GraphicsText(graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
+      .forEach(species => species.draw())
   }
 }
