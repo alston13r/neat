@@ -253,8 +253,10 @@ class Brain {
     let b = new Brain()
 
     // species
-    b.species = this.species
-    b.species.members.push(b)
+    if (Population.Speciation) {
+      b.species = this.species
+      b.species.members.push(b)
+    }
 
     // nodes
     b.nodes = this.nodes.map(x => x.clone())
@@ -278,7 +280,7 @@ class Brain {
   }
 
   static Crossover(a, b) {
-    if (a == b) a.clone()
+    if (a == b) return a.clone()
     else {
       let offspring
       let other
@@ -301,6 +303,7 @@ class Brain {
           }
         }
       }
+      return offspring
     }
   }
 
