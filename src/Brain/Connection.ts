@@ -20,7 +20,7 @@ class Connection {
   /** Toggle for connection disabling mutations */
   static AllowDisablingConnections: boolean = false
   /** The chance for a connection to be disabled when mutated */
-  static DisableConnectionChance: number = 0
+  static DisableConnectionChance: number = 0.01
 
   /** The current global innovation index, this increments when an innovation is made */
   static #InnovationIndex: number = 0
