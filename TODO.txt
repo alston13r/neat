@@ -1,10 +1,22 @@
-Redo functionality for the Neat.js filter // huh?
-Add more stuff to Graphics.js, if not a complete overhaul
+Add more stuff to Graphics, if not a complete overhaul
 Simplify the drawing process of each item
 Make drawing the population better
 Add more math stuff
 Add a simple fully connected feed forward neural network
 Add more toggling
-Allow for softcap on iterations for Neat
+  Disabling of connections
+Allow for softcap on iterations for Neat's findSolution
+Refactor Brain's initialize method
 
 Convert everything to TS
+  Brain
+    Brain
+    Neat
+    Population
+    Species
+  Games
+    Asteroids
+  Utils
+    Graphics
+    Maths
+    Shapes
