@@ -111,7 +111,8 @@ class NNode {
     /**
      * Mutates the bias weight and, if allowed for the Node's type, the activation function.
      * Mutations occur by chance, only if a call to Math.random() yields a value less than
-     * the predefined static values.
+     * the predefined static values. A Node's bias, when mutated, can either be nudged or
+     * completely randomized.
      */
     mutate() {
         // bias mutation
@@ -128,7 +129,7 @@ class NNode {
             this.clamp();
         }
         // activation function mutation
-        // checks for if this node can even mutate its activation function
+        // checks for if this node type can even mutate its activation function
         if (this.type == NNodeType.Input)
             return;
         if (this.type == NNodeType.Output && !NNode.AllowOutputActivationMutations)
