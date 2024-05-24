@@ -82,7 +82,7 @@ const graphics = new Graphics().setSize(800, 600).appendTo(document.body)
 // // calculate allowed offspring
 
 const desired = NeatSolutionValues.XOR
-const neat = new Neat(graphics)
+const neat = new Neat().setGraphics(graphics)
 neat.findSolution(desired, desired.maxLinearFitnessValue() - 0.05).then(solution => {
   solution.draw(graphics)
 })
