@@ -1,6 +1,9 @@
 const MutateWeightChance = 0.8
 const NudgeWeightChance = 0.9
 
+const AllowDisablingConnections = false
+const DisableConnectionChance = 0
+
 class Connection {
   static #InnovationIndex = 0
   static #InnovationMap = new Map()
