@@ -1,10 +1,10 @@
 Redo functionality for the Neat.js filter // huh?
-Add toggling of Speciation
 Add more stuff to Graphics.js, if not a complete overhaul
 Simplify the drawing process of each item
 Make drawing the population better
 Add more math stuff
-Add a simply fully connected feed forward neural network
+Add a simple fully connected feed forward neural network
 Add more toggling
+Allow for softcap on iterations for Neat
 
 Convert everything to TS
