@@ -1,5 +1,5 @@
 class Population {
-  static Speciation = true // add toggling
+  static Speciation = true
   static Elitism = true
   static ElitePercent = 0.3
   static Generation = 0
@@ -39,7 +39,7 @@ class Population {
    * @param {function(Brain): void} fitnessFunction 
    * @returns {Brain | null}
    */
-  generation(fitnessFunction) {
+  calculateFitness(fitnessFunction) {
     for (let i = this.members.length; i < this.popSize; i++) {
       this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc))
     }
@@ -107,17 +107,24 @@ class Population {
   }
 
   produceOffspring() {
-    let t = this.speciesList
-    this.members = []
-    for (let s of t) {
-      s.produceOffspring()
-      this.members.push(...s.members)
-    }
-    if (this.members.length < this.popSize) {
-      let d = this.popSize - this.members.length
-      for (let i = 0; i < d; i++) {
-        this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc))
+    if (Population.Speciation) {
+      let t = this.speciesList
+      this.members = []
+      for (let s of t) {
+        s.produceOffspring()
+        this.members.push(...s.members)
       }
+      if (this.members.length < this.popSize) {
+        let d = this.popSize - this.members.length
+        for (let i = 0; i < d; i++) {
+          this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc))
+        }
+      }
+    } else {
+      const copyOfMembers = [...this.members]
+      this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : []
+      const pairings = Population.GeneratePairings(copyOfMembers, this.popSize)
+      pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)))
     }
   }
 
@@ -127,19 +134,17 @@ class Population {
     }
   }
 
-  step1() {
+  nextGeneration() {
     this.produceOffspring()
     this.generationCounter++
     this.mutate()
   }
 
-  step2() {
-    // this falls under species stuff
+  speciate() {
     Species.Speciate(this)
     this.updateGensSinceImproved()
     this.adjustThreshold()
     this.adjustFitness()
-    // this doesn't
     this.calculateAllowedOffspring()
   }
 
@@ -190,17 +195,19 @@ class Population {
       .map((b, i) => new GraphicsText(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
       .forEach(member => member.draw())
 
-    new GraphicsText(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
-      250, 5, '#fff', 20, 'left', 'top')
-      .draw()
+    if (Population.Speciation) {
+      new GraphicsText(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
+        250, 5, '#fff', 20, 'left', 'top')
+        .draw()
 
-    let getSpeciesText = species => {
-      let a = species.members.length
-      let b = round(species.getAverageFitness(), 5)
-      let c = round(species.getAverageFitnessAdjusted(), 5)
-      return `<${a}> ${b} -> ${c}`
+      let getSpeciesText = species => {
+        let a = species.members.length
+        let b = round(species.getAverageFitness(), 5)
+        let c = round(species.getAverageFitnessAdjusted(), 5)
+        return `<${a}> ${b} -> ${c}`
+      }
+      this.speciesList.map((s, i) => new GraphicsText(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
+        .forEach(species => species.draw())
     }
-    this.speciesList.map((s, i) => new GraphicsText(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
-      .forEach(species => species.draw())
   }
 }
