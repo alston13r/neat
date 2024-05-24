@@ -1,6 +1,8 @@
 const AddConnectionChance = 0.05
 const AllowRecurrent = false
 const ReenableConnectionChance = 0.25
+const AllowNewNodes = true
+const AllowNewConnections = true
 
 const AddANodeChance = 0.03
 
