@@ -7,11 +7,9 @@ const AllowNewConnections = true
 const AddANodeChance = 0.03
 
 class Brain {
-  constructor() {
-    this.fitness = 0
-    this.fitnessAdjusted = 0
-    this.species = null
-  }
+  fitness = 0
+  fitnessAdjusted = 0
+  species = null
 
   /**
    * @param {number} inputN
