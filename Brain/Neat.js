@@ -97,6 +97,15 @@ class Neat {
     this.graphics = graphics
   }
 
+  /**
+   * @param {Graphics} graphics 
+   * @returns {Neat}
+   */
+  setGraphics(graphics) {
+    this.graphics = graphics
+    return this
+  }
+
   fragmentGame(Game, population) {
     return population.members.map(member => {
       return {
@@ -175,13 +184,14 @@ class Neat {
     }
 
     let population = new Population(1000, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
+      .setGraphics(this.graphics)
     population.generation(fitnessFunction)
     population.step2()
 
     return new Promise((resolve) => {
       let iterate = () => {
         this.graphics.bg()
-        population.draw(this.graphics)
+        population.draw()
         if (population.fittestEver == null || population.fittestEver.fitness >= desiredFitness) {
           let solution = population.fittestEver
           console.log(`Solution found`)
