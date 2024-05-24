@@ -48,6 +48,17 @@ class Connection {
   }
 
   /**
+   * Public helper method to return the innovation id for the specified
+   * input Node and output Node.
+   * @param inNode the incoming Node
+   * @param outNode the outgoing Node
+   * @returns the innovation id
+   */
+  static GetInnovationID(inNode: NNode, outNode: NNode): number {
+    return this.#GetInnovationID(inNode, outNode)
+  }
+
+  /**
    * Helper method to generate a random weight value between the minimum and maximum
    * values. This is used since writing Math.random() in place of calling this would lead
    * to a lot of numbers needing to be changed when you can just change the static minimum
@@ -91,30 +102,30 @@ class Connection {
     this.inNode.connectionsOut.push(this)
     this.outNode.connectionsIn.push(this)
   }
+
+  /**
+   * Mutates this Connection's weight. Mutations occur by chance, only if a call to Math.random()
+   * yields a value less than the predefined static values. A Connection's weight, when mutated,
+   * can either be nudged or completely randomized.
+   */
+  mutate(): void {
+    if (Math.random() < Connection.MutateWeightChance) {
+      // connection weight will be mutated
+      if (Math.random() < Connection.NudgeWeightChance) {
+        // weight will only be nudged by 20%
+        this.weight += 0.2 * this.weight * (Math.random() > 0.5 ? 1 : -1)
+      } else {
+        // weight will be randomized
+        this.weight = Connection.GenerateRandomWeight()
+      }
+      this.clamp()
+    }
+  }
+
+  /**
+   * Clamps this Connection's weight to be within predefined bounds.
+   */
+  clamp(): void {
+    this.weight = Math.min(Connection.MaximumWeightValue, Math.max(Connection.MinimumWeightValue, this.weight))
+  }
 }
-
-
-// class Connection {
-
-
-//   static GetInnovationID(inNode, outNode) {
-//     return Connection.#GetInnovationID(inNode, outNode)
-//   }
-
-//   mutate() {
-//     if (Math.random() < MutateWeightChance) {
-//       if (Math.random() < NudgeWeightChance) {
-//         // +/- 20% change
-//         this.weight += 0.2 * this.weight * (Math.random() > 0.5 ? 1 : -1)
-//       } else {
-//         // new value
-//         this.weight = Math.random() * 20 - 10
-//       }
-//       this.clamp()
-//     }
-//   }
-
-//   clamp() {
-//     this.weight = Math.min(10, Math.max(-10, this.weight))
-//   }
-// }
