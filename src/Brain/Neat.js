@@ -160,7 +160,7 @@ class Neat {
    * @param {NeatSolutionValues | {inputs: number[], outputs: number[]}[]} values 
    * @param {number} desiredFitness 
    */
-  findSolution(values, desiredFitness, updateInterval = 10) {
+  findSolution(values, desiredFitness, populationSize = 1000, updateInterval = 10) {
     let solutionValues = values instanceof NeatSolutionValues ? values : new NeatSolutionValues(values)
 
     let fitnessFunction = brain => {
@@ -174,7 +174,7 @@ class Neat {
       }
     }
 
-    let population = new Population(50, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
+    let population = new Population(populationSize, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
       .setGraphics(this.graphics)
     population.calculateFitness(fitnessFunction)
     population.speciate()
