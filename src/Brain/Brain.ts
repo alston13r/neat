@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * The brain is the main class in the neat algorithm. From the neat algorithm, a brain
  * differs from the ordinary fulley connected neural networks in that its topology, or
@@ -13,7 +15,7 @@ class Brain {
   /** Toggle for allowing recurrent connections */
   static AllowRecurrent: boolean = false
   /** The chance for a new connection to be made */
-  static AddConnectionChance: number = 0.5
+  static AddConnectionChance: number = 0.7
   /** The chance for a connection to be disabled */
   static DisableConnectionChance: number = 0.05
   /** The chance for a connection to be reenabled */
@@ -54,7 +56,7 @@ class Brain {
     this.inputNodes = []
     this.outputNodes = []
 
-    const toConnect: NNode[][] = []
+    const toConnect: NNode[][] = [[], []]
 
     for (let i = 0; i < inputN; i++) {
       const node = new NNode(this.nodes.length + 1, NNodeType.Input, 0)
@@ -368,71 +370,71 @@ class Brain {
     }
   }
 
-  // /**
-  //  * @param {Graphics} graphics 
-  //  */
-  // draw(graphics) {
-  //   let width = graphics.width
-  //   let height = graphics.height
+  /**
+   * @param {Graphics} graphics 
+   */
+  draw(graphics) {
+    let width = graphics.width
+    let height = graphics.height
 
-  //   graphics.bg('#000')
+    graphics.bg('#000')
 
-  //   let nodePositions = new Map()
+    let nodePositions = new Map()
 
-  //   let mlayer = this.outputNodes[0].layer
-  //   let dx = width / (mlayer + 1)
+    let mlayer = this.outputNodes[0].layer
+    let dx = width / (mlayer + 1)
 
-  //   for (let i = 1; i <= mlayer; i++) {
-  //     let currNodes = this.nodes.filter(n => n.layer == i)
-  //     let dy = height / (currNodes.length + 1)
-  //     for (let j = 1; j <= currNodes.length; j++) {
-  //       nodePositions.set(currNodes[j - 1], new Vector(i * dx, j * dy))
-  //     }
-  //   }
+    for (let i = 1; i <= mlayer; i++) {
+      let currNodes = this.nodes.filter(n => n.layer == i)
+      let dy = height / (currNodes.length + 1)
+      for (let j = 1; j <= currNodes.length; j++) {
+        nodePositions.set(currNodes[j - 1], new Vector(i * dx, j * dy))
+      }
+    }
 
-  //   // node circles
-  //   // base is white
-  //   // inputs are red
-  //   // outputs are blue
-  //   let circleArray = []
+    // node circles
+    // base is white
+    // inputs are red
+    // outputs are blue
+    let circleArray = []
 
-  //   // text values
-  //   let textArray = []
+    // text values
+    let textArray = []
 
-  //   for (let [node, pos] of nodePositions) {
-  //     circleArray.push(new GraphicsCircle(graphics, pos.x, pos.y, 10, '#fff'))
-  //     circleArray.push(new GraphicsCircle(graphics, pos.x + 7, pos.y, 3, '#f00'))
-  //     circleArray.push(new GraphicsCircle(graphics, pos.x - 7, pos.y, 3, '#00f'))
-  //     textArray.push(new GraphicsText(graphics, node.layer, pos.x, pos.y + 17))
-  //     textArray.push(new GraphicsText(graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
-  //   }
+    for (let [node, pos] of nodePositions) {
+      circleArray.push(new GraphicsCircle(graphics, pos.x, pos.y, 10, '#fff'))
+      circleArray.push(new GraphicsCircle(graphics, pos.x + 7, pos.y, 3, '#f00'))
+      circleArray.push(new GraphicsCircle(graphics, pos.x - 7, pos.y, 3, '#00f'))
+      textArray.push(new GraphicsText(graphics, node.layer, pos.x, pos.y + 17))
+      textArray.push(new GraphicsText(graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
+    }
 
-  //   // connections
-  //   let lineArray = []
+    // connections
+    let lineArray = []
 
-  //   for (let connection of this.connections) {
-  //     let inputNodePos = nodePositions.get(connection.inNode)
-  //     let outputNodePos = nodePositions.get(connection.outNode)
+    for (let connection of this.connections) {
+      let inputNodePos = nodePositions.get(connection.inNode)
+      let outputNodePos = nodePositions.get(connection.outNode)
 
-  //     let color = '#0f0'
-  //     if (!connection.enabled) color = '#f00'
-  //     else if (connection.recurrent) color = '#22f'
-  //     lineArray.push(new Line(graphics, ...inputNodePos.add(new Vector(7, 0)), ...outputNodePos.sub(new Vector(7, 0)), color))
-  //   }
+      let color = '#0f0'
+      if (!connection.enabled) color = '#f00'
+      else if (connection.recurrent) color = '#22f'
+      lineArray.push(new Line(graphics, ...inputNodePos.add(new Vector(7, 0)), ...outputNodePos.sub(new Vector(7, 0)), color))
+    }
 
-  //   circleArray.forEach(circle => circle.draw())
-  //   lineArray.forEach(line => line.draw())
-  //   textArray.forEach(text => text.draw())
+    circleArray.forEach(circle => circle.draw())
+    lineArray.forEach(line => line.draw())
+    textArray.forEach(text => text.draw())
 
-  //   let ytemp = 0
-  //   let weightsInfo = []
-  //   for (let c of this.connections) {
-  //     let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`
-  //     weightsInfo.push(new GraphicsText(graphics, str, 0, ytemp))
-  //     ytemp += 10
-  //   }
-  //   graphics.listText(5, 5, weightsInfo, '#fff', 10, new GraphicsText('Weights', 0, 0), '#fff', 20)
+    let ytemp = 0
+    let weightsInfo = []
+    for (let c of this.connections) {
+      let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`
+      weightsInfo.push(new GraphicsText(graphics, str, 0, ytemp))
+      ytemp += 10
+    }
+    graphics.listText(5, 5, weightsInfo, '#fff', 10, new GraphicsText('Weights', 0, 0), '#fff', 20)
 
-  //   graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top')
-  // }
+    graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top')
+  }
 }

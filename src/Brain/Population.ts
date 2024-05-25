@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TODO
  */
@@ -13,7 +14,7 @@ class Population {
   hiddenN: number
   outputN: number
   enabledChance: number
-  // graphics: Graphics
+  graphics: Graphics
 
   /**
    * TODO
@@ -34,10 +35,10 @@ class Population {
   /**
    * TODO
    */
-  // setGraphics(graphics: Graphics): Brain {
-  //   this.graphics = graphics
-  //   return this
-  // }
+  setGraphics(graphics: Graphics): Brain {
+    this.graphics = graphics
+    return this
+  }
 
   /**
    * TODO
@@ -61,24 +62,24 @@ class Population {
   //  * @param {function(Brain): void} fitnessFunction 
   //  * @returns {Brain | null}
   //  */
-  // calculateFitness(fitnessFunction) {
-  //   for (let i = this.members.length; i < this.popSize; i++) {
-  //     this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc))
-  //   }
+  calculateFitness(fitnessFunction) {
+    for (let i = this.members.length; i < this.popSize; i++) {
+      this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc))
+    }
 
-  //   let fittest
-  //   if (fitnessFunction) {
-  //     for (let b of this.members) {
-  //       fitnessFunction(b)
-  //       if (fittest == null || b.fitness > fittest.fitness) fittest = b
-  //     }
-  //     if (this.fittestEver == null || fittest.fitness > this.fittestEver.fitness) this.fittestEver = fittest
-  //   }
+    let fittest
+    if (fitnessFunction) {
+      for (let b of this.members) {
+        fitnessFunction(b)
+        if (fittest == null || b.fitness > fittest.fitness) fittest = b
+      }
+      if (this.fittestEver == null || fittest.fitness > this.fittestEver.fitness) this.fittestEver = fittest
+    }
 
-  //   this.fittest = this.members.reduce((best, curr) => curr.fitness > best.fitness ? curr : best)
+    this.fittest = this.members.reduce((best, curr) => curr.fitness > best.fitness ? curr : best)
 
-  //   return fittest
-  // }
+    return fittest
+  }
 
   /**
    * TODO
@@ -227,36 +228,36 @@ class Population {
     return res
   }
 
-  // draw() {
-  //   const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p
+  draw() {
+    const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
-  //   this.graphics.bg()
-  //   new GraphicsText(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
-  //     5, 5, '#fff', 20, 'left', 'top').draw()
+    this.graphics.bg()
+    new GraphicsText(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
+      5, 5, '#fff', 20, 'left', 'top').draw()
 
-  //   let getMemberText = (brain, i) => {
-  //     let b = i
-  //     let c = round(brain.fitness, 5)
-  //     let d = round(brain.fitnessAdjusted, 5)
-  //     return `${b}: ${c} -> ${d}`
-  //   }
-  //   this.members.slice().sort((a, b) => b.fitness - a.fitness).slice(0, 50)
-  //     .map((b, i) => new GraphicsText(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
-  //     .forEach(member => member.draw())
+    let getMemberText = (brain, i) => {
+      let b = i
+      let c = round(brain.fitness, 5)
+      let d = round(brain.fitnessAdjusted, 5)
+      return `${b}: ${c} ${Population.Speciation ? ' -> ' + d : ''}`
+    }
+    this.members.slice().sort((a, b) => b.fitness - a.fitness).slice(0, 50)
+      .map((b, i) => new GraphicsText(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
+      .forEach(member => member.draw())
 
-  //   if (Population.Speciation) {
-  //     new GraphicsText(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
-  //       250, 5, '#fff', 20, 'left', 'top')
-  //       .draw()
+    if (Population.Speciation) {
+      new GraphicsText(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
+        250, 5, '#fff', 20, 'left', 'top')
+        .draw()
 
-  //     let getSpeciesText = species => {
-  //       let a = species.members.length
-  //       let b = round(species.getAverageFitness(), 5)
-  //       let c = round(species.getAverageFitnessAdjusted(), 5)
-  //       return `<${a}> ${b} -> ${c}`
-  //     }
-  //     this.speciesList.map((s, i) => new GraphicsText(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
-  //       .forEach(species => species.draw())
-  //   }
-  // }
+      let getSpeciesText = species => {
+        let a = species.members.length
+        let b = round(species.getAverageFitness(), 5)
+        let c = round(species.getAverageFitnessAdjusted(), 5)
+        return `<${a}> ${b} -> ${c}`
+      }
+      this.speciesList.map((s, i) => new GraphicsText(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
+        .forEach(species => species.draw())
+    }
+  }
 }

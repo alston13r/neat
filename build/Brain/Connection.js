@@ -11,19 +11,19 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
 };
 var _a, _Connection_InnovationIndex, _Connection_InnovationMap, _Connection_GetInnovationID;
 /**
- * A connection serves as the pathway between Brain Nodes within the Brain's topology.
- * Each connection has a unique innovation id that allows Brain's with differing topologies
- * to be compared. Connections also have weights that tell Node's how important the data is
- * from the incoming Node. Connections can be enabled or disabled, where disabled connections
+ * A connection serves as the pathway between a brain's nodes within the brain's topology.
+ * Each connection has a unique innovation id that allows brain's with differing topologies
+ * to be compared. Connections also have weights that tell nodes how important the data is
+ * from the incoming node. Connections can be enabled or disabled, where disabled connections
  * do not pass on their data while enabled ones do. Connections can also be recurrent,
- * where their incoming Node's layer is greater than the outgoing Node's, this can be
+ * where their incoming node's layer is greater than the outgoing node's, this can be
  * interpreted as a Brain's "memory" since inputs from one propagation can influence the output
  * of the next propagation.
  */
 class Connection {
     /**
      * Public helper method to return the innovation id for the specified
-     * input Node and output Node.
+     * input node and output node.
      * @param inNode the incoming Node
      * @param outNode the outgoing Node
      * @returns the innovation id
@@ -41,15 +41,15 @@ class Connection {
         return Math.random() * (_a.MaximumWeightValue - _a.MinimumWeightValue) + _a.MinimumWeightValue;
     }
     /**
-     * Constructs a Connection with the specified incoming Node, outgoing Node, weight, enabled value,
-     * and recurrent value. A Connection will take the incoming Node's sum output value, multiply it
-     * by the Connection's weight, and pass it on to the outgoing Node's sum input value. This transfer
+     * Constructs a connection with the specified incoming node, outgoing node, weight, enabled value,
+     * and recurrent value. A connection will take the incoming node's sum output value, multiply it
+     * by the connection's weight, and pass it on to the outgoing node's sum input value. This transfer
      * of data only happens if the Connection is enabled.
-     * @param inNode the Connection's incoming Node
-     * @param outNode the Connection's outgoing Node
+     * @param inNode the connection's incoming node
+     * @param outNode the connection's outgoing node
      * @param weight the Connection's weight
-     * @param enabled whether or not the Connection is enabled
-     * @param recurrent whether or not the Connection is recurrent
+     * @param enabled whether or not the connection is enabled
+     * @param recurrent whether or not the connection is recurrent
      */
     constructor(inNode, outNode, weight, enabled, recurrent) {
         this.inNode = inNode;
@@ -62,8 +62,8 @@ class Connection {
         this.outNode.connectionsIn.push(this);
     }
     /**
-     * Mutates this Connection's weight. Mutations occur by chance, only if a call to Math.random()
-     * yields a value less than the predefined static values. A Connection's weight, when mutated,
+     * Mutates this connection's weight. Mutations occur by chance, only if a call to Math.random()
+     * yields a value less than the predefined static values. A connection's weight, when mutated,
      * can either be nudged or completely randomized.
      */
     mutate() {
@@ -81,7 +81,7 @@ class Connection {
         }
     }
     /**
-     * Clamps this Connection's weight to be within predefined bounds.
+     * Clamps this connection's weight to be within predefined bounds.
      */
     clamp() {
         this.weight = Math.min(_a.MaximumWeightValue, Math.max(_a.MinimumWeightValue, this.weight));
@@ -106,10 +106,6 @@ Connection.MaximumWeightValue = 10;
 Connection.MutateWeightChance = 0.8;
 /** The chance for the weight to be nudged rather than randomized when mutated */
 Connection.NudgeWeightChance = 0.9;
-/** Toggle for connection disabling mutations */
-Connection.AllowDisablingConnections = false;
-/** The chance for a connection to be disabled when mutated */
-Connection.DisableConnectionChance = 0;
 /** The current global innovation index, this increments when an innovation is made */
 _Connection_InnovationIndex = { value: 0 };
 /**

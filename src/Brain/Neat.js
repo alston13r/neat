@@ -174,7 +174,7 @@ class Neat {
       }
     }
 
-    let population = new Population(1000, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
+    let population = new Population(50, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
       .setGraphics(this.graphics)
     population.calculateFitness(fitnessFunction)
     population.speciate()
