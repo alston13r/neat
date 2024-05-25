@@ -10,12 +10,10 @@ class Species {
   static DynamicThreshold = 40
   static DynamicThresholdStepSize = 0.5
 
-  constructor() {
-    this.members = []
-    this.allowedOffspring = 0
-    this.gensSinceImproved = 0
-    this.highestFitness = 0
-  }
+  members: Brain[] = []
+  allowedOffspring: number = 0
+  gensSinceImproved: number = 0
+  highestFitness: number = 0
 
   /**
    * @param {Brain} a 
@@ -71,6 +69,13 @@ class Species {
     weights *= WeightsFactor
 
     return excess + disjoint + weights
+  }
+
+  adjustFitness() {
+    const N: number = this.members.length
+    this.members.forEach(member => {
+      member.fitnessAdjusted = member.fitness / N
+    })
   }
 
   getAverageFitness() {
