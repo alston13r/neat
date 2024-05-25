@@ -151,8 +151,9 @@ class Population {
    */
   produceOffspring(): void {
     if (Population.Speciation) {
+      const speciesList: Species[] = this.speciesList
       this.members = []
-      this.speciesList.forEach(species => {
+      speciesList.forEach(species => {
         species.produceOffspring()
         this.members.push(...species.members)
       })
@@ -220,7 +221,8 @@ class Population {
     if (softLimit == 0) return []
     const res: Brain[] = []
     const sorted: Brain[] = [...list].sort((a, b) => b.fitness - a.fitness)
-    for (let i = 0; i < Math.min(Math.round(Population.ElitePercent * list.length), softLimit); i++) {
+    const amount: number = Math.min(Math.round(Population.ElitePercent * list.length), softLimit)
+    for (let i = 0; i < amount; i++) {
       const eliteMember: Brain = sorted[i]
       eliteMember.isElite = true
       res.push(eliteMember)
