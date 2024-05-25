@@ -130,8 +130,9 @@ class Population {
      */
     produceOffspring() {
         if (Population.Speciation) {
+            const speciesList = this.speciesList;
             this.members = [];
-            this.speciesList.forEach(species => {
+            speciesList.forEach(species => {
                 species.produceOffspring();
                 this.members.push(...species.members);
             });
@@ -197,7 +198,8 @@ class Population {
             return [];
         const res = [];
         const sorted = [...list].sort((a, b) => b.fitness - a.fitness);
-        for (let i = 0; i < Math.min(Math.round(Population.ElitePercent * list.length), softLimit); i++) {
+        const amount = Math.min(Math.round(Population.ElitePercent * list.length), softLimit);
+        for (let i = 0; i < amount; i++) {
             const eliteMember = sorted[i];
             eliteMember.isElite = true;
             res.push(eliteMember);
