@@ -9,14 +9,11 @@ Allow for softcap on iterations for Neat's findSolution
 Refactor Brain's initialize method
 
 Convert everything to TS
-  Brain
-    Brain
-    Neat
-    Population
-    Species
   Games
     Asteroids
   Utils
     Graphics
     Maths
     Shapes
+
+JSDoc everything
