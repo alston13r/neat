@@ -1,204 +1,212 @@
-// // TODO
-// class Matrix {
-//   rows: number
-//   cols: number
-//   mat: number[][]
-
-//   // TODO
-//   constructor(rows: number = 4, cols: number = 4) {
-//     this.rows = rows
-//     this.cols = cols
-//     this.mat = new Array(rows).fill(0).map(() => new Array(cols).fill(0))
-//   }
-
-//   // TODO
-//   static Map(matrix: Matrix, fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
-//     for (let i = 0; i < matrix.rows; i++) {
-//       for (let j = 0; j < matrix.cols; j++) {
-//         matrix.mat[i][j] = fn(matrix.mat[i][j], i, j, matrix)
-//       }
-//     }
-//     return matrix
-//   }
-
-//   // TODO
-//   static Copy(matrix: Matrix): Matrix {
-//     return Matrix.Map(new Matrix(matrix.rows, matrix.cols), (e, i, j) => matrix.mat[i][j])
-//   }
-
-//   // TODO
-//   copy(): Matrix {
-//     return Matrix.Copy(this)
-//   }
-
-//   // TODO
-//   map(fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
-//     return Matrix.Map(this.copy(), fn)
-//   }
-
-//   // TODO
-//   static Dot(matrixA: Matrix, matrixB: Matrix): Matrix {
-//     return Matrix.Map(new Matrix(matrixA.rows, matrixB.cols), (e, i, j) => {
-//       let s: number = 0
-//       for (let k = 0; k < matrixA.cols; k++) s += matrixA.mat[i][k] * matrixB.mat[k][j]
-//       return s
-//     })
-//   }
-
-//   // TODO
-//   dot(matrix: Matrix): Matrix {
-//     return Matrix.Dot(this, matrix)
-//   }
-
-//   // TODO
-//   static Add(matrixA: Matrix, matrixB: Matrix): Matrix
-//   // TODO
-//   static Add(matrix: Matrix, x: number): Matrix
-//   // TODO
-//   static Add(matrix: Matrix, other: Matrix | number): Matrix {
-//     if (other instanceof Matrix) return Matrix.Map(matrix, (e, i, j) => e + other.mat[i][j])
-//     else return Matrix.Map(matrix, e => e + other)
-//   }
-
-//   // TODO
-//   add(matrix: Matrix): Matrix
-//   // TODO
-//   add(x: number): Matrix
-//   // TODO
-//   add(other: Matrix | number): Matrix {
-//     // @ts-ignore
-//     return Matrix.Add(this.copy(), other)
-//   }
-// }
-
-
 // TODO
-// class Matrix {
+class Matrix {
+  rows: number
+  cols: number
+  mat: number[][]
 
-//   static Mul(a: Matrix, b: Matrix): Matrix
-//   static Mul(a: Matrix, b: number): Matrix
-//   static Mul(a: Matrix, b: Matrix | number): Matrix | number {
-//     if (b instanceof Matrix) {
-//       return Matrix.Map(a, (e, i, j) => e * b.m[i][j])
-//     } else {
-//       return Matrix.Map(a, e => e * b)
-//     }
-//   }
-//   mul(a: Matrix | number): Matrix {
-//     // @ts-ignore
-//     return Matrix.Mul(this.copy(), a)
-//   }
+  // TODO
+  constructor(rows: number = 4, cols: number = 4) {
+    this.rows = rows
+    this.cols = cols
+    this.mat = new Array(rows).fill(0).map(() => new Array(cols).fill(0))
+  }
 
-//   static Sub(a: Matrix, b: Matrix): Matrix
-//   static Sub(a: Matrix, b: number): Matrix
-//   static Sub(a: Matrix, b: Matrix | number): Matrix | number {
-//     if (b instanceof Matrix) {
-//       return Matrix.Map(a, (e, i, j) => e - b.m[i][j])
-//     } else {
-//       return Matrix.Map(a, e => e - b)
-//     }
-//   }
-//   sub(a: Matrix | number): Matrix {
-//     // @ts-ignore
-//     return Matrix.Sub(this.copy(), a)
-//   }
+  // TODO
+  static Map(matrix: Matrix, fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
+    for (let i = 0; i < matrix.rows; i++) {
+      for (let j = 0; j < matrix.cols; j++) {
+        matrix.mat[i][j] = fn(matrix.mat[i][j], i, j, matrix)
+      }
+    }
+    return matrix
+  }
 
-//   static Div(a: Matrix, b: Matrix): Matrix
-//   static Div(a: Matrix, b: number): Matrix
-//   static Div(a: Matrix, b: Matrix | number): Matrix | number {
-//     if (b instanceof Matrix) {
-//       return Matrix.Map(a, (e, i, j) => e / b.m[i][j])
-//     } else {
-//       return Matrix.Map(a, e => e / b)
-//     }
-//   }
-//   div(a: Matrix | number): Matrix {
-//     // @ts-ignore
-//     return Matrix.Div(this.copy(), a)
-//   }
+  // TODO
+  static Copy(matrix: Matrix): Matrix {
+    return Matrix.Map(new Matrix(matrix.rows, matrix.cols), (e, i, j) => matrix.mat[i][j])
+  }
 
-//   static FromArr(arr: number[][]): Matrix
-//   static FromArr(arr: number[]): Matrix
-//   static FromArr(arr: number[][] | number[]): Matrix {
-//     if (arr[0] instanceof Array) {
-//       return Matrix.Map(new Matrix(arr.length, arr[0].length), (e, i, j) => (arr as number[][])[i][j])
-//     } else {
-//       return Matrix.Map(new Matrix(1, arr.length), (e, i, j) => (arr as number[])[j])
-//     }
-//   }
+  // TODO
+  copy(): Matrix {
+    return Matrix.Copy(this)
+  }
 
-//   static ToArray(m: Matrix): number[] {
-//     let res: number[] = []
-//     m.map(e => res.push(e))
-//     return res
-//   }
-//   toArray(): number[] {
-//     return Matrix.ToArray(this)
-//   }
-//   static To2DArray(m: Matrix): number[][] {
-//     return [...m.m].map(x => [...x])
-//   }
-//   to2DArray(): number[][] {
-//     return Matrix.To2DArray(this)
-//   }
+  // TODO
+  map(fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
+    return Matrix.Map(this.copy(), fn)
+  }
 
-//   static MakeIdentity(s: number | Matrix = 4): Matrix {
-//     if (s instanceof Matrix) {
-//       for (let i = 0; i < s.r; i++) s.m[i][i] = 1
-//       return s
-//     }
-//     let m = new Matrix(s, s)
-//     for (let i = 0; i < s; i++) m.m[i][i] = 1
-//     return m
-//   }
+  // TODO
+  static Dot(matrixA: Matrix, matrixB: Matrix): Matrix {
+    return Matrix.Map(new Matrix(matrixA.rows, matrixB.cols), (e, i, j) => {
+      let s: number = 0
+      for (let k = 0; k < matrixA.cols; k++) s += matrixA.mat[i][k] * matrixB.mat[k][j]
+      return s
+    })
+  }
+  // TODO
+  dot(matrix: Matrix): Matrix {
+    return Matrix.Dot(this, matrix)
+  }
 
-//   static Print(m: Matrix, text: string): Matrix {
-//     if (text != undefined) console.log(`Matrix {${text}}: ${m.r}-${m.c}`)
-//     console.table(m.m)
-//     return m
-//   }
+  // TODO
+  static Add(matrixA: Matrix, matrixB: Matrix): Matrix
+  // TODO
+  static Add(matrix: Matrix, x: number): Matrix
+  static Add(matrix: Matrix, other: Matrix | number): Matrix {
+    if (other instanceof Matrix) return Matrix.Map(matrix, (e, i, j) => e + other.mat[i][j])
+    return Matrix.Map(matrix, e => e + other)
+  }
 
-//   print(text: string): Matrix {
-//     return Matrix.Print(this, text)
-//   }
+  // TODO
+  add(matrix: Matrix): Matrix
+  // TODO
+  add(x: number): Matrix
+  add(other: Matrix | number): Matrix {
+    // @ts-ignore
+    return Matrix.Add(this.copy(), other)
+  }
 
-//   static Summate(m: Matrix): number {
-//     let s: number = 0
-//     m.map(e => s += e)
-//     return s
-//   }
+  // TODO
+  static Scale(matrix: Matrix, x: number): Matrix {
+    return Matrix.Map(matrix, e => e * x)
+  }
+  // TODO
+  scale(x: number): Matrix {
+    return Matrix.Scale(this.copy(), x)
+  }
 
-//   summate(): number {
-//     return Matrix.Summate(this)
-//   }
+  // TODO
+  static Mul(matrixA: Matrix, matrixB: Matrix): Matrix {
+    return Matrix.Map(matrixA, (e, i, j) => e * matrixB.mat[i][j])
+  }
+  // TODO
+  mul(matrix: Matrix): Matrix {
+    return Matrix.Mul(this.copy(), matrix)
+  }
 
-//   static Randomize(m: Matrix): Matrix {
-//     return Matrix.Map(m, () => Math.random() * 2 - 1)
-//   }
 
-//   randomize(): Matrix {
-//     return Matrix.Randomize(this.copy())
-//   }
+  // TODO
+  static Sub(matrixA: Matrix, matrixB: Matrix): Matrix
+  // TODO
+  static Sub(matrix: Matrix, x: number): Matrix
+  static Sub(matrix: Matrix, other: Matrix | number): Matrix {
+    if (other instanceof Matrix) return Matrix.Add(matrix, other.scale(-1))
+    return Matrix.Add(matrix, -other)
+  }
+  // TODO
+  sub(matrix: Matrix): Matrix
+  // TODO
+  sub(x: number): Matrix
+  sub(other: Matrix | number): Matrix {
+    // @ts-ignore
+    return Matrix.Sub(this.copy(), other)
+  }
 
-//   static Numerize(m: Matrix): Matrix {
-//     return Matrix.Map(m, (e, i, j) => i * m.c + j)
-//   }
+  // TODO
+  static Div(matrixA: Matrix, matrixB: Matrix): Matrix
+  // TODO
+  static Div(matrix: Matrix, x: number): Matrix
+  static Div(matrix: Matrix, other: Matrix | number): Matrix {
+    if (other instanceof Matrix) return Matrix.Map(matrix, (e, i, j) => e / other.mat[i][j])
+    return Matrix.Scale(matrix, 1 / other)
+  }
+  // TODO
+  div(a: Matrix | number): Matrix {
+    // @ts-ignore
+    return Matrix.Div(this.copy(), a)
+  }
 
-//   numerize(): Matrix {
-//     return Matrix.Numerize(this.copy())
-//   }
+  // TODO
+  static FromArr(arr: number[][]): Matrix
+  // TODO
+  static FromArr(arr: number[]): Matrix
+  static FromArr(arr: number[][] | number[]): Matrix {
+    if (arr[0] instanceof Array) return Matrix.Map(new Matrix(arr.length, arr[0].length), (e, i, j) => (arr as number[][])[i][j])
+    return Matrix.Map(new Matrix(1, arr.length), (e, i, j) => (arr as number[])[j])
+  }
 
-//   static Transpose(m: Matrix): Matrix {
-//     let mTemp: number[][] = new Array(m.c).fill(0).map(() => new Array(m.r).fill(0))
-//     m.map((e, i, j) => mTemp[j][i] = e)
-//     let rTemp: number = m.r
-//     m.r = m.c
-//     m.c = rTemp
-//     m.m = mTemp
-//     return m
-//   }
+  // TODO
+  static ToArray(matrix: Matrix): number[] {
+    const res: number[] = []
+    matrix.map(e => res.push(e))
+    return res
+  }
+  // TODO
+  toArray(): number[] {
+    return Matrix.ToArray(this)
+  }
 
-//   transpose(): Matrix {
-//     return Matrix.Transpose(this.copy())
-//   }
-// }
+  // TODO
+  static To2DArray(matrix: Matrix): number[][] {
+    return [...matrix.mat].map(row => [...row])
+  }
+  // TODO
+  to2DArray(): number[][] {
+    return Matrix.To2DArray(this)
+  }
+
+  // TODO
+  static MakeIdentity(size: number): Matrix
+  // TODO
+  static MakeIdentity(matrix: Matrix): Matrix
+  static MakeIdentity(param: number | Matrix = 4): Matrix {
+    if (param instanceof Matrix) return Matrix.Map(param, (e, i, j) => i == j ? 1 : 0)
+    return Matrix.MakeIdentity(new Matrix(param, param))
+  }
+
+  // TODO
+  static Print(matrix: Matrix, text: string): Matrix {
+    if (text != undefined) console.log(`Matrix {${text}}: ${matrix.rows}-${matrix.cols}`)
+    console.table(matrix.mat)
+    return matrix
+  }
+  // TODO
+  print(text: string): Matrix {
+    return Matrix.Print(this, text)
+  }
+
+  // TODO
+  static Summate(matrix: Matrix): number {
+    let s: number = 0
+    matrix.map(e => s += e)
+    return s
+  }
+  // TODO
+  summate(): number {
+    return Matrix.Summate(this)
+  }
+
+  // TODO
+  static Randomize(matrix: Matrix, upperLimit: number = 1, lowerLimit: number = -1): Matrix {
+    return Matrix.Map(matrix, () => Math.random() * (upperLimit - lowerLimit) + lowerLimit)
+  }
+  // TODO
+  randomize(): Matrix {
+    return Matrix.Randomize(new Matrix(this.rows, this.cols))
+  }
+
+  // TODO
+  static Numerize(matrix: Matrix): Matrix {
+    return Matrix.Map(matrix, (e, i, j) => i * matrix.cols + j)
+  }
+  // TODO
+  numerize(): Matrix {
+    return Matrix.Numerize(new Matrix(this.rows, this.cols))
+  }
+
+  // TODO
+  static Transpose(matrix: Matrix): Matrix {
+    const matTemp: number[][] = new Array(matrix.cols).fill(0).map(() => new Array(matrix.rows).fill(0))
+    matrix.map((e, i, j) => matTemp[j][i] = e)
+    const rowsTemp: number = matrix.rows
+    matrix.rows = matrix.cols
+    matrix.cols = rowsTemp
+    matrix.mat = matTemp
+    return matrix
+  }
+  // TODO
+  transpose(): Matrix {
+    return Matrix.Transpose(this.copy())
+  }
+}
