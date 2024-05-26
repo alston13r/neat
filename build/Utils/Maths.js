@@ -1,5 +1,5 @@
 /**
- * TODO
+ * // TODO
  * @returns
  */
 function gauss() {
@@ -10,7 +10,7 @@ function gauss() {
     return s / 6;
 }
 /**
- * TODO
+ * // TODO
  * @param items
  * @param param
  * @param count
@@ -33,59 +33,121 @@ function rouletteWheel(items, param, count) {
     });
     return res;
 }
-// function dealWith(x: number | number[], fn: (a: number) => number): number | number[] {
-//   if (x instanceof Array) {
-//     return x.map(y => fn(y))
-//   } else {
-//     return fn(x)
-//   }
-// }
-// function tanh(x: number | number[]): number | number[] {
-//   return dealWith(x, Math.tanh)
-// }
-// function relu(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>Math.max(0,a))
-// }
-// function lrelu(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>Math.max(0.1*a,a))
-// }
-// function sigmoid(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>-1+2/(1+Math.exp(-a)))
-// }
-// function linear(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>a)
-// }
-// function dtanh(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>1-(a**2))
-// }
-// function drelu(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>a<0?0:1)
-// }
-// function dlrelu(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>a<0?0.1:1)
-// }
-// function dsigmoid(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>2*a*(1-a))
-// }
-// function dlinear(x: number | number[]): number | number[] {
-// 	return dealWith(x,a=>1)
-// }
-// function randGaussian(): number {
-// 	let t = 0
-// 	for (let i=0;i<6;i++) t += Math.random()
-// 	return t / 6
-// }
-// function floor(x: number | number[]): number | number[] {
-// 	return dealWith(x,Math.floor)
-// }
-// function rand(a: number = 0, b: number = 1, c: number = 0): number | number[] {
-//   if (c == 0) return Math.random()*(b-a)+a
-//   return new Array(c).fill(0).map(() => rand(a, b) as number)
-// }
-// function basicMutation(x: number | number[]): number | number[] {
-//   return dealWith(x, a => {
-//     if (rand() as number < 0.05) return a + randGaussian()*0.5
-//     return a
-//   })
-// }
+/**
+ * Utility class containing references to an assortment of activation functions.
+ * An activation function normalizes a node's output value before proceeding to
+ * the next layer. Activation functions are needed since neural networks are meant
+ * to run on arbitrary data inputs. They serve to put data onto the same scale, since
+ * $100 is hard to compare with 5 lemons, but 0s and 1s are much more comparable.
+ */
+class ActivationFunction {
+    /**
+     * Constructs an Activation Function with the specified function and name.
+     * @param fn the function's function :)
+     * @param name the function's name
+     */
+    constructor(fn, name) {
+        this.fn = fn;
+        this.name = name;
+    }
+}
+/** The sigmoid activation function */
+ActivationFunction.Sigmoid = new ActivationFunction(x => 1 / (1 + Math.exp(-x)), 'Sigmoid');
+/** The hyperbolic tangent activation function */
+ActivationFunction.Tanh = new ActivationFunction(Math.tanh, 'Tanh');
+/** The relu activation function */
+ActivationFunction.ReLU = new ActivationFunction(x => Math.max(0, x), 'ReLU');
+/** The leaky relu activation function */
+ActivationFunction.LeakyReLU = new ActivationFunction(x => Math.max(0.1 * x, x), 'Leaky ReLU');
+/** The soft plus activation function */
+ActivationFunction.Softplus = new ActivationFunction(x => Math.log(1 + Math.exp(x)), 'Softplus');
+/** The soft sign activation function */
+ActivationFunction.Softsign = new ActivationFunction(x => x / (1 + Math.abs(x)), 'Softsign');
+/** The identity activation function */
+ActivationFunction.Identity = new ActivationFunction(x => x, 'Identity');
+/** The sign activation function */
+ActivationFunction.Sign = new ActivationFunction(Math.sign, 'Sign');
+/**
+ * A static array containing references to all activation functions, this is to help
+ * with the mutation of a node's activation function
+ */
+ActivationFunction.Arr = [
+    ActivationFunction.Sigmoid,
+    ActivationFunction.Tanh,
+    ActivationFunction.ReLU,
+    ActivationFunction.LeakyReLU,
+    ActivationFunction.Softplus,
+    ActivationFunction.Softsign,
+    ActivationFunction.Identity,
+    ActivationFunction.Sign
+];
+/**
+ * Utility class containing references to the derivatives of activation functions.
+ * An activation function normalizes a node's output value before proceeding to
+ * the next layer. The derivatives of activation functions are needed when a
+ * neural network is conducting back propagation, where it needs to know how to
+ * best adjust its weights and biases to more accurately predict data. This class
+ * will be identicle to the ActivationFunction utility class.
+ */
+class DActivationFunction {
+    /**
+     * Constructs a the derivative of an Activation Function with the specified
+     * derivative function, original function, and name.
+     * @param fn the function's function :)
+     * @param name the function's name
+     */
+    constructor(fn, original, name) {
+        this.fn = fn;
+        this.original = original;
+        this.name = name;
+    }
+}
+/** The derivative of the sigmoid activation function */
+DActivationFunction.DSigmoid = new DActivationFunction(x => {
+    const value = ActivationFunction.Sigmoid.fn(x);
+    return value * (1 - value);
+}, ActivationFunction.Sigmoid, 'D Sigmoid');
+/** The derivative of the hyperbolic tangent activation function */
+DActivationFunction.DTanh = new DActivationFunction(x => {
+    return 1 - Math.tanh(x) ** 2;
+}, ActivationFunction.Tanh, 'D Tanh');
+/** The derivative of the relu activation function */
+DActivationFunction.DReLU = new DActivationFunction(x => {
+    return x >= 0 ? 1 : 0;
+}, ActivationFunction.ReLU, 'D ReLU');
+/** The derivative of the leaky relu activation function */
+DActivationFunction.DLeakyReLU = new DActivationFunction(x => {
+    return x >= 0 ? 1 : 0.1;
+}, ActivationFunction.LeakyReLU, 'D Leaky ReLU');
+/** The derivative of the soft plus activation function */
+DActivationFunction.DSoftplus = new DActivationFunction(x => {
+    const value = Math.exp(x);
+    return value / (1 + value);
+}, ActivationFunction.Softplus, 'D Softplus');
+/** The derivative of the soft sign activation function */
+DActivationFunction.DSoftsign = new DActivationFunction(x => {
+    return 1 / (1 + Math.abs(x)) ** 2;
+}, ActivationFunction.Softsign, 'D Softsign');
+/** The derivative of the identity activation function */
+DActivationFunction.DIdentity = new DActivationFunction(x => {
+    return 1;
+}, ActivationFunction.Identity, 'D Identity');
+/** The derivative of the sign activation function */
+DActivationFunction.DSign = new DActivationFunction(x => {
+    return 0;
+}, ActivationFunction.Sign, 'D Sign');
+/**
+ * A static array containing references to all activation functions, this is to help
+ * with the mutation of a node's activation function
+ */
+DActivationFunction.Arr = [
+    DActivationFunction.DSigmoid,
+    DActivationFunction.DTanh,
+    DActivationFunction.DReLU,
+    DActivationFunction.DLeakyReLU,
+    DActivationFunction.DSoftplus,
+    DActivationFunction.DSoftsign,
+    DActivationFunction.DIdentity,
+    DActivationFunction.DSign
+];
 //# sourceMappingURL=Maths.js.map
