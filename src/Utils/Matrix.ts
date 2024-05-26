@@ -1,75 +1,75 @@
-// TODO
-class Matrix {
-  rows: number
-  cols: number
-  mat: number[][]
+// // TODO
+// class Matrix {
+//   rows: number
+//   cols: number
+//   mat: number[][]
 
-  // TODO
-  constructor(rows: number = 4, cols: number = 4) {
-    this.rows = rows
-    this.cols = cols
-    this.mat = new Array(rows).fill(0).map(() => new Array(cols).fill(0))
-  }
+//   // TODO
+//   constructor(rows: number = 4, cols: number = 4) {
+//     this.rows = rows
+//     this.cols = cols
+//     this.mat = new Array(rows).fill(0).map(() => new Array(cols).fill(0))
+//   }
 
-  // TODO
-  static Map(matrix: Matrix, fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
-    for (let i = 0; i < matrix.rows; i++) {
-      for (let j = 0; j < matrix.cols; j++) {
-        matrix.mat[i][j] = fn(matrix.mat[i][j], i, j, matrix)
-      }
-    }
-    return matrix
-  }
+//   // TODO
+//   static Map(matrix: Matrix, fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
+//     for (let i = 0; i < matrix.rows; i++) {
+//       for (let j = 0; j < matrix.cols; j++) {
+//         matrix.mat[i][j] = fn(matrix.mat[i][j], i, j, matrix)
+//       }
+//     }
+//     return matrix
+//   }
 
-  // TODO
-  static Copy(matrix: Matrix): Matrix {
-    return Matrix.Map(new Matrix(matrix.rows, matrix.cols), (e, i, j) => matrix.mat[i][j])
-  }
+//   // TODO
+//   static Copy(matrix: Matrix): Matrix {
+//     return Matrix.Map(new Matrix(matrix.rows, matrix.cols), (e, i, j) => matrix.mat[i][j])
+//   }
 
-  // TODO
-  copy(): Matrix {
-    return Matrix.Copy(this)
-  }
+//   // TODO
+//   copy(): Matrix {
+//     return Matrix.Copy(this)
+//   }
 
-  // TODO
-  map(fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
-    return Matrix.Map(this.copy(), fn)
-  }
+//   // TODO
+//   map(fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
+//     return Matrix.Map(this.copy(), fn)
+//   }
 
-  // TODO
-  static Dot(matrixA: Matrix, matrixB: Matrix): Matrix {
-    return Matrix.Map(new Matrix(matrixA.rows, matrixB.cols), (e, i, j) => {
-      let s: number = 0
-      for (let k = 0; k < matrixA.cols; k++) s += matrixA.mat[i][k] * matrixB.mat[k][j]
-      return s
-    })
-  }
+//   // TODO
+//   static Dot(matrixA: Matrix, matrixB: Matrix): Matrix {
+//     return Matrix.Map(new Matrix(matrixA.rows, matrixB.cols), (e, i, j) => {
+//       let s: number = 0
+//       for (let k = 0; k < matrixA.cols; k++) s += matrixA.mat[i][k] * matrixB.mat[k][j]
+//       return s
+//     })
+//   }
 
-  // TODO
-  dot(matrix: Matrix): Matrix {
-    return Matrix.Dot(this, matrix)
-  }
+//   // TODO
+//   dot(matrix: Matrix): Matrix {
+//     return Matrix.Dot(this, matrix)
+//   }
 
-  // TODO
-  static Add(matrixA: Matrix, matrixB: Matrix): Matrix
-  // TODO
-  static Add(matrix: Matrix, x: number): Matrix
-  // TODO
-  static Add(matrix: Matrix, other: Matrix | number): Matrix {
-    if (other instanceof Matrix) return Matrix.Map(matrix, (e, i, j) => e + other.mat[i][j])
-    else return Matrix.Map(matrix, e => e + other)
-  }
+//   // TODO
+//   static Add(matrixA: Matrix, matrixB: Matrix): Matrix
+//   // TODO
+//   static Add(matrix: Matrix, x: number): Matrix
+//   // TODO
+//   static Add(matrix: Matrix, other: Matrix | number): Matrix {
+//     if (other instanceof Matrix) return Matrix.Map(matrix, (e, i, j) => e + other.mat[i][j])
+//     else return Matrix.Map(matrix, e => e + other)
+//   }
 
-  // TODO
-  add(matrix: Matrix): Matrix
-  // TODO
-  add(x: number): Matrix
-  // TODO
-  add(other: Matrix | number): Matrix {
-    // @ts-ignore
-    return Matrix.Add(this.copy(), other)
-  }
-}
+//   // TODO
+//   add(matrix: Matrix): Matrix
+//   // TODO
+//   add(x: number): Matrix
+//   // TODO
+//   add(other: Matrix | number): Matrix {
+//     // @ts-ignore
+//     return Matrix.Add(this.copy(), other)
+//   }
+// }
 
 
 // TODO
