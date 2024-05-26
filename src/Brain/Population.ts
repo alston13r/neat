@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * A population is a collection of a bunch of brains and allows for a large amount
  * of brains to explore different topologies. Larger populations allow for solutions
@@ -30,6 +29,8 @@ class Population {
   outputN: number
   /** The enabled connections percent that members will be initialized with */
   enabledChance: number
+  /** A reference to the population's fittest member ever */
+  fittestEver: Brain
   /** A reference to the graphics object that the population can be drawn to */
   graphics: Graphics
 
@@ -77,10 +78,10 @@ class Population {
    */
   calculateFitness(fitnessFunction: (brain: Brain) => number) {
     for (let i = this.members.length; i < this.popSize; i++) {
-      this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc))
+      this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
     }
 
-    let fittest
+    let fittest: Brain
     if (fitnessFunction) {
       for (let b of this.members) {
         fitnessFunction(b)

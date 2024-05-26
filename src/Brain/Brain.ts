@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /**
  * The brain is the main class in the neat algorithm. From the neat algorithm, a brain
  * differs from the ordinary fulley connected neural networks in that its topology, or
@@ -377,7 +375,7 @@ class Brain {
    * @param graphics the graphics to set
    * @returns a refrence to this population
    */
-  setGraphics(graphics: Graphics): Population {
+  setGraphics(graphics: Graphics): Brain {
     this.graphics = graphics
     return this
   }
@@ -385,68 +383,68 @@ class Brain {
   /**
    * Draws this brain to the local graphics.
    */
-  draw() {
-    let width = this.graphics.width
-    let height = this.graphics.height
+  draw(width?: number, height?: number | null, xOffset: number = 0, yOffset: number = 0, outline: boolean = false) {
+    width ||= this.graphics.width
+    height ||= this.graphics.height
 
-    this.graphics.bg('#000')
+    const nodePositions: Map<NNode, Vector> = new Map<NNode, Vector>()
 
-    let nodePositions = new Map()
+    const maxLayer: number = this.outputNodes[0].layer
+    const dx: number = width / (maxLayer + 1)
 
-    let mlayer = this.outputNodes[0].layer
-    let dx = width / (mlayer + 1)
-
-    for (let i = 1; i <= mlayer; i++) {
-      let currNodes = this.nodes.filter(n => n.layer == i)
-      let dy = height / (currNodes.length + 1)
+    for (let i = 1; i <= maxLayer; i++) {
+      const currNodes: NNode[] = this.nodes.filter(n => n.layer == i)
+      const dy: number = height / (currNodes.length + 1)
       for (let j = 1; j <= currNodes.length; j++) {
-        nodePositions.set(currNodes[j - 1], new Vector(i * dx, j * dy))
+        nodePositions.set(currNodes[j - 1], new Vector(i * dx + xOffset, j * dy + yOffset))
       }
     }
 
-    // node circles
-    // base is white
-    // inputs are red
-    // outputs are blue
-    let circleArray = []
-
-    // text values
-    let textArray = []
+    const circleArray: Circle[] = []
+    const textArray: TextGraphics[] = []
 
     for (let [node, pos] of nodePositions) {
-      circleArray.push(new Circle(this.graphics, pos.x, pos.y, 10, '#fff'))
-      circleArray.push(new Circle(this.graphics, pos.x + 7, pos.y, 3, '#f00'))
-      circleArray.push(new Circle(this.graphics, pos.x - 7, pos.y, 3, '#00f'))
-      textArray.push(new TextGraphics(this.graphics, node.layer, pos.x, pos.y + 17))
-      textArray.push(new TextGraphics(this.graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
+      // base circle
+      circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, true, '#fff'))
+      // input circle
+      circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, true, '#f00'))
+      // output circle
+      circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, true, '#00f'))
+      textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17))
+      textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
     }
 
-    // connections
-    let lineArray = []
+    const connectionArray = []
 
     for (let connection of this.connections) {
-      let inputNodePos = nodePositions.get(connection.inNode)
-      let outputNodePos = nodePositions.get(connection.outNode)
+      const inputNodePos: Vector = nodePositions.get(connection.inNode)
+      const outputNodePos: Vector = nodePositions.get(connection.outNode)
 
-      let color = '#0f0'
+      let color: string = '#0f0'
       if (!connection.enabled) color = '#f00'
       else if (connection.recurrent) color = '#22f'
-      lineArray.push(new Line(this.graphics, ...inputNodePos.add(new Vector(7, 0)), ...outputNodePos.sub(new Vector(7, 0)), color))
+      const point1: Vector = inputNodePos.add(new Vector(7, 0))
+      const point2: Vector = outputNodePos.sub(new Vector(7, 0))
+      connectionArray.push(this.graphics.createLine(point1.x, point1.y, point2.x, point2.y, color))
     }
 
     circleArray.forEach(circle => circle.draw())
-    lineArray.forEach(line => line.draw())
+    connectionArray.forEach(line => line.draw())
     textArray.forEach(text => text.draw())
 
-    let ytemp = 0
-    let weightsInfo = []
-    for (let c of this.connections) {
-      let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`
-      weightsInfo.push(new TextGraphics(this.graphics, str, 0, ytemp))
-      ytemp += 10
-    }
-    this.graphics.listText(5, 5, weightsInfo, '#fff', 10, new TextGraphics('Weights', 0, 0), '#fff', 20)
+    // let ytemp = 0
+    // let weightsInfo = []
+    // for (let c of this.connections) {
+    //   let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`
+    //   weightsInfo.push(new TextGraphics(this.graphics, str, 0, ytemp))
+    //   ytemp += 10
+    // }
+    // this.graphics.listText(5, 5, weightsInfo, '#fff', 10, this.graphics.createText('Weights', 0, 0), '#fff', 20)
 
-    this.graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top')
+    this.graphics.createText(this.fitness.toString(), 10, 10, '#fff', 10, 'left', 'top').draw()
+
+    if (outline) {
+      this.graphics.createRectangle(xOffset, yOffset, width, height, false, '#fff', true, 1).draw()
+    }
   }
 }

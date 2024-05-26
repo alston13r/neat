@@ -9,7 +9,7 @@ class Graphics implements HasSize {
    * TODO
    * @param canvas 
    */
-  constructor(canvas: HTMLCanvasElement | null) {
+  constructor(canvas?: HTMLCanvasElement) {
     this.canvas = canvas || document.createElement('canvas')
     this.ctx = this.canvas.getContext('2d')
   }
