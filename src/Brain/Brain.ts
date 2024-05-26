@@ -41,6 +41,8 @@ class Brain {
   connections: Connection[]
   /** Boolean indicating if the brain is an elite from the prior generation */
   isElite: boolean = false
+  /** A reference to the graphics object that the brain can be drawn to */
+  graphics: Graphics
 
   /**
    * Initializes the brain's topology to contain the specified number of input nodes,
@@ -48,7 +50,7 @@ class Brain {
    * @param inputN the number of input nodes
    * @param hiddenN the number of hidden nodes
    * @param outputN the number of output nodes
-   * @param enabledChance the chance for a connection to start enabled, 1 (100%) by default
+   * @param enabledChance the chance for connections to start enabled, 1 (100%) by default
    * @returns a reference to this Brain
    */
   initialize(inputN: number, hiddenN: number, outputN: number, enabledChance: number = 1): Brain {
@@ -371,13 +373,23 @@ class Brain {
   }
 
   /**
-   * @param {Graphics} graphics 
+   * Sets the local reference for graphics to the specified object.
+   * @param graphics the graphics to set
+   * @returns a refrence to this population
    */
-  draw(graphics) {
-    let width = graphics.width
-    let height = graphics.height
+  setGraphics(graphics: Graphics): Population {
+    this.graphics = graphics
+    return this
+  }
 
-    graphics.bg('#000')
+  /**
+   * Draws this brain to the local graphics.
+   */
+  draw() {
+    let width = this.graphics.width
+    let height = this.graphics.height
+
+    this.graphics.bg('#000')
 
     let nodePositions = new Map()
 
@@ -402,11 +414,11 @@ class Brain {
     let textArray = []
 
     for (let [node, pos] of nodePositions) {
-      circleArray.push(new Circle(graphics, pos.x, pos.y, 10, '#fff'))
-      circleArray.push(new Circle(graphics, pos.x + 7, pos.y, 3, '#f00'))
-      circleArray.push(new Circle(graphics, pos.x - 7, pos.y, 3, '#00f'))
-      textArray.push(new TextGraphics(graphics, node.layer, pos.x, pos.y + 17))
-      textArray.push(new TextGraphics(graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
+      circleArray.push(new Circle(this.graphics, pos.x, pos.y, 10, '#fff'))
+      circleArray.push(new Circle(this.graphics, pos.x + 7, pos.y, 3, '#f00'))
+      circleArray.push(new Circle(this.graphics, pos.x - 7, pos.y, 3, '#00f'))
+      textArray.push(new TextGraphics(this.graphics, node.layer, pos.x, pos.y + 17))
+      textArray.push(new TextGraphics(this.graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
     }
 
     // connections
@@ -419,7 +431,7 @@ class Brain {
       let color = '#0f0'
       if (!connection.enabled) color = '#f00'
       else if (connection.recurrent) color = '#22f'
-      lineArray.push(new Line(graphics, ...inputNodePos.add(new Vector(7, 0)), ...outputNodePos.sub(new Vector(7, 0)), color))
+      lineArray.push(new Line(this.graphics, ...inputNodePos.add(new Vector(7, 0)), ...outputNodePos.sub(new Vector(7, 0)), color))
     }
 
     circleArray.forEach(circle => circle.draw())
@@ -430,11 +442,11 @@ class Brain {
     let weightsInfo = []
     for (let c of this.connections) {
       let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`
-      weightsInfo.push(new TextGraphics(graphics, str, 0, ytemp))
+      weightsInfo.push(new TextGraphics(this.graphics, str, 0, ytemp))
       ytemp += 10
     }
-    graphics.listText(5, 5, weightsInfo, '#fff', 10, new TextGraphics('Weights', 0, 0), '#fff', 20)
+    this.graphics.listText(5, 5, weightsInfo, '#fff', 10, new TextGraphics('Weights', 0, 0), '#fff', 20)
 
-    graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top')
+    this.graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top')
   }
 }
