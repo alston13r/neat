@@ -1,13 +1,10 @@
 Make drawing the population better
-Add more math stuff
 
 Allow for softcap on iterations for Neat's findSolution
 Add 3D graphing engine for 3D ai games and stuff
 
 Add a simple fully connected neural network
-  Matrix
   NeuralNetwork
-  Maths
 
 Convert to TS
   Games
@@ -24,6 +21,8 @@ Add car racing
 Add pendulum balancing
 
 JSDoc stuff
+  NeuralNetwork
+    NeuralNetwork
   Brain
     Species
   Games
@@ -34,6 +33,8 @@ JSDoc stuff
     Ship
   Utils
     Maths
+    Matrix
+    Vector
     Drawing
       Graphics
       Interfaces
