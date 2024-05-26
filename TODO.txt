@@ -1,21 +1,40 @@
-Add more stuff to Graphics, if not a complete overhaul
-Simplify the drawing process of each item
 Make drawing the population better
 Add more math stuff
 Add a simple fully connected feed forward neural network
-Add more toggling
-  Disabling of connections
 Allow for softcap on iterations for Neat's findSolution
-Refactor Brain's initialize method
+Add 3D graphing engine for 3D ai games and stuff
 
-Convert everything to TS
-  Brain
-    Species
-    Neat
+Convert to TS
   Games
     Asteroids
-  Utils
-    Graphics
-    Shapes
+      Asteroid
+      Game
+      Laser
+      Ship
 
-JSDoc everything
+Add flappy bird
+
+Add a car racing
+
+Add pendulum balancing
+
+JSDoc stuff
+  Brain
+    Species
+  Games
+    Asteroids
+    Asteroid
+    Game
+    Laser
+    Ship
+  Utils
+    Maths
+    Drawing
+      Graphics
+      Interfaces
+      Shapes
+        Circle
+        Line
+        Rectangle
+        TextGraphics
+        Triangle
