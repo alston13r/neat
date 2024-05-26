@@ -43,7 +43,7 @@ class Vector {
   /**
    * TODO
    */
-  *[Symbol.iterator](): Iterable<number> {
+  *[Symbol.iterator]() {
     yield this.x
     yield this.y
   }

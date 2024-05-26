@@ -1,10 +1,11 @@
-const ExcessFactor = 1
-const DisjointFactor = 1
-const WeightsFactor = 0.4
-
-const GenerationPenalization = 15
-
+/**
+ * TODO
+ */
 class Species {
+  static ExcessFactor: number = 1
+  static DisjointFactor: number = 1
+  static WeightFactor: number = 0.4
+  static GenerationPenalization: number = 15
   static SpeciesIndex = 0
   static TargetSpecies = 10
   static DynamicThreshold = 40
@@ -16,15 +17,18 @@ class Species {
   highestFitness: number = 0
 
   /**
-   * @param {Brain} a 
-   * @param {Brain} b 
-   * @returns {number}
+   * TODO
+   * @param brainA 
+   * @param brainB 
+   * @returns 
    */
-  static Compare(a, b) {
-    let enabledA = a.connections.filter(c => c.enabled).sort((c, d) => c.innovationID - d.innovationID)
-    let enabledB = b.connections.filter(c => c.enabled).sort((c, d) => c.innovationID - d.innovationID)
+  static Compare(brainA: Brain, brainB: Brain): number {
+    const enabledA: Connection[] = brainA.connections.filter(connection => connection.enabled)
+      .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID)
+    const enabledB: Connection[] = brainB.connections.filter(connection => connection.enabled)
+      .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID)
 
-    let N = Math.max(enabledA.length, enabledB.length)
+    const N = Math.max(enabledA.length, enabledB.length)
 
     let disjoint = 0
     let excess = 0
@@ -32,14 +36,14 @@ class Species {
 
     let i = 0
     let j = 0
-    let maxI = enabledA.length - 1
-    let maxJ = enabledB.length - 1
+    const maxI = enabledA.length - 1
+    const maxJ = enabledB.length - 1
 
     while (i <= maxI && j <= maxJ) {
-      let currLeft = enabledA[i]
-      let currRight = enabledB[j]
-      let leftID = currLeft.innovationID
-      let rightID = currRight.innovationID
+      const currLeft = enabledA[i]
+      const currRight = enabledB[j]
+      const leftID = currLeft.innovationID
+      const rightID = currRight.innovationID
       let di = 1
       let dj = 1
       if (leftID == rightID) {
@@ -64,30 +68,44 @@ class Species {
       j += dj
     }
 
-    excess *= ExcessFactor / N
-    disjoint *= DisjointFactor / N
-    weights *= WeightsFactor
+    excess *= Species.ExcessFactor / N
+    disjoint *= Species.DisjointFactor / N
+    weights *= Species.WeightFactor
 
     return excess + disjoint + weights
   }
 
-  adjustFitness() {
+  /**
+   * TODO
+   */
+  adjustFitness(): void {
     const N: number = this.members.length
     this.members.forEach(member => {
       member.fitnessAdjusted = member.fitness / N
     })
   }
 
-  getAverageFitness() {
+  /**
+   * TODO
+   * @returns 
+   */
+  getAverageFitness(): number {
     return this.members.reduce((sum, curr) => sum + curr.fitness / this.members.length, 0)
   }
 
-  getAverageFitnessAdjusted() {
+  /**
+   * TODO
+   * @returns 
+   */
+  getAverageFitnessAdjusted(): number {
     return this.members.reduce((sum, curr) => sum + curr.fitnessAdjusted / this.members.length, 0)
   }
 
-  updateGensSinceImproved() {
-    let max = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0)
+  /**
+   * TODO
+   */
+  updateGensSinceImproved(): void {
+    const max: number = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0)
     if (max > this.highestFitness) {
       this.gensSinceImproved = 0
       this.highestFitness = max
@@ -96,59 +114,61 @@ class Species {
   }
 
   /**
-   * @param {Population} pop 
+   * TODO
+   * @param population 
    */
-  static Speciate(pop) {
-    let speciesList = pop.speciesList
-    let champions = []
-    for (let s of speciesList) {
-      let champion = s.members.splice(Math.floor(Math.random() * s.members.length), 1)[0]
+  static Speciate(population: Population): void {
+    const speciesList: Species[] = population.speciesList
+    const champions: Brain[] = []
+    for (let species of speciesList) {
+      const champion: Brain = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0]
       champions.push(champion)
-      for (let x of s.members) {
-        x.species = null
-      }
-      s.members = [champion]
+      species.members.forEach(member => member.species = null)
+      species.members = [champion]
     }
 
-    let toSpeciate = pop.members.filter(b => b.species == null)
+    const toSpeciate: Brain[] = population.members.filter(member => member.species == null)
 
     for (let champion of champions) {
-      let amount = toSpeciate.length
-      for (let i = 0; i < amount; i++) {
-        let b = toSpeciate.shift()
-        let result = Species.Compare(champion, b)
+      const count: number = toSpeciate.length
+      for (let i = 0; i < count; i++) {
+        const brain: Brain = toSpeciate.shift()
+        const result: number = Species.Compare(champion, brain)
         if (result <= Species.DynamicThreshold) {
-          b.species = champion.species
-          b.species.members.push(b)
-        } else toSpeciate.push(b)
+          brain.species = champion.species
+          brain.species.members.push(brain)
+        } else toSpeciate.push(brain)
       }
     }
 
     while (toSpeciate.length > 0) {
-      let champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
+      const champion: Brain = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
       champion.species = new Species()
       champion.species.members.push(champion)
-      let amount = toSpeciate.length
-      for (let i = 0; i < amount; i++) {
-        let b = toSpeciate.shift()
-        let result = Species.Compare(champion, b)
+      const count = toSpeciate.length
+      for (let i = 0; i < count; i++) {
+        const brain: Brain = toSpeciate.shift()
+        const result: number = Species.Compare(champion, brain)
         if (result <= Species.DynamicThreshold) {
-          b.species = champion.species
-          b.species.members.push(b)
-        } else toSpeciate.push(b)
+          brain.species = champion.species
+          brain.species.members.push(brain)
+        } else toSpeciate.push(brain)
       }
     }
   }
 
-  produceOffspring() {
-    if (this.allowedOffspring == 0 || this.gensSinceImproved > GenerationPenalization) {
+  /**
+   * TODO
+   */
+  produceOffspring(): void {
+    if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       this.members = []
     } else {
-      const copyOfMembers = [...this.members]
+      const copyOfMembers: Brain[] = [...this.members]
       this.members = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
 
-      const remainingCount = this.allowedOffspring - this.members.length
-      const pairings = Population.GeneratePairings(copyOfMembers, remainingCount)
+      const remainingCount: number = this.allowedOffspring - this.members.length
+      const pairings: { p1: Brain, p2: Brain }[] = Population.GeneratePairings(copyOfMembers, remainingCount)
 
       pairings.forEach(({ p1, p2 }) => Brain.Crossover(p1, p2))
     }
