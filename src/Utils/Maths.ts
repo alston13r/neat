@@ -1,72 +1,105 @@
+/**
+ * TODO
+ */
 class Vector {
-  constructor(x = 0, y = 0) {
+  x: number
+  y: number
+
+  /**
+   * TODO
+   * @param x 
+   * @param y 
+   */
+  constructor(x: number = 0, y: number = 0) {
     this.x = x
     this.y = y
   }
 
-  add(v) {
+  /**
+   * TODO
+   * @param v 
+   * @returns 
+   */
+  add(v: Vector): Vector {
     return new Vector(this.x + v.x, this.y + v.y)
   }
 
-  sub(v) {
+  /**
+   * TODO
+   */
+  sub(v: Vector): Vector {
     return new Vector(this.x - v.x, this.y - v.y)
   }
 
-  scale(a) {
+  /**
+   * TODO
+   * @param a 
+   * @returns 
+   */
+  scale(a: number): Vector {
     return new Vector(a * this.x, a * this.y)
   }
 
+  /**
+   * TODO
+   */
   *[Symbol.iterator]() {
     yield this.x
     yield this.y
   }
 
   /**
-   * @returns {number}
+   * TODO
+   * @returns 
    */
-  mag() {
+  mag(): number {
     return Math.sqrt(this.x ** 2 + this.y ** 2)
   }
 
   /**
-   * @returns {Vector}
+   * TODO
+   * @returns 
    */
-  normal() {
+  normal(): Vector {
     return this.scale(1 / this.mag())
   }
 
   /**
-   * @returns {number}
+   * TODO
+   * @returns 
    */
-  angle() {
+  angle(): number {
     return Math.atan2(this.y, this.x)
   }
 
   /**
-   * @param {number} theta 
-   * @returns {Vector}
+   * TODO
+   * @param theta 
+   * @returns 
    */
-  static FromAngle(theta) {
+  static FromAngle(theta: number): Vector {
     return new Vector(Math.cos(theta), Math.sin(theta))
   }
 
   /**
-   * @param {Vector} p1 
-   * @param {Vector} p2 
-   * @param {Vector} p3 
-   * @returns {number}
+   * TODO
+   * @param p1 
+   * @param p2 
+   * @param p3 
+   * @returns 
    */
-  static Sign(p1, p2, p3) {
+  static Sign(p1: Vector, p2: Vector, p3: Vector): number {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
   }
 
   /**
-   * @param {Vector} p1 
-   * @param {Vector} p2 
-   * @param {Vector} p3 
-   * @returns {boolean}
+   * TODO
+   * @param p1 
+   * @param p2 
+   * @param p3 
+   * @returns 
    */
-  insideTriangle(p1, p2, p3) {
+  insideTriangle(p1: Vector, p2: Vector, p3: Vector): boolean {
     let d1 = Vector.Sign(this, p1, p2)
     let d2 = Vector.Sign(this, p2, p3)
     let d3 = Vector.Sign(this, p3, p1)
@@ -76,15 +109,20 @@ class Vector {
   }
 
   /**
-   * @param {Vector} v 
-   * @returns {number}
+   * TODO
+   * @param v 
+   * @returns 
    */
-  distanceTo(v) {
+  distanceTo(v: Vector): number {
     return v.sub(this).mag()
   }
 }
 
-function gauss() {
+/**
+ * TODO
+ * @returns 
+ */
+function gauss(): number {
   let s = 0
   for (let i = 0; i < 6; i++) {
     s += Math.random()
@@ -93,14 +131,15 @@ function gauss() {
 }
 
 /**
- * @param {object[]} items 
- * @param {string} param 
- * @param {number} count 
+ * TODO
+ * @param items 
+ * @param param 
+ * @param count 
  * @returns 
  */
-function rouletteWheel(items, param, count) {
+function rouletteWheel<k>(items: k[], param: string, count: number): k[] {
   if (count == 0) return []
-  const list = items.map(item => { return { item } })
+  const list = items.map(item => { return { item, sum: 0 } })
   const max = list.reduce((sum, curr) => {
     curr.sum = sum + curr.item[param]
     return curr.sum
