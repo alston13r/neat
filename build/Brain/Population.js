@@ -1,18 +1,23 @@
-// @ts-nocheck
 /**
- * TODO
+ * A population is a collection of a bunch of brains and allows for a large amount
+ * of brains to explore different topologies. Larger populations allow for solutions
+ * to be found quciker. This class also houses the methods necessary to produce the
+ * offspring for the next generation.
  */
 class Population {
     /**
-     * TODO
-     * @param popSize
-     * @param inputN
-     * @param hiddenN
-     * @param outputN
-     * @param enabledChance
+     * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
+     * and chance for connections to start enabled.
+     * @param popSize the population size
+     * @param inputN the number of input nodes
+     * @param hiddenN the number of hidden nodes
+     * @param outputN the number of output nodes
+     * @param enabledChance the chance for connections to start enabled
      */
     constructor(popSize, inputN, hiddenN, outputN, enabledChance = 1) {
+        /** A counter for the current generation */
         this.generationCounter = 0;
+        /** An array of the population's members */
         this.members = [];
         this.popSize = popSize;
         this.inputN = inputN;
@@ -21,14 +26,7 @@ class Population {
         this.enabledChance = enabledChance;
     }
     /**
-     * TODO
-     */
-    setGraphics(graphics) {
-        this.graphics = graphics;
-        return this;
-    }
-    /**
-     * TODO
+     * The list of all current species that the members are registered to.
      */
     get speciesList() {
         const returnArr = [];
@@ -39,18 +37,21 @@ class Population {
         return returnArr;
     }
     /**
-     * TODO
+     * Adjusts the dynamic compatibility threshold for the species class given the current
+     * number of species and the desired amount. If speciation is disabled, this will not be called.
      */
     adjustThreshold() {
         Species.DynamicThreshold += Math.sign(this.speciesList.length - Species.TargetSpecies) * Species.DynamicThresholdStepSize;
     }
-    // /**
-    //  * @param {function(Brain): void} fitnessFunction 
-    //  * @returns {Brain | null}
-    //  */
+    /**
+     * Runs the specified fitness function on the population's members. This keeps track
+     * of the fittest member of this iteration as well as the fittest member ever.
+     * @param fitnessFunction the fitness function
+     * @returns the fittest member of the iteration
+     */
     calculateFitness(fitnessFunction) {
         for (let i = this.members.length; i < this.popSize; i++) {
-            this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.connPerc));
+            this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
         }
         let fittest;
         if (fitnessFunction) {
@@ -62,46 +63,51 @@ class Population {
             if (this.fittestEver == null || fittest.fitness > this.fittestEver.fitness)
                 this.fittestEver = fittest;
         }
-        this.fittest = this.members.reduce((best, curr) => curr.fitness > best.fitness ? curr : best);
-        return fittest;
+        return this.getFittest();
     }
     /**
-     * TODO
-     * @returns
+     * Returns the fittest member in the current list of members.
+     * @returns the fittest member
      */
     getFittest() {
         return this.members.reduce((best, curr) => curr.fitness > best.fitness ? curr : best);
     }
     /**
-     * TODO
+     * Updates the gensSinceImproved counter for each species given
+     * whether or not they have improved their fitness since the last generation.
+     * If speciation is disabled, this will not be called.
      */
     updateGensSinceImproved() {
         this.speciesList.forEach(species => species.updateGensSinceImproved());
     }
     /**
-     * TODO
+     * Goes through each species and calls their adjustFitness() methods. Adjusting
+     * the fitness will normalize each member's fitness to their individual species.
+     * If speciation is disabled, this will not be called.
      */
     adjustFitness() {
         this.speciesList.forEach(species => species.adjustFitness());
     }
     /**
-     * TODO
-     * @returns
+     * Returns the average fitness of all the members in the population.
+     * @returns the average fitness of all members
      */
     getAverageFitness() {
         const N = this.members.length;
         return this.members.reduce((sum, curr) => sum + curr.fitness / N, 0);
     }
     /**
-     *
-     * @returns
+     * Returns the average adjusted fitness of all the members in the population.
+     * @returns the average adjusted fitness of all members
      */
     getAverageFitnessAdjusted() {
         const N = this.members.length;
         return this.members.reduce((sum, curr) => sum + curr.fitnessAdjusted / N, 0);
     }
     /**
-     * TODO
+     * Calculates the number of allowed offspring that each species can produce.
+     * If speciation is disabled, this calculation will not run and offspring are
+     * produced solely by the fittest members of the population.
      */
     calculateAllowedOffspring() {
         const max = this.popSize;
@@ -126,7 +132,11 @@ class Population {
         }
     }
     /**
-     * TODO
+     * Produces the next generation of members. If speciation is enabled, it produces them
+     * based on the calculation done in the calculateAllowedOffspring() method. If speciation
+     * is disabled, members are simply produced based on the fittest members. Elitism will
+     * preserve the specified percentage of members in each species when speciation is enabled,
+     * otherwise its the percentage of members that gets preserved.
      */
     produceOffspring() {
         if (Population.Speciation) {
@@ -150,13 +160,15 @@ class Population {
         }
     }
     /**
-     * TODO
+     * Goes through all the members in the population and calls their mutate() method.
      */
     mutate() {
         this.members.forEach(member => member.mutate());
     }
     /**
-     * TODO
+     * Produces the next generation of members for the population. This produces the offspring,
+     * increments the generationCounter denoting which generation the current members are, and
+     * mutates them.
      */
     nextGeneration() {
         this.produceOffspring();
@@ -164,7 +176,10 @@ class Population {
         this.mutate();
     }
     /**
-     * TODO
+     * Speciates the current members of the population. If speciation is disabled, this is
+     * completely skipped during the evolution process. This speciates members, updates
+     * each species gensSinceImproved counters, adjusts the dynamic compatibility threshold,
+     * adjusts the fitness of all members, and calculates the allowed offspring for each species.
      */
     speciate() {
         Species.Speciate(this);
@@ -174,10 +189,12 @@ class Population {
         this.calculateAllowedOffspring();
     }
     /**
-     * TODO
-     * @param list
-     * @param offspringN
-     * @returns
+     * Static helper method to generate pairings of brains that will serve as parents
+     * for the next generation. Parents are chosen based on fitness and rolled through
+     * a roulette wheel.
+     * @param list the list of parents to choose from
+     * @param offspringN the number of offspring desired
+     * @returns an array of parent pairings where parents are p1 and p2
      */
     static GeneratePairings(list, offspringN) {
         if (offspringN == 0)
@@ -188,10 +205,10 @@ class Population {
         });
     }
     /**
-     * TODO
-     * @param list
-     * @param softLimit
-     * @returns
+     * Static helper method to produce an array of elites.
+     * @param list the list of members to select elites from
+     * @param softLimit the soft limit for the number of elites
+     * @returns the elites
      */
     static GetElites(list, softLimit) {
         if (softLimit == 0)
@@ -206,6 +223,18 @@ class Population {
         }
         return res;
     }
+    /**
+     * Sets the local reference for graphics to the specified object.
+     * @param graphics the graphics to set
+     * @returns a refrence to this population
+     */
+    setGraphics(graphics) {
+        this.graphics = graphics;
+        return this;
+    }
+    /**
+     * Draws this population to the local graphics.
+     */
     draw() {
         const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
         this.graphics.bg();
@@ -233,7 +262,13 @@ class Population {
         }
     }
 }
+/** Toggle for speciation between generations */
 Population.Speciation = true;
+/**
+ * Toggle for elitism, where the specified percent of members gets preserved from
+ * each generation with no mutations
+ */
 Population.Elitism = true;
+/** The percent of members who get carried over as elites */
 Population.ElitePercent = 0.3;
 //# sourceMappingURL=Population.js.map
