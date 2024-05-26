@@ -1,8 +1,13 @@
 Make drawing the population better
 Add more math stuff
-Add a simple fully connected feed forward neural network
+
 Allow for softcap on iterations for Neat's findSolution
 Add 3D graphing engine for 3D ai games and stuff
+
+Add a simple fully connected neural network
+  Matrix
+  NeuralNetwork
+  Maths
 
 Convert to TS
   Games
@@ -14,7 +19,7 @@ Convert to TS
 
 Add flappy bird
 
-Add a car racing
+Add car racing
 
 Add pendulum balancing
 
