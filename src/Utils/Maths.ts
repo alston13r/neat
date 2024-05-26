@@ -1,125 +1,5 @@
 /**
  * TODO
- */
-class Vector {
-  x: number
-  y: number
-
-  /**
-   * TODO
-   * @param x 
-   * @param y 
-   */
-  constructor(x: number = 0, y: number = 0) {
-    this.x = x
-    this.y = y
-  }
-
-  /**
-   * TODO
-   * @param v 
-   * @returns 
-   */
-  add(v: Vector): Vector {
-    return new Vector(this.x + v.x, this.y + v.y)
-  }
-
-  /**
-   * TODO
-   */
-  sub(v: Vector): Vector {
-    return new Vector(this.x - v.x, this.y - v.y)
-  }
-
-  /**
-   * TODO
-   * @param a 
-   * @returns 
-   */
-  scale(a: number): Vector {
-    return new Vector(a * this.x, a * this.y)
-  }
-
-  /**
-   * TODO
-   */
-  *[Symbol.iterator]() {
-    yield this.x
-    yield this.y
-  }
-
-  /**
-   * TODO
-   * @returns 
-   */
-  mag(): number {
-    return Math.sqrt(this.x ** 2 + this.y ** 2)
-  }
-
-  /**
-   * TODO
-   * @returns 
-   */
-  normal(): Vector {
-    return this.scale(1 / this.mag())
-  }
-
-  /**
-   * TODO
-   * @returns 
-   */
-  angle(): number {
-    return Math.atan2(this.y, this.x)
-  }
-
-  /**
-   * TODO
-   * @param theta 
-   * @returns 
-   */
-  static FromAngle(theta: number): Vector {
-    return new Vector(Math.cos(theta), Math.sin(theta))
-  }
-
-  /**
-   * TODO
-   * @param p1 
-   * @param p2 
-   * @param p3 
-   * @returns 
-   */
-  static Sign(p1: Vector, p2: Vector, p3: Vector): number {
-    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
-  }
-
-  /**
-   * TODO
-   * @param p1 
-   * @param p2 
-   * @param p3 
-   * @returns 
-   */
-  insideTriangle(p1: Vector, p2: Vector, p3: Vector): boolean {
-    let d1 = Vector.Sign(this, p1, p2)
-    let d2 = Vector.Sign(this, p2, p3)
-    let d3 = Vector.Sign(this, p3, p1)
-    let hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0)
-    let hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0)
-    return !(hasNeg && hasPos)
-  }
-
-  /**
-   * TODO
-   * @param v 
-   * @returns 
-   */
-  distanceTo(v: Vector): number {
-    return v.sub(this).mag()
-  }
-}
-
-/**
- * TODO
  * @returns 
  */
 function gauss(): number {
@@ -152,3 +32,61 @@ function rouletteWheel<k>(items: k[], param: string, count: number): k[] {
   })
   return res
 }
+
+
+// function dealWith(x: number | number[], fn: (a: number) => number): number | number[] {
+//   if (x instanceof Array) {
+//     return x.map(y => fn(y))
+//   } else {
+//     return fn(x)
+//   }
+// }
+
+// function tanh(x: number | number[]): number | number[] {
+//   return dealWith(x, Math.tanh)
+// }
+// function relu(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>Math.max(0,a))
+// }
+// function lrelu(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>Math.max(0.1*a,a))
+// }
+// function sigmoid(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>-1+2/(1+Math.exp(-a)))
+// }
+// function linear(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>a)
+// }
+// function dtanh(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>1-(a**2))
+// }
+// function drelu(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>a<0?0:1)
+// }
+// function dlrelu(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>a<0?0.1:1)
+// }
+// function dsigmoid(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>2*a*(1-a))
+// }
+// function dlinear(x: number | number[]): number | number[] {
+// 	return dealWith(x,a=>1)
+// }
+// function randGaussian(): number {
+// 	let t = 0
+// 	for (let i=0;i<6;i++) t += Math.random()
+// 	return t / 6
+// }
+// function floor(x: number | number[]): number | number[] {
+// 	return dealWith(x,Math.floor)
+// }
+// function rand(a: number = 0, b: number = 1, c: number = 0): number | number[] {
+//   if (c == 0) return Math.random()*(b-a)+a
+//   return new Array(c).fill(0).map(() => rand(a, b) as number)
+// }
+// function basicMutation(x: number | number[]): number | number[] {
+//   return dealWith(x, a => {
+//     if (rand() as number < 0.05) return a + randGaussian()*0.5
+//     return a
+//   })
+// }
