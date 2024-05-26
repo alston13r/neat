@@ -1,7 +1,6 @@
-const ExcessFactor = 1;
-const DisjointFactor = 1;
-const WeightsFactor = 0.4;
-const GenerationPenalization = 15;
+/**
+ * TODO
+ */
 class Species {
     constructor() {
         this.members = [];
@@ -10,26 +9,29 @@ class Species {
         this.highestFitness = 0;
     }
     /**
-     * @param {Brain} a
-     * @param {Brain} b
-     * @returns {number}
+     * TODO
+     * @param brainA
+     * @param brainB
+     * @returns
      */
-    static Compare(a, b) {
-        let enabledA = a.connections.filter(c => c.enabled).sort((c, d) => c.innovationID - d.innovationID);
-        let enabledB = b.connections.filter(c => c.enabled).sort((c, d) => c.innovationID - d.innovationID);
-        let N = Math.max(enabledA.length, enabledB.length);
+    static Compare(brainA, brainB) {
+        const enabledA = brainA.connections.filter(connection => connection.enabled)
+            .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID);
+        const enabledB = brainB.connections.filter(connection => connection.enabled)
+            .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID);
+        const N = Math.max(enabledA.length, enabledB.length);
         let disjoint = 0;
         let excess = 0;
         let weights = 0;
         let i = 0;
         let j = 0;
-        let maxI = enabledA.length - 1;
-        let maxJ = enabledB.length - 1;
+        const maxI = enabledA.length - 1;
+        const maxJ = enabledB.length - 1;
         while (i <= maxI && j <= maxJ) {
-            let currLeft = enabledA[i];
-            let currRight = enabledB[j];
-            let leftID = currLeft.innovationID;
-            let rightID = currRight.innovationID;
+            const currLeft = enabledA[i];
+            const currRight = enabledB[j];
+            const leftID = currLeft.innovationID;
+            const rightID = currRight.innovationID;
             let di = 1;
             let dj = 1;
             if (leftID == rightID) {
@@ -60,25 +62,39 @@ class Species {
             i += di;
             j += dj;
         }
-        excess *= ExcessFactor / N;
-        disjoint *= DisjointFactor / N;
-        weights *= WeightsFactor;
+        excess *= Species.ExcessFactor / N;
+        disjoint *= Species.DisjointFactor / N;
+        weights *= Species.WeightFactor;
         return excess + disjoint + weights;
     }
+    /**
+     * TODO
+     */
     adjustFitness() {
         const N = this.members.length;
         this.members.forEach(member => {
             member.fitnessAdjusted = member.fitness / N;
         });
     }
+    /**
+     * TODO
+     * @returns
+     */
     getAverageFitness() {
         return this.members.reduce((sum, curr) => sum + curr.fitness / this.members.length, 0);
     }
+    /**
+     * TODO
+     * @returns
+     */
     getAverageFitnessAdjusted() {
         return this.members.reduce((sum, curr) => sum + curr.fitnessAdjusted / this.members.length, 0);
     }
+    /**
+     * TODO
+     */
     updateGensSinceImproved() {
-        let max = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0);
+        const max = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0);
         if (max > this.highestFitness) {
             this.gensSinceImproved = 0;
             this.highestFitness = max;
@@ -87,52 +103,54 @@ class Species {
             this.gensSinceImproved++;
     }
     /**
-     * @param {Population} pop
+     * TODO
+     * @param population
      */
-    static Speciate(pop) {
-        let speciesList = pop.speciesList;
-        let champions = [];
-        for (let s of speciesList) {
-            let champion = s.members.splice(Math.floor(Math.random() * s.members.length), 1)[0];
+    static Speciate(population) {
+        const speciesList = population.speciesList;
+        const champions = [];
+        for (let species of speciesList) {
+            const champion = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0];
             champions.push(champion);
-            for (let x of s.members) {
-                x.species = null;
-            }
-            s.members = [champion];
+            species.members.forEach(member => member.species = null);
+            species.members = [champion];
         }
-        let toSpeciate = pop.members.filter(b => b.species == null);
+        const toSpeciate = population.members.filter(member => member.species == null);
         for (let champion of champions) {
-            let amount = toSpeciate.length;
-            for (let i = 0; i < amount; i++) {
-                let b = toSpeciate.shift();
-                let result = Species.Compare(champion, b);
+            const count = toSpeciate.length;
+            for (let i = 0; i < count; i++) {
+                const brain = toSpeciate.shift();
+                const result = Species.Compare(champion, brain);
                 if (result <= Species.DynamicThreshold) {
-                    b.species = champion.species;
-                    b.species.members.push(b);
+                    brain.species = champion.species;
+                    brain.species.members.push(brain);
                 }
                 else
-                    toSpeciate.push(b);
+                    toSpeciate.push(brain);
             }
         }
         while (toSpeciate.length > 0) {
-            let champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
+            const champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
             champion.species = new Species();
             champion.species.members.push(champion);
-            let amount = toSpeciate.length;
-            for (let i = 0; i < amount; i++) {
-                let b = toSpeciate.shift();
-                let result = Species.Compare(champion, b);
+            const count = toSpeciate.length;
+            for (let i = 0; i < count; i++) {
+                const brain = toSpeciate.shift();
+                const result = Species.Compare(champion, brain);
                 if (result <= Species.DynamicThreshold) {
-                    b.species = champion.species;
-                    b.species.members.push(b);
+                    brain.species = champion.species;
+                    brain.species.members.push(brain);
                 }
                 else
-                    toSpeciate.push(b);
+                    toSpeciate.push(brain);
             }
         }
     }
+    /**
+     * TODO
+     */
     produceOffspring() {
-        if (this.allowedOffspring == 0 || this.gensSinceImproved > GenerationPenalization) {
+        if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
             this.members = [];
         }
         else {
@@ -144,6 +162,10 @@ class Species {
         }
     }
 }
+Species.ExcessFactor = 1;
+Species.DisjointFactor = 1;
+Species.WeightFactor = 0.4;
+Species.GenerationPenalization = 15;
 Species.SpeciesIndex = 0;
 Species.TargetSpecies = 10;
 Species.DynamicThreshold = 40;

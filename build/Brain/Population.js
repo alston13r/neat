@@ -209,7 +209,7 @@ class Population {
     draw() {
         const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
         this.graphics.bg();
-        new GraphicsText(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5, '#fff', 20, 'left', 'top').draw();
+        new TextGraphics(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5, '#fff', 20, 'left', 'top').draw();
         let getMemberText = (brain, i) => {
             let b = i;
             let c = round(brain.fitness, 5);
@@ -217,10 +217,10 @@ class Population {
             return `${b}: ${c} ${Population.Speciation ? ' -> ' + d : ''}`;
         };
         this.members.slice().sort((a, b) => b.fitness - a.fitness).slice(0, 50)
-            .map((b, i) => new GraphicsText(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
+            .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
             .forEach(member => member.draw());
         if (Population.Speciation) {
-            new GraphicsText(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`, 250, 5, '#fff', 20, 'left', 'top')
+            new TextGraphics(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`, 250, 5, '#fff', 20, 'left', 'top')
                 .draw();
             let getSpeciesText = species => {
                 let a = species.members.length;
@@ -228,7 +228,7 @@ class Population {
                 let c = round(species.getAverageFitnessAdjusted(), 5);
                 return `<${a}> ${b} -> ${c}`;
             };
-            this.speciesList.map((s, i) => new GraphicsText(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
+            this.speciesList.map((s, i) => new TextGraphics(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
                 .forEach(species => species.draw());
         }
     }

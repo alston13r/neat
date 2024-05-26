@@ -347,11 +347,11 @@ class Brain {
         // text values
         let textArray = [];
         for (let [node, pos] of nodePositions) {
-            circleArray.push(new GraphicsCircle(graphics, pos.x, pos.y, 10, '#fff'));
-            circleArray.push(new GraphicsCircle(graphics, pos.x + 7, pos.y, 3, '#f00'));
-            circleArray.push(new GraphicsCircle(graphics, pos.x - 7, pos.y, 3, '#00f'));
-            textArray.push(new GraphicsText(graphics, node.layer, pos.x, pos.y + 17));
-            textArray.push(new GraphicsText(graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15));
+            circleArray.push(new Circle(graphics, pos.x, pos.y, 10, '#fff'));
+            circleArray.push(new Circle(graphics, pos.x + 7, pos.y, 3, '#f00'));
+            circleArray.push(new Circle(graphics, pos.x - 7, pos.y, 3, '#00f'));
+            textArray.push(new TextGraphics(graphics, node.layer, pos.x, pos.y + 17));
+            textArray.push(new TextGraphics(graphics, `${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15));
         }
         // connections
         let lineArray = [];
@@ -372,10 +372,10 @@ class Brain {
         let weightsInfo = [];
         for (let c of this.connections) {
             let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`;
-            weightsInfo.push(new GraphicsText(graphics, str, 0, ytemp));
+            weightsInfo.push(new TextGraphics(graphics, str, 0, ytemp));
             ytemp += 10;
         }
-        graphics.listText(5, 5, weightsInfo, '#fff', 10, new GraphicsText('Weights', 0, 0), '#fff', 20);
+        graphics.listText(5, 5, weightsInfo, '#fff', 10, new TextGraphics('Weights', 0, 0), '#fff', 20);
         graphics.text(this.fitness, 10, 10, '#fff', 10, 'left', 'top');
     }
 }
