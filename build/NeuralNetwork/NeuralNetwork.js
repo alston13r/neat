@@ -1,3 +1,7 @@
+// function mutateWeight(x: number): number {
+//   if (Math.random() < 0.05) return x + gauss() * 0.5
+//   return x
+// }
 // class BasicNeuralNetwork {
 //   inputSize: number
 //   outputSize: number
