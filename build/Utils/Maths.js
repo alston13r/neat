@@ -1,6 +1,6 @@
 /**
- * // TODO
- * @returns
+ * Returns a random normally distributed gaussian number.
+ * @returns the number
  */
 function gauss() {
     let s = 0;
@@ -10,11 +10,13 @@ function gauss() {
     return s / 6;
 }
 /**
- * // TODO
- * @param items
- * @param param
- * @param count
- * @returns
+ * Does a roulette wheel on the list of items based on the specified param values.
+ * A roulette wheel will assign a portion of a "roll" to each item in the list, where
+ * items with bigger portions will come up more often when rolled.
+ * @param items the list of items to select from
+ * @param param the value to assign portions from
+ * @param count the number of items to select
+ * @returns the selected items
  */
 function rouletteWheel(items, param, count) {
     if (count == 0)

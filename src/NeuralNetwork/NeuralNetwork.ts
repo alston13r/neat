@@ -65,10 +65,10 @@ class NeuralNetwork {
     for (let weightMatrix of this.weights) Matrix.Randomize(weightMatrix, NeuralNetwork.MinimumWeightValue, NeuralNetwork.MaximumWeightValue)
     for (let biasMatrix of this.biases) Matrix.Randomize(biasMatrix, NeuralNetwork.MinimumBiasValue, NeuralNetwork.MaximumBiasValue)
 
-    const outputLayerDActivationFunctions: DActivationFunction[] = new Array(this.outputSize).fill(DActivationFunction.DSigmoid)
+    const outputLayerDActivationFunctions: DActivationFunction[] = new Array(this.outputSize).fill(DActivationFunction.DTanh)
     const hiddenLayerDActivationFunctions: DActivationFunction[][] = []
     for (let row of this.hiddenSizes) {
-      const tempLayer: DActivationFunction[] = new Array(row).fill(DActivationFunction.DSigmoid)
+      const tempLayer: DActivationFunction[] = new Array(row).fill(DActivationFunction.DTanh)
       hiddenLayerDActivationFunctions.push(tempLayer)
     }
     this.dActivationFunctions = []
@@ -80,6 +80,11 @@ class NeuralNetwork {
     for (let dActivationFunctionLayer of this.dActivationFunctions) {
       this.activationFunctions.push(dActivationFunctionLayer.map(dActivationFunction => dActivationFunction.original))
     }
+  }
+
+  // TODO
+  adjustAlpha(error: number): void {
+    this.alpha = clamp(0.6 * Math.exp(-5.4342 * error), 0.01, 1)
   }
 
   // TODO
