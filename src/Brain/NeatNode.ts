@@ -24,6 +24,11 @@ class NNode {
   /** The chance for the bias to be nudged rather than randomized when mutated */
   static NudgeBiasChance: number = 0.9
 
+  /** The minimum value that a bias can be */
+  static MinimumBiasValue: number = -10
+  /** The maximum value that a bias can be */
+  static MaximumBiasValue: number = 10
+
   /** The node's unique numerical identifier within the Brain */
   id: number
   /** The node's type, can be Input, Hidden, or Output */
@@ -35,7 +40,7 @@ class NNode {
   /** The activated sum input */
   sumOutput: number = 0
   /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
-  bias: number = Connection.GenerateRandomWeight()
+  bias: number = NNode.GenerateRandomBias()
   /** An array of incoming connections */
   connectionsIn: Connection[] = []
   /** An array of outgoing connections */
@@ -58,6 +63,10 @@ class NNode {
     this.type = type
     this.layer = layer
     this.activationFunction = type == NNodeType.Input ? ActivationFunction.Identity : ActivationFunction.Sigmoid
+  }
+
+  static GenerateRandomBias(): number {
+    return Math.random() * (NNode.MaximumBiasValue - NNode.MinimumBiasValue) + NNode.MinimumBiasValue
   }
 
   /**
@@ -94,7 +103,7 @@ class NNode {
         this.bias += 0.2 * this.bias * (Math.random() > 0.5 ? 1 : -1)
       } else {
         // bias weight will be randomized
-        this.bias = Connection.GenerateRandomWeight()
+        this.bias = NNode.GenerateRandomBias()
       }
       this.clamp()
     }
@@ -114,6 +123,6 @@ class NNode {
    * Clamps the bias weight to be within predefined bounds.
    */
   clamp(): void {
-    this.bias = Math.min(Connection.MaximumWeightValue, Math.max(Connection.MinimumWeightValue, this.bias))
+    this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue)
   }
 }
