@@ -5,17 +5,17 @@ class NeuralNetwork {
   /** The chance for a weight to be nudged when mutated, rather than randomized */
   static NudgeWeightChance: number = 0.8
   /** The minimum value that a weight can be */
-  static MinimumWeightValue: number = -10
+  static MinimumWeightValue: number = -1
   /** The maximum value that a weight can be */
-  static MaximumWeightValue: number = 10
+  static MaximumWeightValue: number = 1
   /** The chance for a bias to be mutated */
   static MutateBiasChance: number = 0.5
   /** The chance for a bias to be nudged when mutated, rather than randomized */
   static NudgeBiasChance: number = 0.8
   /** The minimum value that a bias can be */
-  static MinimumBiasValue: number = -10
+  static MinimumBiasValue: number = -1
   /** The maximum value that a bias can be */
-  static MaximumBiasValue: number = 10
+  static MaximumBiasValue: number = 1
   /** The chance for an activation function to be mutated */
   static MutateActivationFunctionChance: number = 0.05
 
@@ -26,7 +26,7 @@ class NeuralNetwork {
   biases: Matrix[]
   activationFunctions: ActivationFunction[][]
   dActivationFunctions: DActivationFunction[][]
-  alpha: number
+  alpha: number = 0.01
 
   // TODO
   constructor(inputSize: number, outputSize: number)
@@ -99,6 +99,7 @@ class NeuralNetwork {
         if (Math.random() < NeuralNetwork.NudgeWeightChance) return x + gauss() * 0.5
         return NeuralNetwork.GenerateRandomWeight()
       }
+      return x
     }))
     this.clampWeights()
   }
@@ -110,6 +111,7 @@ class NeuralNetwork {
         if (Math.random() < NeuralNetwork.NudgeBiasChance) return x + gauss() * 0.5
         return NeuralNetwork.GenerateRandomBias()
       }
+      return x
     }))
     this.clampBiases()
   }
@@ -145,37 +147,42 @@ class NeuralNetwork {
     }
     return lastOutput.toArray()
   }
+
+  // TODO
+  backPropagation(values: TrainingValues | { inputs: number[], outputs: number[] }[]): void {
+    const trainingValues: TrainingValues = values instanceof TrainingValues ? values : new TrainingValues(values)
+    for (let value of trainingValues.random()) {
+      const layerOutputs: Matrix[] = [Matrix.FromArr(value.inputs).transpose()]
+      for (let [i, e] of this.weights.entries()) {
+        const lastOutput: Matrix = layerOutputs[layerOutputs.length - 1]
+        const layerOutput: Matrix = e.dot(lastOutput).add(this.biases[i]).map((x, j) => this.activationFunctions[i][j].fn(x))
+        layerOutputs.push(layerOutput)
+      }
+
+      const layerErrors: Matrix[] = [Matrix.FromArr(value.outputs).transpose().sub(layerOutputs[layerOutputs.length - 1])]
+      for (let i = this.weights.length - 1; i >= 1; i--) {
+        const lastError: Matrix = layerErrors[layerErrors.length - 1]
+        layerErrors.push(this.weights[i].transpose().dot(lastError))
+      }
+      layerErrors.reverse()
+
+      const biasDeltas: Matrix[] = []
+      const weightDeltas: Matrix[] = []
+      for (let [i, error] of layerErrors.entries()) {
+        const delta = error.mul(layerOutputs[i + 1].map((x, j) => this.dActivationFunctions[i][j].fn(x))).scale(this.alpha)
+        biasDeltas.push(delta)
+        weightDeltas.push(delta.dot(layerOutputs[i].transpose()))
+      }
+
+      for (let [i, e] of biasDeltas.entries()) {
+        Matrix.Add(this.biases[i], e)
+        Matrix.Add(this.weights[i], weightDeltas[i])
+      }
+    }
+  }
 }
 
 // class BasicNeuralNetwork {
-
-
-//   train(inputs: number[], targets: number[]): void {
-//     let layerOutputs: Matrix[] = [Matrix.FromArr(inputs).transpose()]
-//     for (let [i, e] of this.weights.entries()) {
-//       let lastOutput: Matrix = layerOutputs[layerOutputs.length - 1]
-//       let layerOutput: Matrix = e.dot(lastOutput).add(this.biases[i]).map(this.activationFunction)
-//       layerOutputs.push(layerOutput)
-//     }
-
-//     let layerErrors: Matrix[] = [Matrix.FromArr(targets).transpose().sub(layerOutputs[layerOutputs.length - 1])]
-//     for (let i = this.weights.length - 1; i >= 1; i--) {
-//       let lastError: Matrix = layerErrors[layerErrors.length - 1]
-//       layerErrors.push(this.weights[i].transpose().dot(lastError))
-//     }
-//     layerErrors.reverse()
-
-//     let biasDeltas: Matrix[] = []
-//     let weightDeltas: Matrix[] = []
-//     for (let [i, error] of layerErrors.entries()) {
-//       biasDeltas.push(error.mul(layerOutputs[i + 1].map(this.dActivationFunction)).mul(this.learningRate))
-//       weightDeltas.push(biasDeltas[biasDeltas.length - 1].dot(layerOutputs[i].transpose()))
-//     }
-//     for (let [i, e] of biasDeltas.entries()) {
-//       Matrix.Add(this.biases[i], e)
-//       Matrix.Add(this.weights[i], weightDeltas[i])
-//     }
-//   }
 
 //   static Copy(n: BasicNeuralNetwork): BasicNeuralNetwork {
 //     let a: BasicNeuralNetwork = new BasicNeuralNetwork(n.inputSize, n.hiddenSizes, n.outputSize)
