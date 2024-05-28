@@ -12,7 +12,7 @@ class Matrix {
   }
 
   // TODO
-  static Map(matrix: Matrix, fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
+  static Map(matrix: Matrix, fn: (element?: number, i?: number, j?: number, mat?: Matrix) => number): Matrix {
     for (let i = 0; i < matrix.rows; i++) {
       for (let j = 0; j < matrix.cols; j++) {
         matrix.mat[i][j] = fn(matrix.mat[i][j], i, j, matrix)
@@ -178,7 +178,7 @@ class Matrix {
   }
 
   // TODO
-  static Randomize(matrix: Matrix, upperLimit: number = 1, lowerLimit: number = -1): Matrix {
+  static Randomize(matrix: Matrix, lowerLimit: number = -1, upperLimit: number = 1): Matrix {
     return Matrix.Map(matrix, () => Math.random() * (upperLimit - lowerLimit) + lowerLimit)
   }
   // TODO
