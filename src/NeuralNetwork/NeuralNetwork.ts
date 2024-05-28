@@ -1,55 +1,154 @@
-// function mutateWeight(x: number): number {
-//   if (Math.random() < 0.05) return x + gauss() * 0.5
-//   return x
-// }
+// TODO
+class NeuralNetwork {
+  /** The chance for a weight to be mutated */
+  static MutateWeightChance: number = 0.5
+  /** The chance for a weight to be nudged when mutated, rather than randomized */
+  static NudgeWeightChance: number = 0.8
+  /** The minimum value that a weight can be */
+  static MinimumWeightValue: number = -10
+  /** The maximum value that a weight can be */
+  static MaximumWeightValue: number = 10
+  /** The chance for a bias to be mutated */
+  static MutateBiasChance: number = 0.5
+  /** The chance for a bias to be nudged when mutated, rather than randomized */
+  static NudgeBiasChance: number = 0.8
+  /** The minimum value that a bias can be */
+  static MinimumBiasValue: number = -10
+  /** The maximum value that a bias can be */
+  static MaximumBiasValue: number = 10
+  /** The chance for an activation function to be mutated */
+  static MutateActivationFunctionChance: number = 0.05
+
+  inputSize: number
+  outputSize: number
+  hiddenSizes: number[]
+  weights: Matrix[]
+  biases: Matrix[]
+  activationFunctions: ActivationFunction[][]
+  dActivationFunctions: DActivationFunction[][]
+  alpha: number
+
+  // TODO
+  constructor(inputSize: number, outputSize: number)
+  // TODO
+  constructor(inputSize: number, hiddenSize: number, outputSize: number)
+  // TODO
+  constructor(inputSize: number, hiddenSizes: number[], outputSize: number)
+  constructor(a: number, b: number | number[], c?: number) {
+    this.inputSize = a
+    if (c == null) {
+      this.hiddenSizes = []
+      this.outputSize = b as number
+    } else {
+      this.hiddenSizes = b instanceof Array ? [...b] : [b]
+      this.outputSize = c
+    }
+
+    this.weights = []
+    this.biases = []
+
+    for (let i = 1; i < this.hiddenSizes.length; i++) {
+      this.weights.push(new Matrix(this.hiddenSizes[i], this.hiddenSizes[i - 1]))
+    }
+    if (this.hiddenSizes.length > 0) {
+      this.weights.push(new Matrix(this.outputSize, this.hiddenSizes[this.hiddenSizes.length - 1]))
+      this.weights.unshift(new Matrix(this.hiddenSizes[0], this.inputSize))
+    } else {
+      this.weights.push(new Matrix(this.outputSize, this.inputSize))
+    }
+
+    for (let i = 0; i < this.hiddenSizes.length; i++) {
+      this.biases.push(new Matrix(this.hiddenSizes[i], 1))
+    }
+    this.biases.push(new Matrix(this.outputSize, 1))
+
+    for (let weightMatrix of this.weights) Matrix.Randomize(weightMatrix, NeuralNetwork.MinimumWeightValue, NeuralNetwork.MaximumWeightValue)
+    for (let biasMatrix of this.biases) Matrix.Randomize(biasMatrix, NeuralNetwork.MinimumBiasValue, NeuralNetwork.MaximumBiasValue)
+
+    const outputLayerDActivationFunctions: DActivationFunction[] = new Array(this.outputSize).fill(DActivationFunction.DSigmoid)
+    const hiddenLayerDActivationFunctions: DActivationFunction[][] = []
+    for (let row of this.hiddenSizes) {
+      const tempLayer: DActivationFunction[] = new Array(row).fill(DActivationFunction.DSigmoid)
+      hiddenLayerDActivationFunctions.push(tempLayer)
+    }
+    this.dActivationFunctions = []
+    for (let hiddenLayer of hiddenLayerDActivationFunctions) {
+      this.dActivationFunctions.push(hiddenLayer)
+    }
+    this.dActivationFunctions.push(outputLayerDActivationFunctions)
+    this.activationFunctions = []
+    for (let dActivationFunctionLayer of this.dActivationFunctions) {
+      this.activationFunctions.push(dActivationFunctionLayer.map(dActivationFunction => dActivationFunction.original))
+    }
+  }
+
+  // TODO
+  static GenerateRandomWeight(): number {
+    return Math.random() * (NeuralNetwork.MaximumWeightValue - NeuralNetwork.MinimumWeightValue) + NeuralNetwork.MinimumWeightValue
+  }
+
+  // TODO
+  static GenerateRandomBias(): number {
+    return Math.random() * (NeuralNetwork.MaximumBiasValue - NeuralNetwork.MinimumBiasValue) + NeuralNetwork.MinimumBiasValue
+  }
+
+  // TODO
+  mutateWeights(): void {
+    this.weights.forEach(weight => Matrix.Map(weight, x => {
+      if (Math.random() < NeuralNetwork.MutateWeightChance) {
+        if (Math.random() < NeuralNetwork.NudgeWeightChance) return x + gauss() * 0.5
+        return NeuralNetwork.GenerateRandomWeight()
+      }
+    }))
+    this.clampWeights()
+  }
+
+  // TODO
+  mutateBiases(): void {
+    this.biases.forEach(bias => Matrix.Map(bias, x => {
+      if (Math.random() < NeuralNetwork.MutateBiasChance) {
+        if (Math.random() < NeuralNetwork.NudgeBiasChance) return x + gauss() * 0.5
+        return NeuralNetwork.GenerateRandomBias()
+      }
+    }))
+    this.clampBiases()
+  }
+
+  // TODO
+  clampWeights(): void {
+    this.weights.forEach(weight => Matrix.Map(weight, x => clamp(x, NeuralNetwork.MinimumWeightValue, NeuralNetwork.MaximumWeightValue)))
+  }
+
+  // TODO
+  clampBiases(): void {
+    this.biases.forEach(bias => Matrix.Map(bias, x => clamp(x, NeuralNetwork.MinimumBiasValue, NeuralNetwork.MaximumBiasValue)))
+  }
+
+  // TODO
+  mutateActivationFunctions(): void {
+    for (let i = 0; i < this.dActivationFunctions.length; i++) {
+      let row: DActivationFunction[] = this.dActivationFunctions[i]
+      for (let j = 0; j < row.length; j++) {
+        if (Math.random() < NeuralNetwork.MutateActivationFunctionChance) {
+          row[j] = DActivationFunction.Arr[Math.floor(Math.random() * DActivationFunction.Arr.length)]
+          this.activationFunctions[i][j] = row[j].original
+        }
+      }
+    }
+  }
+
+  // TODO
+  feedForward(inputs: number[]): number[] {
+    let lastOutput: Matrix = Matrix.FromArr(inputs).transpose()
+    for (let [i, e] of this.weights.entries()) {
+      lastOutput = e.dot(lastOutput).add(this.biases[i]).map((x, j) => this.activationFunctions[i][j].fn(x))
+    }
+    return lastOutput.toArray()
+  }
+}
 
 // class BasicNeuralNetwork {
-//   inputSize: number
-//   outputSize: number
-//   hiddenSizes: number[]
-//   weights: Matrix[]
-//   biases: Matrix[]
-//   activationFunction: (x: number) => number
-//   dActivationFunction: (x: number) => number
-//   learningRate: number
 
-//   constructor(a: number, b: number | number[], c?: number) {
-//     this.inputSize = a
-//     if (c == undefined) {
-//       this.hiddenSizes = []
-//       this.outputSize = b as number
-//     } else {
-//       this.hiddenSizes = b instanceof Array ? [...b] : [b]
-//       this.outputSize = c
-//     }
-
-//     this.weights = []
-//     this.biases = []
-
-//     for (let i = 1; i < this.hiddenSizes.length; i++) this.weights.push(new Matrix(this.hiddenSizes[i], this.hiddenSizes[i - 1]))
-//     if (this.hiddenSizes.length > 0) {
-//       this.weights.push(new Matrix(this.outputSize, this.hiddenSizes[this.hiddenSizes.length - 1]))
-//       this.weights.unshift(new Matrix(this.hiddenSizes[0], this.inputSize))
-//     } else {
-//       this.weights.push(new Matrix(this.outputSize, this.inputSize))
-//     }
-
-//     for (let i = 0; i < this.hiddenSizes.length; i++) this.biases.push(new Matrix(this.hiddenSizes[i], 1))
-//     this.biases.push(new Matrix(this.outputSize, 1))
-
-//     for (let w of this.weights) Matrix.Randomize(w)
-//     for (let b of this.biases) Matrix.Randomize(b)
-
-//     this.activationFunction = tanh as (x: number) => number
-//     this.dActivationFunction = dtanh as (x: number) => number
-//     this.learningRate = 0.01
-//   }
-
-//   feedForward(input: number[]): number[] {
-//     let lastOutput: Matrix = Matrix.FromArr(input).transpose()
-//     for (let [i, e] of this.weights.entries()) lastOutput = e.dot(lastOutput).add(this.biases[i]).map(this.activationFunction)
-//     return lastOutput.toArray()
-//   }
 
 //   train(inputs: number[], targets: number[]): void {
 //     let layerOutputs: Matrix[] = [Matrix.FromArr(inputs).transpose()]
@@ -90,28 +189,6 @@
 
 //   copy(): BasicNeuralNetwork {
 //     return BasicNeuralNetwork.Copy(this)
-//   }
-
-//   clamp(): void {
-//     for (let w of this.weights) {
-//       Matrix.Map(w, e => {
-//         if (e > 1) return 1
-//         if (e < -1) return -1
-//         return e
-//       })
-//     }
-//     for (let b of this.biases) {
-//       Matrix.Map(b, e => {
-//         if (e > 1) return 1
-//         if (e < -1) return -1
-//         return e
-//       })
-//     }
-//   }
-
-//   mutate(fn: (x: number) => number): void {
-//     for (let w of this.weights) Matrix.Map(w, fn)
-//     for (let b of this.biases) Matrix.Map(b, fn)
 //   }
 
 //   static Crossover(a: BasicNeuralNetwork, b: BasicNeuralNetwork): BasicNeuralNetwork {
