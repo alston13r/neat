@@ -32,7 +32,6 @@ JSDoc stuff
     Laser
     Ship
   Utils
-    Maths
     Matrix
     Vector
     Drawing
