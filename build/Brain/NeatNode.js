@@ -33,7 +33,7 @@ class NNode {
         /** The activated sum input */
         this.sumOutput = 0;
         /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
-        this.bias = Connection.GenerateRandomWeight();
+        this.bias = NNode.GenerateRandomBias();
         /** An array of incoming connections */
         this.connectionsIn = [];
         /** An array of outgoing connections */
@@ -42,6 +42,9 @@ class NNode {
         this.type = type;
         this.layer = layer;
         this.activationFunction = type == NNodeType.Input ? ActivationFunction.Identity : ActivationFunction.Sigmoid;
+    }
+    static GenerateRandomBias() {
+        return Math.random() * (NNode.MaximumBiasValue - NNode.MinimumBiasValue) + NNode.MinimumBiasValue;
     }
     /**
      * Activates the weighted sum of input values for this node. This adds the bias node before activation and
@@ -76,7 +79,7 @@ class NNode {
             }
             else {
                 // bias weight will be randomized
-                this.bias = Connection.GenerateRandomWeight();
+                this.bias = NNode.GenerateRandomBias();
             }
             this.clamp();
         }
@@ -97,7 +100,7 @@ class NNode {
      * Clamps the bias weight to be within predefined bounds.
      */
     clamp() {
-        this.bias = Math.min(Connection.MaximumWeightValue, Math.max(Connection.MinimumWeightValue, this.bias));
+        this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue);
     }
 }
 /** Toggle for hidden node activation function mutations */
@@ -110,4 +113,8 @@ NNode.MutateActivationFunctionChance = 0.03;
 NNode.MutateBiasChance = 0.03;
 /** The chance for the bias to be nudged rather than randomized when mutated */
 NNode.NudgeBiasChance = 0.9;
+/** The minimum value that a bias can be */
+NNode.MinimumBiasValue = -10;
+/** The maximum value that a bias can be */
+NNode.MaximumBiasValue = 10;
 //# sourceMappingURL=NeatNode.js.map

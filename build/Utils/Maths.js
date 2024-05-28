@@ -34,6 +34,18 @@ function rouletteWheel(items, param, count) {
     return res;
 }
 /**
+ * Clamps the given value to be within the bounds. If the value is greater
+ * than the maximum, this will return the maximum value. Likewise, if the
+ * value is less than the minimum, this will return the minimum value.
+ * @param x the value
+ * @param minimum the lower bound for the clamp
+ * @param maximum the upper bound for the clamp
+ * @returns the clamped value
+ */
+function clamp(x, minimum, maximum) {
+    return Math.max(minimum, Math.min(x, maximum));
+}
+/**
  * Utility class containing references to an assortment of activation functions.
  * An activation function normalizes a node's output value before proceeding to
  * the next layer. Activation functions are needed since neural networks are meant

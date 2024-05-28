@@ -84,7 +84,7 @@ class Connection {
      * Clamps this connection's weight to be within predefined bounds.
      */
     clamp() {
-        this.weight = Math.min(_a.MaximumWeightValue, Math.max(_a.MinimumWeightValue, this.weight));
+        this.weight = clamp(this.weight, _a.MinimumWeightValue, _a.MaximumWeightValue);
     }
 }
 _a = Connection, _Connection_GetInnovationID = function _Connection_GetInnovationID(inNode, outNode) {

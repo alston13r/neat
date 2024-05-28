@@ -134,7 +134,7 @@ class Matrix {
         return Matrix.Summate(this);
     }
     // TODO
-    static Randomize(matrix, upperLimit = 1, lowerLimit = -1) {
+    static Randomize(matrix, lowerLimit = -1, upperLimit = 1) {
         return Matrix.Map(matrix, () => Math.random() * (upperLimit - lowerLimit) + lowerLimit);
     }
     // TODO

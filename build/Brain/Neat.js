@@ -1,113 +1,6 @@
 /**
- * Utility class to help with organizing basic training data. This already includes data
- * for XOR, OR, and AND training.
- */
-class NeatSolutionValues {
-    /**
-     * Constructs a NeatSolutionValues wrapper object for the specified values. If the
-     * values are null, then the values are initialized to an empty array.
-     * @param values the values
-     */
-    constructor(values) {
-        this.values = values || [];
-    }
-    /**
-     * Adds the specified given inputs and outputs to the internal array.
-     * @param inputs the inputs to add
-     * @param outputs the outputs to add
-     * @returns a reference to this NeatSolutionValues object
-     */
-    addValue(inputs, outputs) {
-        this.values.push({ inputs, outputs });
-        return this;
-    }
-    /**
-     * Returns a generator for the local values in an ordered sequence.
-     * @returns the values as a generator
-     */
-    *ordered() {
-        yield* this.values;
-    }
-    /**
-     * Returns a generator for the local values in a random sequence.
-     * @returns the values as a generator
-     */
-    *random() {
-        let t = [...this.values];
-        let m = t.length;
-        for (let i = 0; i < m; i++) {
-            yield t.splice(Math.floor(Math.random() * t.length), 1)[0];
-        }
-    }
-    /**
-     * Returns the max linear fitness available by these values, simply the number of
-     * values multiplies by the size of the output.
-     * @returns the max linear fitness
-     */
-    maxLinearFitnessValue() {
-        return this.values.length * this.values[0].outputs.length;
-    }
-}
-/** Training data for XOR */
-NeatSolutionValues.XOR = new NeatSolutionValues([
-    {
-        inputs: [0, 0],
-        outputs: [0]
-    },
-    {
-        inputs: [0, 1],
-        outputs: [1]
-    },
-    {
-        inputs: [1, 0],
-        outputs: [1]
-    },
-    {
-        inputs: [1, 1],
-        outputs: [0]
-    }
-]);
-/** Training data for OR */
-NeatSolutionValues.OR = new NeatSolutionValues([
-    {
-        inputs: [0, 0],
-        outputs: [0]
-    },
-    {
-        inputs: [0, 1],
-        outputs: [1]
-    },
-    {
-        inputs: [1, 0],
-        outputs: [1]
-    },
-    {
-        inputs: [1, 1],
-        outputs: [1]
-    }
-]);
-/** Training data for AND */
-NeatSolutionValues.AND = new NeatSolutionValues([
-    {
-        inputs: [0, 0],
-        outputs: [0]
-    },
-    {
-        inputs: [0, 1],
-        outputs: [0]
-    },
-    {
-        inputs: [1, 0],
-        outputs: [0]
-    },
-    {
-        inputs: [1, 1],
-        outputs: [1]
-    }
-]);
-/**
  * Utility class to manage a population. Has a method for finding a solution to a
- * set of NeatSolutionValues, or an array of input-output values. TODO making a
+ * set of TrainingValues, or an array of input-output values. TODO making a
  * method to evolve an optimal brain for a game.
  */
 class Neat {
@@ -173,7 +66,7 @@ class Neat {
     //   }
     // }
     /**
-     * Helper method to find a solution to a valid NeatSolutionValues at, or above, the desired
+     * Helper method to find a solution to a valid TrainingValues at, or above, the desired
      * fitness level.
      * @param values the values to find a solution for
      * @param desiredFitness the desired fitness of the solution
@@ -182,10 +75,10 @@ class Neat {
      * @returns a promise that will resolve with the solution brain
      */
     findSolution(values, desiredFitness, populationSize = 1000, updateInterval = 10) {
-        const solutionValues = values instanceof NeatSolutionValues ? values : new NeatSolutionValues(values);
+        const trainingValues = values instanceof TrainingValues ? values : new TrainingValues(values);
         const fitnessFunction = (brain) => {
-            brain.fitness = solutionValues.maxLinearFitnessValue();
-            for (let value of solutionValues.random()) {
+            brain.fitness = trainingValues.maxLinearFitnessValue();
+            for (let value of trainingValues.random()) {
                 brain.loadInputs(value.inputs);
                 brain.runTheNetwork();
                 const output = brain.getOutput();
@@ -240,9 +133,9 @@ class Neat {
      * @returns the fitness of the brain
      */
     calculateLinearFitness(brain, values) {
-        const solutionValues = values instanceof NeatSolutionValues ? values : new NeatSolutionValues(values);
-        brain.fitness = solutionValues.maxLinearFitnessValue();
-        for (let value of solutionValues.random()) {
+        const trainingValues = values instanceof TrainingValues ? values : new TrainingValues(values);
+        brain.fitness = trainingValues.maxLinearFitnessValue();
+        for (let value of trainingValues.random()) {
             brain.loadInputs(value.inputs);
             brain.runTheNetwork();
             const output = brain.getOutput();
