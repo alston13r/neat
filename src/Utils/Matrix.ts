@@ -156,13 +156,13 @@ class Matrix {
   }
 
   // TODO
-  static Print(matrix: Matrix, text: string): Matrix {
+  static Print(matrix: Matrix, text?: string): Matrix {
     if (text != undefined) console.log(`Matrix {${text}}: ${matrix.rows}-${matrix.cols}`)
     console.table(matrix.mat)
     return matrix
   }
   // TODO
-  print(text: string): Matrix {
+  print(text?: string): Matrix {
     return Matrix.Print(this, text)
   }
 
