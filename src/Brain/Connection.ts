@@ -122,6 +122,6 @@ class Connection {
    * Clamps this connection's weight to be within predefined bounds.
    */
   clamp(): void {
-    this.weight = Math.min(Connection.MaximumWeightValue, Math.max(Connection.MinimumWeightValue, this.weight))
+    this.weight = clamp(this.weight, Connection.MinimumWeightValue, Connection.MaximumWeightValue)
   }
 }
