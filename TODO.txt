@@ -3,7 +3,7 @@ Make drawing the population better
 Allow for softcap on iterations for Neat's findSolution
 Add 3D graphing engine for 3D ai games and stuff
 
-Add a simple fully connected neural network
+Debug a simple fully connected neural network
   NeuralNetwork
 
 Convert to TS
