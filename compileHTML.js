@@ -23,7 +23,7 @@ function readPath(path) {
 const excludedEndings = ['index.js', '.map']
 
 readPath('./build').then(() => {
-  const template = fs.readFileSync('./index.html.template', 'utf8')
+  const template = fs.readFileSync('./web/index.html.template', 'utf8')
   const scripts = paths.filter(path => {
     for (let ending of excludedEndings) {
       if (path.endsWith(ending)) return false
@@ -31,10 +31,10 @@ readPath('./build').then(() => {
     return true
   })
     .map(script => {
-      return `<script src='${script}'></script>`
+      return `<script src='.${script}'></script>`
     }).join('\n')
   const filledFile = template.replace('SCRIPT', scripts)
-  fs.writeFile('./index.html', filledFile, 'utf8', err => {
+  fs.writeFile('./web/index.html', filledFile, 'utf8', err => {
     if (err) throw err
   })
 })

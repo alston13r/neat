@@ -9,6 +9,6 @@
 <body></body>
 
 SCRIPT
-<script src='./build/index.js'></script>
+<script src='../build/index.js'></script>
 
 </html>
