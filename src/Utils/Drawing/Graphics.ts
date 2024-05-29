@@ -123,6 +123,11 @@ class Graphics implements HasSize {
     return new Triangle(this, x1, y1, x2, y2, x3, y3, fill, color, stroke, lineWidth)
   }
 
+  createPolygon(points: Vector[], fill: boolean = true, color: string = '#fff',
+    stroke: boolean = false, lineWidth: number = 1): Polygon {
+    return new Polygon(this, points, fill, color, stroke, lineWidth)
+  }
+
   /**
    * TODO
    * @param text 
