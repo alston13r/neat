@@ -27,10 +27,11 @@ JSDoc stuff
     Species
   Games
     Asteroids
-    Asteroid
-    Game
-    Laser
-    Ship
+      Asteroid
+      Events
+      Game
+      Laser
+      Ship
   Utils
     Matrix
     Vector
@@ -38,6 +39,7 @@ JSDoc stuff
       Graphics
       Interfaces
       Shapes
+        Polygon
         Circle
         Line
         Rectangle
