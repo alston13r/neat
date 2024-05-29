@@ -107,6 +107,9 @@ class Graphics {
     createTriangle(x1, y1, x2, y2, x3, y3, fill = true, color = '#fff', stroke = false, lineWidth = 1) {
         return new Triangle(this, x1, y1, x2, y2, x3, y3, fill, color, stroke, lineWidth);
     }
+    createPolygon(points, fill = true, color = '#fff', stroke = false, lineWidth = 1) {
+        return new Polygon(this, points, fill, color, stroke, lineWidth);
+    }
     /**
      * TODO
      * @param text
