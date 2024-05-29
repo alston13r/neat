@@ -45,3 +45,5 @@ JSDoc stuff
         Rectangle
         TextGraphics
         Triangle
+
+Convert the GameEvent classes into enums
