@@ -57,7 +57,7 @@ class Line implements HasTwoPoints, Drawable {
   /**
    * TODO
    */
-  draw() {
+  draw(): void {
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
     ctx.strokeStyle = this.color
     ctx.lineWidth = this.lineWidth

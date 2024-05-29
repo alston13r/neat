@@ -50,7 +50,7 @@ class TextGraphics implements HasPoint, Drawable {
   /**
    * TODO
    */
-  draw() {
+  draw(): void {
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
     ctx.fillStyle = this.color
     ctx.textAlign = this.align

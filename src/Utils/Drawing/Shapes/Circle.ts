@@ -48,7 +48,7 @@ class Circle implements HasPoint, Drawable {
   /**
    * TODO
    */
-  draw() {
+  draw(): void {
     if (!this.fill && !this.stroke) return
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
     ctx.beginPath()
