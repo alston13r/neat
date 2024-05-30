@@ -1,3 +1,12 @@
+type ShipInfo = {
+  posX: number
+  posY: number
+  velX: number
+  velY: number
+  heading: number
+  canShoot: boolean
+}
+
 class Ship implements Drawable {
   static MaxSpeed: number = 3
   static ShootDelay: number = 200
@@ -28,6 +37,9 @@ class Ship implements Drawable {
     this.lasers = []
     this.canShoot = true
     this.alive = true
+    this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(pos)
+    this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos)
+    this.right = Vector.FromAngle(-Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos)
   }
 
   kill(): void {
@@ -94,20 +106,13 @@ class Ship implements Drawable {
     this.lasers.forEach(laser => laser.draw())
   }
 
-  getInfo(): {
-    posX: number,
-    posY: number,
-    velX: number,
-    velY: number,
-    heading: number,
-    canShoot: boolean
-  } {
+  getInfo(): ShipInfo {
     return {
       posX: this.pos.x / this.game.width,
       posY: this.pos.y / this.game.height,
       velX: this.velocity.x / Ship.MaxSpeed,
       velY: this.velocity.y / Ship.MaxSpeed,
-      heading: this.heading,
+      heading: this.heading / Math.PI / 2,
       canShoot: this.canShoot
     }
   }
