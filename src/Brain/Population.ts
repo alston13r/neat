@@ -155,7 +155,7 @@ class Population {
       return d - c
     })
     const min: number = list.reduce((sum, curr) => sum + Math.floor(curr.allowedOffspring), 0)
-    const roundUpCount: number = max - min
+    const roundUpCount: number = Math.min(max - min, list.length)
     for (let i = 0; i < roundUpCount; i++) {
       const species: Species = list.shift()
       species.allowedOffspring = Math.ceil(species.allowedOffspring)
