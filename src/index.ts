@@ -16,7 +16,6 @@ class GameBrainPair {
 
   kill() {
     this.updateFitness()
-    deadCount++
     deadSet.push(aliveSet.splice(aliveSet.indexOf(this), 1)[0])
     this.drawing = false
     if (aliveSet.length > 0) aliveSet[0].drawing = true
@@ -38,7 +37,7 @@ class GameBrainPair {
     if (this.drawing) {
       this.game.draw()
       this.game.graphics.createText(`Generation: ${population.generationCounter}`, 5, this.game.graphics.height - 5, '#fff', 10, 'left', 'bottom').draw()
-      this.game.graphics.createText(`Alive: ${population.popSize - deadCount} / ${population.popSize}`, 5, this.game.graphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
+      this.game.graphics.createText(`Alive: ${aliveSet.length} / ${population.popSize}`, 5, this.game.graphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
       this.game.graphics.createText(`Alive for: ${Math.round(generationTimeAlive)} / ${maxTimeAlive} seconds`, 5, 15, '#fff', 10, 'left', 'top').draw()
     }
 
@@ -64,10 +63,9 @@ function loadBrainInputs(pair: GameBrainPair) {
   pair.brain.loadInputs(inputs)
 }
 
-const population: Population = new Population(200, 11, 0, 3)
+const population: Population = new Population(500, 11, 0, 3)
 const aliveSet: GameBrainPair[] = population.members.map(brain => new GameBrainPair(brain))
 const deadSet: GameBrainPair[] = []
-let deadCount: number = 0
 aliveSet[0].drawing = true
 aliveSet.forEach(pair => pair.loop())
 
@@ -80,18 +78,26 @@ function mainLoop(timestamp: number) {
   lastTimestamp = timestamp
   generationTimeAlive += diff / 1000
 
-  if (deadCount == population.popSize) {
+  if (aliveSet.length == 0) {
     generationTimeAlive = 0
     fittestRecords.push(population.getFittest())
     if (Population.Speciation) population.speciate()
     population.nextGeneration()
     deadSet.length = 0
     population.members.forEach(brain => aliveSet.push(new GameBrainPair(brain)))
-    deadCount = 0
     aliveSet[0].drawing = true
     aliveSet.forEach(pair => pair.loop())
   } else if (generationTimeAlive > maxTimeAlive) {
     aliveSet.forEach(pair => pair.game.ship.kill())
+    aliveSet.length = 0
+    generationTimeAlive = 0
+    fittestRecords.push(population.getFittest())
+    if (Population.Speciation) population.speciate()
+    population.nextGeneration()
+    deadSet.length = 0
+    population.members.forEach(brain => aliveSet.push(new GameBrainPair(brain)))
+    aliveSet[0].drawing = true
+    aliveSet.forEach(pair => pair.loop())
   }
   window.requestAnimationFrame(mainLoop)
 }
