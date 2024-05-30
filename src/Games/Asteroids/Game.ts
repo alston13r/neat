@@ -24,7 +24,7 @@ class AsteroidsGame implements Drawable {
     this.dispatch(GameEvent.Start)
   }
 
-  addEventListener(event: GameEvent, callback: (game?: AsteroidsGame) => void): void {
+  addEventListener(event: GameEvent, callback: (game?: AsteroidsGame) => void): AsteroidsGame {
     let arr: ((game?: AsteroidsGame) => void)[]
     if (this.events.has(event)) {
       arr = this.events.get(event)
@@ -33,6 +33,7 @@ class AsteroidsGame implements Drawable {
       this.events.set(event, arr)
     }
     arr.push(callback)
+    return this
   }
 
   dispatch(event: GameEvent) {
@@ -119,6 +120,8 @@ class AsteroidsGame implements Drawable {
         new Line(this.graphics, pos.x, pos.y, added.x, added.y, '#f00', 1).draw()
       }
     }
+
+    this.graphics.createText(`Asteroids destroyed: ${this.asteroidCounter}`, 5, 5, '#fff', 10, 'left', 'top').draw()
   }
 
   getAsteroidsByDistance(): Asteroid[] {
@@ -129,13 +132,7 @@ class AsteroidsGame implements Drawable {
     })
   }
 
-  asteroidsInfo(): {
-    velX: number,
-    velY: number,
-    angleFromShip: number,
-    distanceFromShip: number,
-    size: number
-  }[] {
+  asteroidsInfo(): AsteroidInfo[] {
     return this.getAsteroidsByDistance().map(asteroid => asteroid.getInfo())
   }
 }
