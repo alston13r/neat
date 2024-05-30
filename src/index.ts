@@ -94,6 +94,8 @@ function mainLoop(timestamp: number) {
     population.members.forEach(brain => alive.push(new GameBrainPair(brain)))
     alive[0].drawing = true
     alive.forEach(pair => pair.loop())
+  } else if (generationTimeAlive > maxTimeAlive) {
+    alive.forEach(pair => pair.game.ship.kill())
   }
 
   populationGraphics.bg()
