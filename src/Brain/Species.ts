@@ -8,7 +8,7 @@ class Species {
   static GenerationPenalization: number = 15
   static SpeciesIndex = 0
   static TargetSpecies = 10
-  static DynamicThreshold = 40
+  static DynamicThreshold = 100
   static DynamicThresholdStepSize = 0.5
 
   members: Brain[] = []
