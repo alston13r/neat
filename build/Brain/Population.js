@@ -24,6 +24,7 @@ class Population {
         this.hiddenN = hiddenN;
         this.outputN = outputN;
         this.enabledChance = enabledChance;
+        this.members = new Array(popSize).fill(0).map(() => new Brain().initialize(inputN, hiddenN, outputN, enabledChance));
     }
     /**
      * The list of all current species that the members are registered to.

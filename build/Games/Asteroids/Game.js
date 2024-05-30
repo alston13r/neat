@@ -26,6 +26,7 @@ class AsteroidsGame {
             this.events.set(event, arr);
         }
         arr.push(callback);
+        return this;
     }
     dispatch(event) {
         if (this.events.has(event)) {
@@ -98,6 +99,7 @@ class AsteroidsGame {
                 new Line(this.graphics, pos.x, pos.y, added.x, added.y, '#f00', 1).draw();
             }
         }
+        this.graphics.createText(`Asteroids destroyed: ${this.asteroidCounter}`, 5, 5, '#fff', 10, 'left', 'top').draw();
     }
     getAsteroidsByDistance() {
         return [...this.asteroids].sort((a, b) => {

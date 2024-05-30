@@ -69,7 +69,7 @@ class Asteroid {
             velY: this.velocity.y / 1.5,
             angleFromShip: Math.atan2(d.y, d.x) / 2 / Math.PI,
             distanceFromShip: d.mag() / this.graphics.size.mag(),
-            size: this.radius
+            size: this.collisionRadius / 50
         };
     }
 }

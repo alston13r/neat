@@ -157,7 +157,8 @@ class Brain {
                     || node1.layer > node2.layer && !Brain.AllowRecurrent
                     || node1.layer == node2.layer)
                     continue;
-                let c = this.connections.filter(x => x.innovationID == Connection.GetInnovationID(node1, node2))[0];
+                const innovationID = Innovations.GetInnovationID(node1, node2);
+                let c = this.connections.filter(x => x.innovationID == innovationID)[0];
                 if (c != undefined) {
                     if (c.enabled)
                         continue;
@@ -358,6 +359,7 @@ class Brain {
             textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17));
             textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15));
         }
+        console.log(circleArray);
         const connectionArray = [];
         for (let connection of this.connections) {
             const inputNodePos = nodePositions.get(connection.inNode);
@@ -393,7 +395,7 @@ Brain.AllowNewConnections = true;
 /** Toggle for connection disabling */
 Brain.AllowDisablingConnections = false;
 /** Toggle for allowing recurrent connections */
-Brain.AllowRecurrent = false;
+Brain.AllowRecurrent = true;
 /** The chance for a new connection to be made */
 Brain.AddConnectionChance = 0.7;
 /** The chance for a connection to be disabled */

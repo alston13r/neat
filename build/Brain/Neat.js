@@ -90,7 +90,8 @@ class Neat {
         const population = new Population(populationSize, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
             .setGraphics(this.graphics);
         population.calculateFitness(fitnessFunction);
-        population.speciate();
+        if (Population.Speciation)
+            population.speciate();
         return new Promise((resolve) => {
             const iterate = () => {
                 if (this.graphics) {
