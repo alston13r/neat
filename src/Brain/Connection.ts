@@ -18,42 +18,6 @@ class Connection {
   /** The chance for the weight to be nudged rather than randomized when mutated */
   static NudgeWeightChance: number = 0.9
 
-  /** The current global innovation index, this increments when an innovation is made */
-  static #InnovationIndex: number = 0
-  /**
-   * A Map containing all currently known innovations. The keys are a concatenation of
-   * the input node id, a colon, and the output node id. The values are the innovation ids
-   * which are made whenever a new innovation is found.
-   */
-  static #InnovationMap: Map<string, number> = new Map<string, number>()
-  /**
-   * Private helper method to generate internal innovation ids.
-   * @param inNode the connection's incoming node
-   * @param outNode the connection's outgoing node
-   * @returns the Connections innovation id
-   */
-  static #GetInnovationID(inNode: NNode, outNode: NNode): number {
-    // concatenate ids
-    const innovationString: string = inNode.id + ':' + outNode.id
-    if (!this.#InnovationMap.has(innovationString)) {
-      // increment innovation counter and set value accordingly
-      this.#InnovationMap.set(innovationString, ++this.#InnovationIndex)
-    }
-    // return the innovation id
-    return this.#InnovationMap.get(innovationString)
-  }
-
-  /**
-   * Public helper method to return the innovation id for the specified
-   * input node and output node.
-   * @param inNode the incoming Node
-   * @param outNode the outgoing Node
-   * @returns the innovation id
-   */
-  static GetInnovationID(inNode: NNode, outNode: NNode): number {
-    return this.#GetInnovationID(inNode, outNode)
-  }
-
   /**
    * Helper method to generate a random weight value between the minimum and maximum
    * values. This is used since writing Math.random() in place of calling this would lead
@@ -61,7 +25,7 @@ class Connection {
    * and maximum values.
    */
   static GenerateRandomWeight(): number {
-    return Math.random() * (Connection.MaximumWeightValue - Connection.MinimumWeightValue) + Connection.MinimumWeightValue
+    return Math.random() * (this.MaximumWeightValue - this.MinimumWeightValue) + this.MinimumWeightValue
   }
 
   /** This connection's incoming node */
@@ -94,7 +58,7 @@ class Connection {
     this.weight = weight
     this.enabled = enabled
     this.recurrent = recurrent
-    this.innovationID = Connection.#GetInnovationID(inNode, outNode)
+    this.innovationID = Innovations.GetInnovationID(inNode, outNode)
     this.inNode.connectionsOut.push(this)
     this.outNode.connectionsIn.push(this)
   }
