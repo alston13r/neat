@@ -350,16 +350,12 @@ class Brain {
         const circleArray = [];
         const textArray = [];
         for (let [node, pos] of nodePositions) {
-            // base circle
-            circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, true, '#fff'));
-            // input circle
-            circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, true, '#f00'));
-            // output circle
-            circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, true, '#00f'));
+            circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, true, '#fff')); // base
+            circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, true, '#f00')); // input
+            circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, true, '#00f')); // output
             textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17));
             textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15));
         }
-        console.log(circleArray);
         const connectionArray = [];
         for (let connection of this.connections) {
             const inputNodePos = nodePositions.get(connection.inNode);
@@ -376,14 +372,6 @@ class Brain {
         circleArray.forEach(circle => circle.draw());
         connectionArray.forEach(line => line.draw());
         textArray.forEach(text => text.draw());
-        // let ytemp = 0
-        // let weightsInfo = []
-        // for (let c of this.connections) {
-        //   let str = `${c.inNode.id}-${c.outNode.id} : ${c.weight}`
-        //   weightsInfo.push(new TextGraphics(this.graphics, str, 0, ytemp))
-        //   ytemp += 10
-        // }
-        // this.graphics.listText(5, 5, weightsInfo, '#fff', 10, this.graphics.createText('Weights', 0, 0), '#fff', 20)
         this.graphics.createText(this.fitness.toString(), 10, 10, '#fff', 10, 'left', 'top').draw();
         if (outline) {
             this.graphics.createRectangle(xOffset, yOffset, width, height, false, '#fff', true, 1).draw();
