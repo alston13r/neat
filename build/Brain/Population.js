@@ -123,7 +123,7 @@ class Population {
             return d - c;
         });
         const min = list.reduce((sum, curr) => sum + Math.floor(curr.allowedOffspring), 0);
-        const roundUpCount = max - min;
+        const roundUpCount = Math.min(max - min, list.length);
         for (let i = 0; i < roundUpCount; i++) {
             const species = list.shift();
             species.allowedOffspring = Math.ceil(species.allowedOffspring);
