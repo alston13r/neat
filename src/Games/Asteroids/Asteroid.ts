@@ -1,3 +1,11 @@
+type AsteroidInfo = {
+  velX: number
+  velY: number
+  angleFromShip: number
+  distanceFromShip: number
+  size: number
+}
+
 class Asteroid implements Drawable {
   static SizeCutoff = 10
 
@@ -74,20 +82,14 @@ class Asteroid implements Drawable {
     return laser.pos.sub(this.pos).mag() <= this.collisionRadius
   }
 
-  getInfo(): {
-    velX: number,
-    velY: number,
-    angleFromShip: number,
-    distanceFromShip: number,
-    size: number
-  } {
+  getInfo(): AsteroidInfo {
     let d = this.pos.sub(this.game.ship.pos)
     return {
       velX: this.velocity.x / 1.5,
       velY: this.velocity.y / 1.5,
       angleFromShip: Math.atan2(d.y, d.x) / 2 / Math.PI,
       distanceFromShip: d.mag() / this.graphics.size.mag(),
-      size: this.radius
+      size: this.collisionRadius / 50
     }
   }
 }
