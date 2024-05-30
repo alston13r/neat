@@ -11,7 +11,7 @@ class Brain {
   /** Toggle for connection disabling */
   static AllowDisablingConnections: boolean = false
   /** Toggle for allowing recurrent connections */
-  static AllowRecurrent: boolean = false
+  static AllowRecurrent: boolean = true
   /** The chance for a new connection to be made */
   static AddConnectionChance: number = 0.7
   /** The chance for a connection to be disabled */
@@ -194,7 +194,8 @@ class Brain {
           || node1.layer > node2.layer && !Brain.AllowRecurrent
           || node1.layer == node2.layer
         ) continue
-        let c = this.connections.filter(x => x.innovationID == Connection.GetInnovationID(node1, node2))[0]
+        const innovationID: number = Innovations.GetInnovationID(node1, node2)
+        let c = this.connections.filter(x => x.innovationID == innovationID)[0]
         if (c != undefined) {
           if (c.enabled) continue
           if (Math.random() < Brain.ReenableConnectionChance) {
@@ -413,6 +414,8 @@ class Brain {
       textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17))
       textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
     }
+
+    console.log(circleArray)
 
     const connectionArray = []
 
