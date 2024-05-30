@@ -121,22 +121,19 @@ class Brain {
      * from the first node to the new node as well as from the new node to the second node.
      * The first connection inherits the weight of the original while the second is randomized.
      * A call to the brain's fixLayers() method is made to ensure proper topology is maintained.
-     * @param override boolean indicating if this method should just add a node without chance
      */
-    addANode(override = false) {
-        if (Math.random() < Brain.AddANodeChance || override) {
-            let forward = this.connections.filter(x => x.enabled && !x.recurrent);
-            if (forward.length == 0)
-                return;
-            let chosen = forward[Math.floor(Math.random() * forward.length)];
-            chosen.enabled = false;
-            let newNode = new NNode(this.nodes.length + 1, NNodeType.Hidden, chosen.outNode.layer);
-            let connectionIn = new Connection(chosen.inNode, newNode, chosen.weight, true, false);
-            let connectionOut = new Connection(newNode, chosen.outNode, Math.random() * 20 - 10, true, false);
-            this.connections.push(connectionIn, connectionOut);
-            this.nodes.push(newNode);
-            this.fixLayers();
-        }
+    addANode() {
+        let forward = this.connections.filter(x => x.enabled && !x.recurrent);
+        if (forward.length == 0)
+            return;
+        let chosen = forward[Math.floor(Math.random() * forward.length)];
+        chosen.enabled = false;
+        let newNode = new NNode(this.nodes.length + 1, NNodeType.Hidden, chosen.outNode.layer);
+        let connectionIn = new Connection(chosen.inNode, newNode, chosen.weight, true, false);
+        let connectionOut = new Connection(newNode, chosen.outNode, Math.random() * 20 - 10, true, false);
+        this.connections.push(connectionIn, connectionOut);
+        this.nodes.push(newNode);
+        this.fixLayers();
     }
     /**
      * Helper method to add a new connection to the brain's topology during the mutation process.
@@ -149,28 +146,26 @@ class Brain {
      * random weight, is enabled, and recurrent when appropriate.
      */
     addAConnection() {
-        if (Math.random() < Brain.AddConnectionChance) {
-            for (let i = 0; i < 20; i++) {
-                let node1 = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                let node2 = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                if (node1 == node2
-                    || node1.layer > node2.layer && !Brain.AllowRecurrent
-                    || node1.layer == node2.layer)
+        for (let i = 0; i < 20; i++) {
+            let node1 = this.nodes[Math.floor(Math.random() * this.nodes.length)];
+            let node2 = this.nodes[Math.floor(Math.random() * this.nodes.length)];
+            if (node1 == node2
+                || node1.layer > node2.layer && !Brain.AllowRecurrent
+                || node1.layer == node2.layer)
+                continue;
+            const innovationID = Innovations.GetInnovationID(node1, node2);
+            let c = this.connections.filter(x => x.innovationID == innovationID)[0];
+            if (c != undefined) {
+                if (c.enabled)
                     continue;
-                const innovationID = Innovations.GetInnovationID(node1, node2);
-                let c = this.connections.filter(x => x.innovationID == innovationID)[0];
-                if (c != undefined) {
-                    if (c.enabled)
-                        continue;
-                    if (Math.random() < Brain.ReenableConnectionChance) {
-                        c.enabled = true;
-                        break;
-                    }
-                }
-                else {
-                    this.connections.push(new Connection(node1, node2, Math.random() * 20 - 10, true, node1.layer > node2.layer));
+                if (Math.random() < Brain.ReenableConnectionChance) {
+                    c.enabled = true;
                     break;
                 }
+            }
+            else {
+                this.connections.push(new Connection(node1, node2, Math.random() * 20 - 10, true, node1.layer > node2.layer));
+                break;
             }
         }
     }
@@ -180,14 +175,12 @@ class Brain {
      * are used to find a valid connection.
      */
     disableAConnection() {
-        if (Math.random() < Brain.DisableConnectionChance) {
-            for (let i = 0; i < 20; i++) {
-                const connection = this.connections[Math.floor(Math.random() * this.connections.length)];
-                if (!connection.enabled)
-                    continue;
-                connection.enabled = false;
-                break;
-            }
+        for (let i = 0; i < 20; i++) {
+            const connection = this.connections[Math.floor(Math.random() * this.connections.length)];
+            if (!connection.enabled)
+                continue;
+            connection.enabled = false;
+            break;
         }
     }
     /**
@@ -204,17 +197,14 @@ class Brain {
         for (let connection of this.connections) {
             connection.mutate();
         }
-        // add a connection
-        if (Brain.AllowNewConnections) {
-            this.addAConnection();
+        if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
+            this.addAConnection(); // add a connection
         }
-        // disable a connection
-        if (Brain.AllowDisablingConnections) {
-            this.disableAConnection();
+        else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
+            this.disableAConnection(); // disable a connection
         }
-        // add a node
-        if (Brain.AllowNewNodes) {
-            this.addANode();
+        else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
+            this.addANode(); // add a node
         }
         // mutate activation functions and bias
         for (let node of this.nodes) {

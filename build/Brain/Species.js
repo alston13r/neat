@@ -168,6 +168,6 @@ Species.WeightFactor = 0.4;
 Species.GenerationPenalization = 15;
 Species.SpeciesIndex = 0;
 Species.TargetSpecies = 10;
-Species.DynamicThreshold = 40;
+Species.DynamicThreshold = 100;
 Species.DynamicThresholdStepSize = 0.5;
 //# sourceMappingURL=Species.js.map

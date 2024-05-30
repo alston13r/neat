@@ -246,7 +246,7 @@ class Population {
             let d = round(brain.fitnessAdjusted, 5);
             return `${b}: ${c} ${Population.Speciation ? ' -> ' + d : ''}`;
         };
-        this.members.slice().sort((a, b) => b.fitness - a.fitness).slice(0, 50)
+        this.members.slice().sort((a, b) => b.fitness - a.fitness)
             .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
             .forEach(member => member.draw());
         if (Population.Speciation) {
