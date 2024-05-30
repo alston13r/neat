@@ -1,7 +1,10 @@
-const graphics = new Graphics().setSize(800, 600).appendTo(document.body)
+const gameGraphics = new Graphics().setSize(800, 600).appendTo(document.body)
+const populationGraphics = new Graphics().setSize(600, 1600).appendTo(document.body)
 
 const maxTimeAlive: number = 30
 let generationTimeAlive: number = 0
+
+const removeQueue: GameBrainPair[] = []
 
 class GameBrainPair {
   brain: Brain
@@ -11,14 +14,12 @@ class GameBrainPair {
 
   constructor(brain: Brain) {
     this.brain = brain
-    this.game = new AsteroidsGame(graphics).addEventListener(ShipEvent.ShipDied, () => this.kill())
+    this.game = new AsteroidsGame(gameGraphics).addEventListener(ShipEvent.ShipDied, () => this.kill())
   }
 
   kill() {
     this.updateFitness()
-    deadSet.push(aliveSet.splice(aliveSet.indexOf(this), 1)[0])
-    this.drawing = false
-    if (aliveSet.length > 0) aliveSet[0].drawing = true
+    removeQueue.push(this)
   }
 
   updateFitness() {
@@ -26,7 +27,7 @@ class GameBrainPair {
   }
 
   loop(): void {
-    if (this.drawing) graphics.bg()
+    if (this.drawing) gameGraphics.bg()
 
     loadBrainInputs(this)
     this.brain.runTheNetwork()
@@ -37,7 +38,7 @@ class GameBrainPair {
     if (this.drawing) {
       this.game.draw()
       this.game.graphics.createText(`Generation: ${population.generationCounter}`, 5, this.game.graphics.height - 5, '#fff', 10, 'left', 'bottom').draw()
-      this.game.graphics.createText(`Alive: ${aliveSet.length} / ${population.popSize}`, 5, this.game.graphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
+      this.game.graphics.createText(`Alive: ${alive.length} / ${population.popSize}`, 5, this.game.graphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
       this.game.graphics.createText(`Alive for: ${Math.round(generationTimeAlive)} / ${maxTimeAlive} seconds`, 5, 15, '#fff', 10, 'left', 'top').draw()
     }
 
@@ -63,42 +64,40 @@ function loadBrainInputs(pair: GameBrainPair) {
   pair.brain.loadInputs(inputs)
 }
 
-const population: Population = new Population(500, 11, 0, 3)
-const aliveSet: GameBrainPair[] = population.members.map(brain => new GameBrainPair(brain))
-const deadSet: GameBrainPair[] = []
-aliveSet[0].drawing = true
-aliveSet.forEach(pair => pair.loop())
+const population: Population = new Population(200, 11, 0, 3)
+const alive: GameBrainPair[] = population.members.map(brain => new GameBrainPair(brain))
+alive[0].drawing = true
+alive.forEach(pair => pair.loop())
 
 const fittestRecords: Brain[] = []
 
 let lastTimestamp: number = 0
 
 function mainLoop(timestamp: number) {
+  while (removeQueue.length > 0) {
+    const toRemove: GameBrainPair = removeQueue.shift()
+    const index: number = alive.indexOf(toRemove)
+    if (index != -1) alive.splice(index, 1)
+    if (toRemove.drawing && alive.length > 0) alive[0].drawing = true
+    toRemove.drawing = false
+  }
+
   const diff: number = timestamp - lastTimestamp
   lastTimestamp = timestamp
   generationTimeAlive += diff / 1000
 
-  if (aliveSet.length == 0) {
+  if (alive.length == 0) {
     generationTimeAlive = 0
     fittestRecords.push(population.getFittest())
     if (Population.Speciation) population.speciate()
     population.nextGeneration()
-    deadSet.length = 0
-    population.members.forEach(brain => aliveSet.push(new GameBrainPair(brain)))
-    aliveSet[0].drawing = true
-    aliveSet.forEach(pair => pair.loop())
-  } else if (generationTimeAlive > maxTimeAlive) {
-    aliveSet.forEach(pair => pair.game.ship.kill())
-    aliveSet.length = 0
-    generationTimeAlive = 0
-    fittestRecords.push(population.getFittest())
-    if (Population.Speciation) population.speciate()
-    population.nextGeneration()
-    deadSet.length = 0
-    population.members.forEach(brain => aliveSet.push(new GameBrainPair(brain)))
-    aliveSet[0].drawing = true
-    aliveSet.forEach(pair => pair.loop())
+    population.members.forEach(brain => alive.push(new GameBrainPair(brain)))
+    alive[0].drawing = true
+    alive.forEach(pair => pair.loop())
   }
+
+  populationGraphics.bg()
+  population.setGraphics(populationGraphics).draw()
   window.requestAnimationFrame(mainLoop)
 }
 
