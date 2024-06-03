@@ -274,17 +274,16 @@ class Population {
    * Draws this population to the local graphics.
    */
   draw(): void {
-    const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p
+    const round: (x: number, p: number) => number = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
     this.graphics.bg()
     new TextGraphics(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
       5, 5, '#fff', 20, 'left', 'top').draw()
 
-    let getMemberText = (brain, i) => {
-      let b = i
-      let c = round(brain.fitness, 5)
-      let d = round(brain.fitnessAdjusted, 5)
-      return `${b}: ${c} ${Population.Speciation ? ' -> ' + d : ''}`
+    const getMemberText = (brain: Brain, i: number) => {
+      const a: number = round(brain.fitness, 5)
+      const b: number = round(brain.fitnessAdjusted, 5)
+      return `${i}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`
     }
     this.members.slice().sort((a, b) => b.fitness - a.fitness)
       .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
@@ -295,11 +294,12 @@ class Population {
         250, 5, '#fff', 20, 'left', 'top')
         .draw()
 
-      let getSpeciesText = species => {
-        let a = species.members.length
-        let b = round(species.getAverageFitness(), 5)
-        let c = round(species.getAverageFitnessAdjusted(), 5)
-        return `<${a}> ${b} -> ${c}`
+      const getSpeciesText = (species: Species) => {
+        const a: number = species.members.length
+        const b: number = round(species.getAverageFitness(), 5)
+        const c: number = round(species.getAverageFitnessAdjusted(), 5)
+        const d: number = species.gensSinceImproved
+        return `<${a}, ${d}> ${b} -> ${c}`
       }
       this.speciesList.map((s, i) => new TextGraphics(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
         .forEach(species => species.draw())
