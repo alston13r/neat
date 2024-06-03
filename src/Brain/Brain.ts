@@ -370,10 +370,7 @@ class Brain {
   /**
    * Draws this brain to the local graphics.
    */
-  draw(width?: number, height?: number | null, xOffset: number = 0, yOffset: number = 0, outline: boolean = false) {
-    width ||= this.graphics.width
-    height ||= this.graphics.height
-
+  draw(xOffset: number, yOffset: number, width: number, height: number, outline: boolean = false) {
     const nodePositions: Map<NNode, Vector> = new Map<NNode, Vector>()
 
     const maxLayer: number = this.outputNodes[0].layer
