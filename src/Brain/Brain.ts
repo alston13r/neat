@@ -282,8 +282,20 @@ class Brain {
    * be run after the brain's has propagated values through it.
    * @returns the output node layer's values
    */
-  getOutput() {
+  getOutput(): number[] {
     return this.outputNodes.map(node => node.sumOutput)
+  }
+
+  /**
+   * Helper method that will load the specified inputs to the brain's input
+   * nodes, run the network, and return the output values.
+   * @param inputs an array of inputs
+   * @returns the brain's output
+   */
+  think(inputs: number[]): number[] {
+    this.loadInputs(inputs)
+    this.runTheNetwork()
+    return this.getOutput()
   }
 
   /**
