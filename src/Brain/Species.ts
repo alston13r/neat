@@ -11,10 +11,27 @@ class Species {
   static DynamicThreshold = 100
   static DynamicThresholdStepSize = 0.5
 
+  population: Population
   members: Brain[] = []
   allowedOffspring: number = 0
   gensSinceImproved: number = 0
   highestFitness: number = 0
+
+  /**
+   * Constructs a species. This does not speciate any members of a population
+   * on its own, that is done through the static Speciate method.
+   */
+  constructor()
+  /**
+   * Constructs a species with the specified population reference. This does
+   * not speciate any members of a population on its own, that is done through
+   * the static Speciate method.
+   * @param population the population
+   */
+  constructor(population: Population)
+  constructor(population?: Population) {
+    this.population = population
+  }
 
   /**
    * TODO
@@ -143,7 +160,7 @@ class Species {
 
     while (toSpeciate.length > 0) {
       const champion: Brain = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
-      champion.species = new Species()
+      champion.species = new Species(champion.population)
       champion.species.members.push(champion)
       const count = toSpeciate.length
       for (let i = 0; i < count; i++) {
@@ -165,7 +182,7 @@ class Species {
       this.members = []
     } else {
       const copyOfMembers: Brain[] = [...this.members]
-      this.members = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
+      this.members = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
 
       const remainingCount: number = this.allowedOffspring - this.members.length
       const pairings: { p1: Brain, p2: Brain }[] = Population.GeneratePairings(copyOfMembers, remainingCount)
