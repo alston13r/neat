@@ -1,5 +1,5 @@
 const gameGraphics = new Graphics().setSize(800, 600).appendTo(document.body)
-const populationGraphics = new Graphics().setSize(600, 1600).appendTo(document.body)
+const populationGraphics = new Graphics().setSize(800, 1600).appendTo(document.body)
 
 const maxTimeAlive: number = 30
 let generationTimeAlive: number = 0
@@ -23,7 +23,7 @@ class GameBrainPair {
   }
 
   updateFitness() {
-    this.brain.fitness = this.game.asteroidCounter * 40 + this.game.frameCounter / 600
+    this.brain.fitness = this.game.asteroidCounter * 4 + this.game.frameCounter / 60
   }
 
   loop(): void {
@@ -64,7 +64,7 @@ function loadBrainInputs(pair: GameBrainPair) {
   pair.brain.loadInputs(inputs)
 }
 
-const population: Population = new Population(200, 11, 0, 3)
+const population: Population = new Population(200, 11, 2, 3, 0.5)
 const alive: GameBrainPair[] = population.members.map(brain => new GameBrainPair(brain))
 alive[0].drawing = true
 alive.forEach(pair => pair.loop())
@@ -100,6 +100,7 @@ function mainLoop(timestamp: number) {
 
   populationGraphics.bg()
   population.setGraphics(populationGraphics).draw()
+  alive[0].brain.setGraphics(populationGraphics).draw(160, 100, 640, 1500)
   window.requestAnimationFrame(mainLoop)
 }
 
