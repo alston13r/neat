@@ -137,8 +137,10 @@ class Population {
             const speciesList = this.speciesList;
             this.members = [];
             speciesList.forEach(species => {
-                species.produceOffspring();
-                this.members.push(...species.members);
+                const speciesOffspring = species.produceOffspring();
+                this.members.push(...speciesOffspring);
+                speciesOffspring.forEach(offspring => offspring.species = species);
+                species.members = speciesOffspring;
             });
             if (this.members.length < this.popSize) {
                 const difference = this.popSize - this.members.length;

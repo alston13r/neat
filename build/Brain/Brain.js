@@ -6,11 +6,6 @@
  * data.
  */
 class Brain {
-    /**
-     * Constructs a brain with the specified population reference. This does not
-     * initialize the brain's topology.
-     * @param population the population
-     */
     constructor(population) {
         /** The current fitness of the brain */
         this.fitness = 0;
@@ -256,17 +251,11 @@ class Brain {
         return this.getOutput();
     }
     /**
-     * Clones this brain's topology and returns the clone. If speciation is enabled,
-     * the clone is also added to the species' list of members.
+     * Clones this brain's topology and returns the clone.
      * @returns the clone
      */
     clone() {
         const clone = new Brain(this.population);
-        // species
-        if (this.population.speciation) {
-            clone.species = this.species;
-            clone.species.members.push(clone);
-        }
         // nodes
         clone.nodes = this.nodes.map(node => node.clone());
         // input nodes

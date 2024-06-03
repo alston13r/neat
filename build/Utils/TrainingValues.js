@@ -3,11 +3,6 @@
  * for XOR, OR, and AND training.
  */
 class TrainingValues {
-    /**
-     * Constructs a TrainingValues wrapper object for the specified values. If the
-     * values are null, then the values are initialized to an empty array.
-     * @param values the values
-     */
     constructor(values) {
         this.inputSize = 0;
         this.outputSize = 0;
