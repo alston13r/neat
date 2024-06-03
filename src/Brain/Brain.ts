@@ -326,18 +326,11 @@ class Brain {
   }
 
   /**
-   * Clones this brain's topology and returns the clone. If speciation is enabled,
-   * the clone is also added to the species' list of members.
+   * Clones this brain's topology and returns the clone.
    * @returns the clone
    */
   clone(): Brain {
     const clone = new Brain(this.population)
-
-    // species
-    if (this.population.speciation) {
-      clone.species = this.species
-      clone.species.members.push(clone)
-    }
 
     // nodes
     clone.nodes = this.nodes.map(node => node.clone())
