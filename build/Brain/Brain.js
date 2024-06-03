@@ -324,9 +324,7 @@ class Brain {
     /**
      * Draws this brain to the local graphics.
      */
-    draw(width, height, xOffset = 0, yOffset = 0, outline = false) {
-        width || (width = this.graphics.width);
-        height || (height = this.graphics.height);
+    draw(xOffset, yOffset, width, height, outline = false) {
         const nodePositions = new Map();
         const maxLayer = this.outputNodes[0].layer;
         const dx = width / (maxLayer + 1);
