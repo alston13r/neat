@@ -13,137 +13,59 @@ class Neat {
         this.graphics = graphics;
         return this;
     }
-    // fragmentGame(Game, population) {
-    //   return population.members.map(member => {
-    //     return {
-    //       member,
-    //       game: new Game(this.graphics.width, this.graphics.height)
-    //     }
-    //   })
-    // }
-    // runOnGame(Game) {
-    //   // curr position (x and y)
-    //   // curr velocity (x and y)
-    //   // curr heading
-    //   // can fire
-    //   // position of nearest asteroid (x and y)
-    //   // velocity of nearest asteroid (x and y)
-    //   // angle to nearest asteroid
-    //   // thrusters
-    //   // steering
-    //   // fire
-    //   let population = new Population(50, 7, 0, 3, 1)
-    //   population.calculateFitness()
-    //   let fragments = this.fragmentGame(Game, population)
-    //   this.runThroughFragments(fragments)
-    //   population.speciate()
-    //   while (population.generationCounter < 1000) {
-    //     population.nextGeneration()
-    //     population.calculateFitness()
-    //     fragments = this.fragmentGame(Game, population)
-    //     this.runThroughFragments(fragments)
-    //     let fittest = population.getFittest()
-    //     // fittest.draw(this.graphics)
-    //     population.speciate()
-    //   }
-    //   console.log(population.getFittest())
-    // }
-    // runThroughFragments(fragments) {
-    //   let stillAlive = true
-    //   while (fragments.length > 0 && stillAlive) {
-    //     stillAlive = false
-    //     for (let fragment of [...fragments].reverse()) {
-    //       let member = fragment.member
-    //       let game = fragment.game
-    //       game.update()
-    //       game.collisions()
-    //       if (game.ship.alive) stillAlive = true
-    //       else {
-    //         member.fitness = game.asteroidCounter * 10 + game.updateCounter / 100
-    //         fragments.splice(fragments.indexOf(fragment), 1)
-    //       }
-    //     }
-    //   }
-    // }
     /**
-     * Helper method to find a solution to a valid TrainingValues at, or above, the desired
-     * fitness level.
-     * @param values the values to find a solution for
+     * Runs the Neat algorithm on the specified TrainingValues and resolves with a solution.
+     * If the algorithm runs beyond the specified max generations, this resolves with the
+     * fittest member it made during the algorithm.
+     * @param trainingValues the values to find a solution for
      * @param desiredFitness the desired fitness of the solution
      * @param populationSize the size of the population
-     * @param updateInterval the update interval between generations
-     * @returns a promise that will resolve with the solution brain
+     * @param maxGenerations the maximum number of generations to run for
+     * @param updateInterval the delay between generations
+     * @returns a promise that will resolve with the solution
      */
-    findSolution(values, desiredFitness, populationSize = 1000, updateInterval = 10) {
-        const trainingValues = values instanceof TrainingValues ? values : new TrainingValues(values);
-        const fitnessFunction = (brain) => {
-            brain.fitness = trainingValues.maxLinearFitnessValue();
-            for (let value of trainingValues.random()) {
-                brain.loadInputs(value.inputs);
-                brain.runTheNetwork();
-                const output = brain.getOutput();
-                const difference = value.outputs.map((exp, i) => Math.abs(exp - output[i]));
-                brain.fitness -= difference.reduce((sum, curr) => sum + curr);
-            }
-            return brain.fitness;
-        };
-        const population = new Population(populationSize, values.values[0].inputs.length, 0, values.values[0].outputs.length, 1)
+    findSolution(trainingValues, desiredFitness, populationSize = 1000, maxGenerations = 1000, updateInterval = 10) {
+        const population = new Population(populationSize, trainingValues.inputSize, 0, trainingValues.outputSize, 1)
             .setGraphics(this.graphics);
-        population.calculateFitness(fitnessFunction);
-        if (Population.Speciation)
-            population.speciate();
-        return new Promise((resolve) => {
-            const iterate = () => {
-                if (this.graphics) {
-                    this.graphics.bg();
-                    population.draw();
-                }
-                if (population.fittestEver == null || population.fittestEver.fitness >= desiredFitness) {
-                    const solution = population.fittestEver;
-                    console.log(`Solution found`);
-                    solution.loadInputs([0, 0]);
-                    solution.runTheNetwork();
-                    console.log(`[0, 0] -> [${solution.getOutput().join(', ')}]`);
-                    solution.loadInputs([0, 1]);
-                    solution.runTheNetwork();
-                    console.log(`[0, 1] -> [${solution.getOutput().join(', ')}]`);
-                    solution.loadInputs([1, 0]);
-                    solution.runTheNetwork();
-                    console.log(`[1, 0] -> [${solution.getOutput().join(', ')}]`);
-                    solution.loadInputs([1, 1]);
-                    solution.runTheNetwork();
-                    console.log(`[1, 1] -> [${solution.getOutput().join(', ')}]`);
-                    return resolve(solution);
-                }
+        population.draw();
+        return new Promise(resolve => {
+            function iterate() {
+                // if the population's fittest member ever has the desired fitness, resolve it
+                if (population.fittestEver && population.fittestEver.fitness >= desiredFitness)
+                    resolve(population.fittestEver);
+                // if the population has run for too many generations, resolve the fittest ever
+                else if (population.generationCounter >= maxGenerations)
+                    resolve(population.fittestEver);
                 else {
                     population.nextGeneration();
-                    population.calculateFitness(fitnessFunction);
-                    if (Population.Speciation)
-                        population.speciate();
+                    // fitness calculation
+                    // takes the average of 5 run throughs of a random order of training values
+                    // this ensures that, if recurrent connections are enabled, the solution's
+                    // fitness wasn't just a fluke from that random ordering
+                    const maxFitness = trainingValues.length * trainingValues.outputSize;
+                    population.members.forEach(member => {
+                        let fitnessSum = 0;
+                        for (let i = 0; i < 5; i++) {
+                            let tempFitness = maxFitness;
+                            for (let value of trainingValues.random) {
+                                const actual = member.think(value.inputs);
+                                const errors = value.outputs.map((expected, i) => Math.abs(expected - actual[i]));
+                                const errorSum = errors.reduce((sum, curr) => sum + curr);
+                                tempFitness -= errorSum;
+                            }
+                            fitnessSum += tempFitness;
+                        }
+                        fitnessSum /= 5;
+                        member.fitness = fitnessSum;
+                    });
+                    population.updateFittestEver();
+                    population.speciate();
+                    population.draw();
                     setTimeout(iterate, updateInterval);
                 }
-            };
+            }
             iterate();
         });
-    }
-    /**
-     * Basic function to calculate the fitness of a brain based on values, where the ideal fitness is the exact output
-     * and any deviation is simply subtracted from the max potential fitness.
-     * @param brain the brain to calculate the fitness for
-     * @param values the values
-     * @returns the fitness of the brain
-     */
-    calculateLinearFitness(brain, values) {
-        const trainingValues = values instanceof TrainingValues ? values : new TrainingValues(values);
-        brain.fitness = trainingValues.maxLinearFitnessValue();
-        for (let value of trainingValues.random()) {
-            brain.loadInputs(value.inputs);
-            brain.runTheNetwork();
-            const output = brain.getOutput();
-            const difference = value.outputs.map((exp, i) => Math.abs(exp - output[i]));
-            brain.fitness -= difference.reduce((sum, curr) => sum + curr);
-        }
-        return brain.fitness;
     }
 }
 //# sourceMappingURL=Neat.js.map

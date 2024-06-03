@@ -2,11 +2,16 @@
  * TODO
  */
 class Species {
-    constructor() {
+    /**
+     * Constructs a species with the specified population reference.
+     * @param population the population
+     */
+    constructor(population) {
         this.members = [];
         this.allowedOffspring = 0;
         this.gensSinceImproved = 0;
         this.highestFitness = 0;
+        this.population = population;
     }
     /**
      * TODO
@@ -131,7 +136,7 @@ class Species {
         }
         while (toSpeciate.length > 0) {
             const champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
-            champion.species = new Species();
+            champion.species = new Species(champion.population);
             champion.species.members.push(champion);
             const count = toSpeciate.length;
             for (let i = 0; i < count; i++) {
@@ -155,7 +160,7 @@ class Species {
         }
         else {
             const copyOfMembers = [...this.members];
-            this.members = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
+            this.members = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
             const remainingCount = this.allowedOffspring - this.members.length;
             const pairings = Population.GeneratePairings(copyOfMembers, remainingCount);
             pairings.forEach(({ p1, p2 }) => Brain.Crossover(p1, p2));

@@ -15,6 +15,10 @@ class Population {
      * @param enabledChance the chance for connections to start enabled
      */
     constructor(popSize, inputN, hiddenN, outputN, enabledChance = 1) {
+        /** Toggle for speciation between generations */
+        this.speciation = true;
+        /** Toggle for elitism */
+        this.elitism = true;
         /** A counter for the current generation */
         this.generationCounter = 0;
         /** An array of the population's members */
@@ -24,7 +28,6 @@ class Population {
         this.hiddenN = hiddenN;
         this.outputN = outputN;
         this.enabledChance = enabledChance;
-        this.members = new Array(popSize).fill(0).map(() => new Brain().initialize(inputN, hiddenN, outputN, enabledChance));
     }
     /**
      * The list of all current species that the members are registered to.
@@ -45,33 +48,23 @@ class Population {
         Species.DynamicThreshold += Math.sign(this.speciesList.length - Species.TargetSpecies) * Species.DynamicThresholdStepSize;
     }
     /**
-     * Runs the specified fitness function on the population's members. This keeps track
-     * of the fittest member of this iteration as well as the fittest member ever.
-     * @param fitnessFunction the fitness function
-     * @returns the fittest member of the iteration
-     */
-    calculateFitness(fitnessFunction) {
-        for (let i = this.members.length; i < this.popSize; i++) {
-            this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
-        }
-        let fittest;
-        if (fitnessFunction) {
-            for (let b of this.members) {
-                fitnessFunction(b);
-                if (fittest == null || b.fitness > fittest.fitness)
-                    fittest = b;
-            }
-            if (this.fittestEver == null || fittest.fitness > this.fittestEver.fitness)
-                this.fittestEver = fittest;
-        }
-        return this.getFittest();
-    }
-    /**
      * Returns the fittest member in the current list of members.
      * @returns the fittest member
      */
     getFittest() {
         return this.members.reduce((best, curr) => curr.fitness > best.fitness ? curr : best);
+    }
+    /**
+     * Updates this population's fittest member ever. The fittestEver property
+     * keeps track of the fittest member the population has ever produced. This
+     * will be updated with the population's current generation's fittest member
+     * if their fitness exceeds the record.
+     */
+    updateFittestEver() {
+        const genFittest = this.getFittest();
+        if (this.fittestEver == null || genFittest.fitness > this.fittestEver.fitness)
+            this.fittestEver = genFittest;
+        return this.fittestEver;
     }
     /**
      * Updates the gensSinceImproved counter for each species given
@@ -114,7 +107,7 @@ class Population {
         const max = this.popSize;
         const avg = this.getAverageFitnessAdjusted();
         const list = [...this.speciesList];
-        list.forEach(species => species.allowedOffspring = species.getAverageFitnessAdjusted() / avg * species.members.length);
+        list.forEach(species => species.allowedOffspring = species.getAverageFitnessAdjusted() / (avg == 0 ? 1 : avg) * species.members.length);
         list.sort((a, b) => {
             const c = a.allowedOffspring - Math.floor(a.allowedOffspring);
             const d = b.allowedOffspring - Math.floor(b.allowedOffspring);
@@ -140,7 +133,7 @@ class Population {
      * otherwise its the percentage of members that gets preserved.
      */
     produceOffspring() {
-        if (Population.Speciation) {
+        if (this.speciation) {
             const speciesList = this.speciesList;
             this.members = [];
             speciesList.forEach(species => {
@@ -148,14 +141,15 @@ class Population {
                 this.members.push(...species.members);
             });
             if (this.members.length < this.popSize) {
-                for (let i = 0; i < this.popSize - this.members.length; i++) {
-                    this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
+                const difference = this.popSize - this.members.length;
+                for (let i = 0; i < difference; i++) {
+                    this.members.push(new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
                 }
             }
         }
         else {
             const copyOfMembers = [...this.members];
-            this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : [];
+            this.members = this.elitism ? Population.GetElites(this.members, this.popSize) : [];
             const pairings = Population.GeneratePairings(copyOfMembers, this.popSize);
             pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)));
         }
@@ -172,9 +166,15 @@ class Population {
      * mutates them.
      */
     nextGeneration() {
-        this.produceOffspring();
-        this.generationCounter++;
-        this.mutate();
+        if (this.members.length == 0) {
+            this.members = new Array(this.popSize).fill(0)
+                .map(() => new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
+        }
+        else {
+            this.produceOffspring();
+            this.generationCounter++;
+            this.mutate();
+        }
     }
     /**
      * Speciates the current members of the population. If speciation is disabled, this is
@@ -183,11 +183,13 @@ class Population {
      * adjusts the fitness of all members, and calculates the allowed offspring for each species.
      */
     speciate() {
-        Species.Speciate(this);
-        this.updateGensSinceImproved();
-        this.adjustThreshold();
-        this.adjustFitness();
-        this.calculateAllowedOffspring();
+        if (this.speciation) {
+            Species.Speciate(this);
+            this.updateGensSinceImproved();
+            this.adjustThreshold();
+            this.adjustFitness();
+            this.calculateAllowedOffspring();
+        }
     }
     /**
      * Static helper method to generate pairings of brains that will serve as parents
@@ -243,12 +245,12 @@ class Population {
         const getMemberText = (brain, i) => {
             const a = round(brain.fitness, 5);
             const b = round(brain.fitnessAdjusted, 5);
-            return `${i}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`;
+            return `${i}: ${a} ${this.speciation ? ' -> ' + b : ''}`;
         };
         this.members.slice().sort((a, b) => b.fitness - a.fitness)
             .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
             .forEach(member => member.draw());
-        if (Population.Speciation) {
+        if (this.speciation) {
             new TextGraphics(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`, 250, 5, '#fff', 20, 'left', 'top')
                 .draw();
             const getSpeciesText = (species) => {
@@ -263,13 +265,6 @@ class Population {
         }
     }
 }
-/** Toggle for speciation between generations */
-Population.Speciation = true;
-/**
- * Toggle for elitism, where the specified percent of members gets preserved from
- * each generation with no mutations
- */
-Population.Elitism = true;
 /** The percent of members who get carried over as elites */
 Population.ElitePercent = 0.3;
 //# sourceMappingURL=Population.js.map
