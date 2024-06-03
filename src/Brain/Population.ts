@@ -162,9 +162,12 @@ class Population {
       const speciesList: Species[] = this.speciesList
       this.members = []
       speciesList.forEach(species => {
-        species.produceOffspring()
-        this.members.push(...species.members)
+        const speciesOffspring: Brain[] = species.produceOffspring()
+        this.members.push(...speciesOffspring)
+        speciesOffspring.forEach(offspring => offspring.species = species)
+        species.members = speciesOffspring
       })
+
       if (this.members.length < this.popSize) {
         const difference: number = this.popSize - this.members.length
         for (let i = 0; i < difference; i++) {
