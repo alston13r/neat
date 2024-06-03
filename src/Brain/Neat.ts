@@ -17,65 +17,6 @@ class Neat {
     return this
   }
 
-  // fragmentGame(Game, population) {
-  //   return population.members.map(member => {
-  //     return {
-  //       member,
-  //       game: new Game(this.graphics.width, this.graphics.height)
-  //     }
-  //   })
-  // }
-
-  // runOnGame(Game) {
-  //   // curr position (x and y)
-  //   // curr velocity (x and y)
-  //   // curr heading
-  //   // can fire
-  //   // position of nearest asteroid (x and y)
-  //   // velocity of nearest asteroid (x and y)
-  //   // angle to nearest asteroid
-
-  //   // thrusters
-  //   // steering
-  //   // fire
-  //   let population = new Population(50, 7, 0, 3, 1)
-  //   population.calculateFitness()
-  //   let fragments = this.fragmentGame(Game, population)
-  //   this.runThroughFragments(fragments)
-  //   population.speciate()
-
-  //   while (population.generationCounter < 1000) {
-  //     population.nextGeneration()
-  //     population.calculateFitness()
-  //     fragments = this.fragmentGame(Game, population)
-  //     this.runThroughFragments(fragments)
-  //     let fittest = population.getFittest()
-  //     // fittest.draw(this.graphics)
-  //     population.speciate()
-  //   }
-
-
-  //   console.log(population.getFittest())
-  // }
-
-  // runThroughFragments(fragments) {
-  //   let stillAlive = true
-  //   while (fragments.length > 0 && stillAlive) {
-  //     stillAlive = false
-  //     for (let fragment of [...fragments].reverse()) {
-  //       let member = fragment.member
-  //       let game = fragment.game
-  //       game.update()
-  //       game.collisions()
-  //       if (game.ship.alive) stillAlive = true
-  //       else {
-  //         member.fitness = game.asteroidCounter * 10 + game.updateCounter / 100
-  //         fragments.splice(fragments.indexOf(fragment), 1)
-  //       }
-  //     }
-  //   }
-  // }
-
   /**
    * Helper method to find a solution to a valid TrainingValues at, or above, the desired
    * fitness level.
