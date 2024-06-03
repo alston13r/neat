@@ -51,7 +51,7 @@ function loadBrainInputs(pair) {
     inputs[10] = nearestAsteroidInfo.size;
     pair.brain.loadInputs(inputs);
 }
-const population = new Population(200, 11, 2, 3, 0.5);
+const population = new Population(200, 11, 0, 3, 0.5);
 const alive = population.members.map(brain => new GameBrainPair(brain));
 alive[0].drawing = true;
 alive.forEach(pair => pair.loop());

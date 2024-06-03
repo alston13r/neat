@@ -373,7 +373,7 @@ Brain.AllowDisablingConnections = false;
 /** Toggle for allowing recurrent connections */
 Brain.AllowRecurrent = true;
 /** The chance for a new connection to be made */
-Brain.AddConnectionChance = 0.7;
+Brain.AddConnectionChance = 0.4;
 /** The chance for a connection to be disabled */
 Brain.DisableConnectionChance = 0.05;
 /** The chance for a connection to be reenabled */
