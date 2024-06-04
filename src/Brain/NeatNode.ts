@@ -13,6 +13,12 @@ enum NNodeType { Input, Hidden, Output }
  * was already taken.
  */
 class NNode {
+  /** The default activation function for input nodes */
+  static DefaultInputActivationFunction: ActivationFunction = ActivationFunction.Identity
+  /** The default activation function for hidden nodes */
+  static DefaultHiddenActivationFunction: ActivationFunction = ActivationFunction.Sigmoid
+  /** The default activation function for output nodes */
+  static DefaultOutputActivationFunction: ActivationFunction = ActivationFunction.Tanh
   /** Toggle for hidden node activation function mutations */
   static AllowHiddenActivationMutations: boolean = true
   /** Toggle for output node activation function mutations */
@@ -23,7 +29,6 @@ class NNode {
   static MutateBiasChance: number = 0.03
   /** The chance for the bias to be nudged rather than randomized when mutated */
   static NudgeBiasChance: number = 0.9
-
   /** The minimum value that a bias can be */
   static MinimumBiasValue: number = -10
   /** The maximum value that a bias can be */
@@ -62,7 +67,17 @@ class NNode {
     this.id = id
     this.type = type
     this.layer = layer
-    this.activationFunction = type == NNodeType.Input ? ActivationFunction.Identity : ActivationFunction.Sigmoid
+    switch (type) {
+      case NNodeType.Input:
+        this.activationFunction = NNode.DefaultInputActivationFunction
+        break
+      case NNodeType.Hidden:
+        this.activationFunction = NNode.DefaultHiddenActivationFunction
+        break
+      case NNodeType.Output:
+        this.activationFunction = NNode.DefaultOutputActivationFunction
+        break
+    }
   }
 
   static GenerateRandomBias(): number {
