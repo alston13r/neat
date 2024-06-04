@@ -1,26 +1,68 @@
 /**
- * TODO
+ * A species is a group of brains that have similar topologies. Two brains will
+ * belong to the same species if their differences, as calculated in the static
+ * Compare() method, are below the dynamic threshold. The dynamic threshold will
+ * adjust depending on the current number of species present in the population
+ * and the desired number.
  */
 class Species {
+  /** The weight that excess connections have in the compatibility difference */
   static ExcessFactor: number = 1
+  /** The weight that disjoint connections have in the compatibility difference */
   static DisjointFactor: number = 1
+  /** The weight that the average of weight difference have in the compatibility difference  */
   static WeightFactor: number = 0.4
+  /** The number of generations that a species can run for simultaneously without improvement without being penalized */
   static GenerationPenalization: number = 15
-  static SpeciesIndex = 0
+  /** The current target number of species */
   static TargetSpecies = 10
+  /** The current compatibility threshold used for comparisons */
   static DynamicThreshold = 100
+  /** The compatibility threshold step size */
   static DynamicThresholdStepSize = 0.5
 
+  /** A reference to this species' containing population */
+  population: Population
+  /** An array of this species' members */
   members: Brain[] = []
+  /** The number of allowed offspring this species can produce */
   allowedOffspring: number = 0
+  /** The number of generations since this species has improved */
   gensSinceImproved: number = 0
+  /** Record of this species' highest fitness value */
   highestFitness: number = 0
 
   /**
-   * TODO
-   * @param brainA 
-   * @param brainB 
-   * @returns 
+   * Constructs a species. This does not speciate any members of a population
+   * on its own, that is done through the static Speciate method.
+   */
+  constructor()
+  /**
+   * Constructs a species with the specified population reference. This does
+   * not speciate any members of a population on its own, that is done through
+   * the static Speciate method.
+   * @param population the population
+   */
+  constructor(population: Population)
+  constructor(population?: Population) {
+    this.population = population
+  }
+
+  /**
+   * Compares two brains based on their topologies. Topologies are compared by
+   * only their enabled connections' innovation IDs and weights. For every connection
+   * that is not in the other, they are considered disjoint, or excess if they
+   * exceed the maximum innovation ID of the other. The weights of the connections
+   * are only compared for connections in both topologies, with the weights value
+   * simply being the sum of the differences between them. The disjoint number,
+   * excess number, and weight differences are then weighted by the static Factor
+   * values and that value is returned, indicating the compatibility of the two
+   * brains. If the two brains are identical, the compatibility value is expected
+   * to be 0. Two brains belong to the same species if their compatibility is
+   * below the current threshold.
+   * @param brainA the first brain to compare
+   * @param brainB the second brain to compare
+   * @returns the compatibility of the two brains
    */
   static Compare(brainA: Brain, brainB: Brain): number {
     const enabledA: Connection[] = brainA.connections.filter(connection => connection.enabled)
@@ -76,7 +118,8 @@ class Species {
   }
 
   /**
-   * TODO
+   * Adjusts the fitness of all members in this species. The members
+   * need to have a fitness calculated prior to this being called.
    */
   adjustFitness(): void {
     const N: number = this.members.length
@@ -86,23 +129,26 @@ class Species {
   }
 
   /**
-   * TODO
-   * @returns 
+   * Returns the average fitness of all members in this species.
+   * @returns the average fitness
    */
   getAverageFitness(): number {
     return this.members.reduce((sum, curr) => sum + curr.fitness / this.members.length, 0)
   }
 
   /**
-   * TODO
-   * @returns 
+   * Returns the average adjusted fitness of all members in this species.
+   * The adjusted fitness for each member is calculated in adjustFitness().
+   * @returns the average adjusted fitness
    */
   getAverageFitnessAdjusted(): number {
     return this.members.reduce((sum, curr) => sum + curr.fitnessAdjusted / this.members.length, 0)
   }
 
   /**
-   * TODO
+   * Updates the gensSinceImproved counter to indicate the number of generations
+   * that have passed since this species has improved. This means that it has
+   * produced a member with a fitness greater than the recorded highest.
    */
   updateGensSinceImproved(): void {
     const max: number = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0)
@@ -114,42 +160,49 @@ class Species {
   }
 
   /**
-   * TODO
-   * @param population 
+   * Speciates the population, placing every member into a species. This works
+   * by selecting champions from either a preexisting set of species or a group
+   * of unspeciated members. Then, the rest of the members are compared to these
+   * champions and placed into their corresponding species.
+   * @param population the population to speciate
    */
   static Speciate(population: Population): void {
+    // get any preexisting species
     const speciesList: Species[] = population.speciesList
     const champions: Brain[] = []
+    // select champions from each one and store them in an array
     for (let species of speciesList) {
       const champion: Brain = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0]
       champions.push(champion)
+      // clear species field for all other species members
       species.members.forEach(member => member.species = null)
       species.members = [champion]
     }
 
+    // store all remaining and unspeciated members in an array
     const toSpeciate: Brain[] = population.members.filter(member => member.species == null)
-
-    for (let champion of champions) {
-      const count: number = toSpeciate.length
-      for (let i = 0; i < count; i++) {
-        const brain: Brain = toSpeciate.shift()
-        const result: number = Species.Compare(champion, brain)
-        if (result <= Species.DynamicThreshold) {
-          brain.species = champion.species
-          brain.species.members.push(brain)
-        } else toSpeciate.push(brain)
-      }
-    }
-
+    // while loop to go over each unspeciated member
     while (toSpeciate.length > 0) {
-      const champion: Brain = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
-      champion.species = new Species()
-      champion.species.members.push(champion)
+      // there can either be an array of champions from the previous generation
+      // or no champions
+      let champion: Brain
+      // this selects a random champion from the unspeciated array
+      if (champions.length == 0) {
+        champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
+        // create a species for the champion
+        champion.species = new Species(champion.population)
+        champion.species.members.push(champion)
+      }
+      // this takes a champion from the front of the champions array
+      else champion = champions.shift()
+
+      // for loop to go over the remaining members of the unspeciated array
+      // this will group them together with the champion if they are
+      // compatible or throw them back at the end of the array
       const count = toSpeciate.length
       for (let i = 0; i < count; i++) {
         const brain: Brain = toSpeciate.shift()
-        const result: number = Species.Compare(champion, brain)
-        if (result <= Species.DynamicThreshold) {
+        if (Species.Compare(champion, brain) <= Species.DynamicThreshold) {
           brain.species = champion.species
           brain.species.members.push(brain)
         } else toSpeciate.push(brain)
@@ -158,19 +211,21 @@ class Species {
   }
 
   /**
-   * TODO
+   * Produces the next generation's offspring and returns an array of them.
+   * If the allowed number of offspring is 0, this returns an empty array. The
+   * offspring are first set to include the previous generation's elites and
+   * any remaining spots are produced by crossover between two parents rolled
+   * by a roulette wheel.
    */
-  produceOffspring(): void {
+  produceOffspring(): Brain[] {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
-      this.members = []
+      return []
     } else {
-      const copyOfMembers: Brain[] = [...this.members]
-      this.members = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
-
-      const remainingCount: number = this.allowedOffspring - this.members.length
-      const pairings: { p1: Brain, p2: Brain }[] = Population.GeneratePairings(copyOfMembers, remainingCount)
-
-      pairings.forEach(({ p1, p2 }) => Brain.Crossover(p1, p2))
+      const offspring: Brain[] = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
+      const remainingCount: number = this.allowedOffspring - offspring.length
+      Population.GeneratePairings(this.members, remainingCount)
+        .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
+      return offspring
     }
   }
 }

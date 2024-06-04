@@ -1,18 +1,9 @@
 Make drawing the population better
 
-Allow for softcap on iterations for Neat's findSolution
 Add 3D graphing engine for 3D ai games and stuff
 
 Debug a simple fully connected neural network
   NeuralNetwork
-
-Convert to TS
-  Games
-    Asteroids
-      Asteroid
-      Game
-      Laser
-      Ship
 
 Add flappy bird
 
@@ -23,8 +14,6 @@ Add pendulum balancing
 JSDoc stuff
   NeuralNetwork
     NeuralNetwork
-  Brain
-    Species
   Games
     Asteroids
       Asteroid

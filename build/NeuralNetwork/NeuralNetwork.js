@@ -114,7 +114,7 @@ class NeuralNetwork {
     // TODO
     backPropagation(values) {
         const trainingValues = values instanceof TrainingValues ? values : new TrainingValues(values);
-        for (let value of trainingValues.random()) {
+        for (let value of trainingValues.random) {
             const layerOutputs = [Matrix.FromArr(value.inputs).transpose()];
             for (let [i, e] of this.weights.entries()) {
                 const lastOutput = layerOutputs[layerOutputs.length - 1];

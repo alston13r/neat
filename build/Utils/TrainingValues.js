@@ -3,13 +3,14 @@
  * for XOR, OR, and AND training.
  */
 class TrainingValues {
-    /**
-     * Constructs a TrainingValues wrapper object for the specified values. If the
-     * values are null, then the values are initialized to an empty array.
-     * @param values the values
-     */
     constructor(values) {
+        this.inputSize = 0;
+        this.outputSize = 0;
         this.values = values || [];
+        if (values != null) {
+            this.inputSize = this.values[0].inputs.length;
+            this.outputSize = this.values[0].outputs.length;
+        }
     }
     /**
      * Adds the specified given inputs and outputs to the internal array.
@@ -18,34 +19,35 @@ class TrainingValues {
      * @returns a reference to this TrainingValues object
      */
     addValue(inputs, outputs) {
+        if (this.inputSize == 0 || this.outputSize == 0) {
+            this.inputSize = inputs.length;
+            this.outputSize = outputs.length;
+        }
         this.values.push({ inputs, outputs });
         return this;
     }
+    /** The number of training values in this set */
+    get length() {
+        return this.values.length;
+    }
     /**
-     * Returns a generator for the local values in an ordered sequence.
-     * @returns the values as a generator
+     * Returns a shalloy copy of the input output values in an ordered sequence.
+     * @returns the array values
      */
-    *ordered() {
-        yield* this.values;
+    get ordered() {
+        return [...this.values];
     }
     /**
      * Returns a generator for the local values in a random sequence.
-     * @returns the values as a generator
+     * @returns the array of values
      */
-    *random() {
-        let t = [...this.values];
-        let m = t.length;
-        for (let i = 0; i < m; i++) {
-            yield t.splice(Math.floor(Math.random() * t.length), 1)[0];
+    get random() {
+        const temp = [...this.values];
+        const res = [];
+        while (temp.length > 0) {
+            res.push(temp.splice(Math.floor(Math.random() * temp.length), 1)[0]);
         }
-    }
-    /**
-     * Returns the max linear fitness available by these values, simply the number of
-     * values multiplies by the size of the output.
-     * @returns the max linear fitness
-     */
-    maxLinearFitnessValue() {
-        return this.values.length * this.values[0].outputs.length;
+        return res;
     }
 }
 /** Training data for XOR */

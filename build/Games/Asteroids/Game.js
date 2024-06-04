@@ -99,7 +99,6 @@ class AsteroidsGame {
                 new Line(this.graphics, pos.x, pos.y, added.x, added.y, i == 0 ? '#0f0' : '#f00', 1).draw();
             }
         }
-        this.graphics.createText(`Asteroids destroyed: ${this.asteroidCounter}`, 5, 5, '#fff', 10, 'left', 'top').draw();
     }
     getAsteroidsByDistance() {
         return [...this.asteroids].sort((a, b) => {

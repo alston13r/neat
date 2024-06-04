@@ -11,7 +11,7 @@ class Brain {
   /** Toggle for connection disabling */
   static AllowDisablingConnections: boolean = false
   /** Toggle for allowing recurrent connections */
-  static AllowRecurrent: boolean = true
+  static AllowRecurrent: boolean = false
   /** The chance for a new connection to be made */
   static AddConnectionChance: number = 0.4
   /** The chance for a connection to be disabled */
@@ -41,6 +41,23 @@ class Brain {
   isElite: boolean = false
   /** A reference to the graphics object that the brain can be drawn to */
   graphics: Graphics
+  /** A reference to this brain's population */
+  population: Population
+
+  /**
+   * Constructs a brain. This does not initialize the brain's topology,
+   * call initialize() on the brain to do that.
+   */
+  constructor()
+  /**
+   * Constructs a brain with the specified population reference. This does not
+   * initialize the brain's topology, call initialize() on the brain to do that.
+   * @param population the population
+   */
+  constructor(population: Population)
+  constructor(population?: Population) {
+    this.population = population
+  }
 
   /**
    * Initializes the brain's topology to contain the specified number of input nodes,
@@ -48,9 +65,19 @@ class Brain {
    * @param inputN the number of input nodes
    * @param hiddenN the number of hidden nodes
    * @param outputN the number of output nodes
-   * @param enabledChance the chance for connections to start enabled, 1 (100%) by default
    * @returns a reference to this Brain
    */
+  initialize(inputN: number, hiddenN: number, outputN: number): Brain
+  /**
+   * Initializes the brain's topology to contain the specified number of input nodes,
+   * hidden nodes, output nodes, and enabled chance.
+   * @param inputN the number of input nodes
+   * @param hiddenN the number of hidden nodes
+   * @param outputN the number of output nodes
+   * @param enabledChance the chance for connections to start enabled
+   * @returns a reference to this Brain
+   */
+  initialize(inputN: number, hiddenN: number, outputN: number, enabledChance: number): Brain
   initialize(inputN: number, hiddenN: number, outputN: number, enabledChance: number = 1): Brain {
     this.nodes = []
     this.inputNodes = []
@@ -299,18 +326,11 @@ class Brain {
   }
 
   /**
-   * Clones this brain's topology and returns the clone. If speciation is enabled,
-   * the clone is also added to the species' list of members.
+   * Clones this brain's topology and returns the clone.
    * @returns the clone
    */
   clone(): Brain {
-    const clone = new Brain()
-
-    // species
-    if (Population.Speciation) {
-      clone.species = this.species
-      clone.species.members.push(clone)
-    }
+    const clone = new Brain(this.population)
 
     // nodes
     clone.nodes = this.nodes.map(node => node.clone())

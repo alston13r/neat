@@ -6,7 +6,7 @@
  * data.
  */
 class Brain {
-    constructor() {
+    constructor(population) {
         /** The current fitness of the brain */
         this.fitness = 0;
         /** The adjusted fitness of the brain, this is the fitness normalized by its species */
@@ -15,16 +15,8 @@ class Brain {
         this.species = null;
         /** Boolean indicating if the brain is an elite from the prior generation */
         this.isElite = false;
+        this.population = population;
     }
-    /**
-     * Initializes the brain's topology to contain the specified number of input nodes,
-     * hidden nodes, and output nodes.
-     * @param inputN the number of input nodes
-     * @param hiddenN the number of hidden nodes
-     * @param outputN the number of output nodes
-     * @param enabledChance the chance for connections to start enabled, 1 (100%) by default
-     * @returns a reference to this Brain
-     */
     initialize(inputN, hiddenN, outputN, enabledChance = 1) {
         this.nodes = [];
         this.inputNodes = [];
@@ -248,17 +240,22 @@ class Brain {
         return this.outputNodes.map(node => node.sumOutput);
     }
     /**
-     * Clones this brain's topology and returns the clone. If speciation is enabled,
-     * the clone is also added to the species' list of members.
+     * Helper method that will load the specified inputs to the brain's input
+     * nodes, run the network, and return the output values.
+     * @param inputs an array of inputs
+     * @returns the brain's output
+     */
+    think(inputs) {
+        this.loadInputs(inputs);
+        this.runTheNetwork();
+        return this.getOutput();
+    }
+    /**
+     * Clones this brain's topology and returns the clone.
      * @returns the clone
      */
     clone() {
-        const clone = new Brain();
-        // species
-        if (Population.Speciation) {
-            clone.species = this.species;
-            clone.species.members.push(clone);
-        }
+        const clone = new Brain(this.population);
         // nodes
         clone.nodes = this.nodes.map(node => node.clone());
         // input nodes
@@ -371,7 +368,7 @@ Brain.AllowNewConnections = true;
 /** Toggle for connection disabling */
 Brain.AllowDisablingConnections = false;
 /** Toggle for allowing recurrent connections */
-Brain.AllowRecurrent = true;
+Brain.AllowRecurrent = false;
 /** The chance for a new connection to be made */
 Brain.AddConnectionChance = 0.4;
 /** The chance for a connection to be disabled */

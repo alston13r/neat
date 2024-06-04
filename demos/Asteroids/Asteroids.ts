@@ -1,107 +1,94 @@
-const gameGraphics = new Graphics().setSize(800, 600).appendTo(document.body)
-const populationGraphics = new Graphics().setSize(800, 1600).appendTo(document.body)
+const gameGraphics: Graphics = new Graphics().setSize(800, 600).appendTo(document.body)
+const population: Population = new Population(500, 11, 0, 3, 0.5)
+
+const game: AsteroidsGame = new AsteroidsGame(gameGraphics)
+const brain: Brain = new Brain().initialize(11, 0, 3, 0.5)
 
 const maxTimeAlive: number = 30
-let generationTimeAlive: number = 0
+let currentGenerationTimeAlive: number = 0
 
-const removeQueue: GameBrainPair[] = []
-
-class GameBrainPair {
-  brain: Brain
+type GameBrainPair = {
   game: AsteroidsGame
-  lastFrame: number
-  drawing: boolean = false
-
-  constructor(brain: Brain) {
-    this.brain = brain
-    this.game = new AsteroidsGame(gameGraphics).addEventListener(ShipEvent.ShipDied, () => this.kill())
-  }
-
-  kill() {
-    this.updateFitness()
-    removeQueue.push(this)
-  }
-
-  updateFitness() {
-    this.brain.fitness = this.game.asteroidCounter * 4 + this.game.frameCounter / 60
-  }
-
-  loop(): void {
-    if (this.drawing) gameGraphics.bg()
-
-    loadBrainInputs(this)
-    this.brain.runTheNetwork()
-    const brainOutputs: number[] = this.brain.getOutput()
-    this.game.ship.loadInputs(...brainOutputs)
-
-    this.game.update()
-    if (this.drawing) {
-      this.game.draw()
-      this.game.graphics.createText(`Generation: ${population.generationCounter}`, 5, this.game.graphics.height - 5, '#fff', 10, 'left', 'bottom').draw()
-      this.game.graphics.createText(`Alive: ${alive.length} / ${population.popSize}`, 5, this.game.graphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
-      this.game.graphics.createText(`Alive for: ${Math.round(generationTimeAlive)} / ${maxTimeAlive} seconds`, 5, 15, '#fff', 10, 'left', 'top').draw()
-    }
-
-    if (this.game.ship.alive) this.lastFrame = window.requestAnimationFrame(() => this.loop())
-  }
+  brain: Brain
 }
 
-function loadBrainInputs(pair: GameBrainPair) {
+function thinkBrain(brain: Brain, game: AsteroidsGame): number[] {
   const inputs: number[] = []
-  const shipInfo: ShipInfo = pair.game.ship.getInfo()
+  const shipInfo: ShipInfo = game.ship.getInfo()
   inputs[0] = shipInfo.posX
   inputs[1] = shipInfo.posY
   inputs[2] = shipInfo.heading
   inputs[3] = shipInfo.velX
   inputs[4] = shipInfo.velY
   inputs[5] = shipInfo.canShoot ? 1 : 0
-  const nearestAsteroidInfo: AsteroidInfo = pair.game.getAsteroidsByDistance()[0].getInfo()
+  const nearestAsteroidInfo: AsteroidInfo = game.getAsteroidsByDistance()[0].getInfo()
   inputs[6] = nearestAsteroidInfo.angleFromShip
   inputs[7] = nearestAsteroidInfo.distanceFromShip
   inputs[8] = nearestAsteroidInfo.velX
   inputs[9] = nearestAsteroidInfo.velY
   inputs[10] = nearestAsteroidInfo.size
-  pair.brain.loadInputs(inputs)
+  return brain.think(inputs)
 }
 
-const population: Population = new Population(200, 11, 0, 3, 0.5)
-const alive: GameBrainPair[] = population.members.map(brain => new GameBrainPair(brain))
-alive[0].drawing = true
-alive.forEach(pair => pair.loop())
+function updateFitness(pair: GameBrainPair) {
+  pair.brain.fitness = pair.game.asteroidCounter * 5 + pair.game.frameCounter / 120
+}
+
+function addListeners(arr: GameBrainPair[]) {
+  arr.forEach(pair => {
+    pair.game.addEventListener(AsteroidEvent.AsteroidDestroyed, () => updateFitness(pair))
+    pair.game.addEventListener(GameEvent.End, () => updateFitness(pair))
+  })
+}
 
 const fittestRecords: Brain[] = []
 
+let pairings: GameBrainPair[] = []
+
 let lastTimestamp: number = 0
-
-function mainLoop(timestamp: number) {
-  while (removeQueue.length > 0) {
-    const toRemove: GameBrainPair = removeQueue.shift()
-    const index: number = alive.indexOf(toRemove)
-    if (index != -1) alive.splice(index, 1)
-    if (toRemove.drawing && alive.length > 0) alive[0].drawing = true
-    toRemove.drawing = false
-  }
-
+function loop(timestamp: number) {
   const diff: number = timestamp - lastTimestamp
   lastTimestamp = timestamp
-  generationTimeAlive += diff / 1000
+  currentGenerationTimeAlive += diff / 1000
 
-  if (alive.length == 0) {
-    generationTimeAlive = 0
-    fittestRecords.push(population.getFittest())
-    if (Population.Speciation) population.speciate()
-    population.nextGeneration()
-    population.members.forEach(brain => alive.push(new GameBrainPair(brain)))
-    alive[0].drawing = true
-    alive.forEach(pair => pair.loop())
-  } else if (generationTimeAlive > maxTimeAlive) {
-    alive.forEach(pair => pair.game.ship.kill())
+  const stillAlive: GameBrainPair[] = pairings.filter(pair => pair.game.ship.alive)
+
+  if (currentGenerationTimeAlive > maxTimeAlive) {
+    stillAlive.forEach(pair => pair.game.ship.kill())
   }
 
-  populationGraphics.bg()
-  population.setGraphics(populationGraphics).draw()
-  alive[0].brain.setGraphics(populationGraphics).draw(160, 100, 640, 1500)
-  window.requestAnimationFrame(mainLoop)
+  if (stillAlive.length > 0) {
+    const fittest: GameBrainPair = stillAlive.reduce((best, curr) => curr.brain.fitness > best.brain.fitness ? curr : best)
+    gameGraphics.bg()
+
+    stillAlive.forEach(pair => {
+      const brainThoughts: number[] = thinkBrain(pair.brain, pair.game)
+      pair.game.ship.loadInputs(...brainThoughts)
+      pair.game.update()
+    })
+
+    fittest.game.draw()
+
+    gameGraphics.createText(`Generation: ${population.generationCounter}`, 5, gameGraphics.height - 5, '#fff', 10, 'left', 'bottom').draw()
+    gameGraphics.createText(`Alive: ${stillAlive.length} / ${population.popSize}`, 5, gameGraphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
+    gameGraphics.createText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, gameGraphics.height - 25, '#fff', 10, 'left', 'bottom').draw()
+    gameGraphics.createText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, gameGraphics.height - 35, '#fff', 10, 'left', 'bottom').draw()
+  } else {
+    currentGenerationTimeAlive = 0
+    population.nextGeneration()
+    if (population.generationCounter > 0) {
+      population.speciate()
+      fittestRecords.push(population.getFittest())
+    }
+    pairings = population.members.map(member => {
+      return {
+        brain: member,
+        game: new AsteroidsGame(gameGraphics)
+      }
+    })
+    addListeners(pairings)
+  }
+  window.requestAnimationFrame(loop)
 }
 
-window.requestAnimationFrame(mainLoop)
+window.requestAnimationFrame(loop)
