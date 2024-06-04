@@ -20,20 +20,27 @@ function readPath(path) {
   })
 }
 
+const priorityEndings = ['Maths.js']
 const excludedEndings = ['index.js', '.map']
 
 readPath('./build').then(() => {
   const template = fs.readFileSync('./web/index.html.template', 'utf8')
+  const priority = []
   const scripts = paths.filter(path => {
     for (let ending of excludedEndings) {
       if (path.endsWith(ending)) return false
     }
+    for (let ending of priorityEndings) {
+      if (path.endsWith(ending)) {
+        priority.push(path)
+        return false
+      }
+    }
     return true
   })
-    .map(script => {
-      return `<script src='.${script}'></script>`
-    }).join('\n')
-  const filledFile = template.replace('SCRIPT', scripts)
+    .map(script => `<script src='.${script}'></script>`)
+  priority.forEach((script, i) => priority[i] = `<script src='.${script}'></script>`)
+  const filledFile = template.replace('SCRIPT', priority.concat(scripts).join('\n'))
   fs.writeFile('./web/index.html', filledFile, 'utf8', err => {
     if (err) throw err
   })
