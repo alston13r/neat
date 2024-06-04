@@ -133,37 +133,41 @@ class Species {
      * @param population the population to speciate
      */
     static Speciate(population) {
+        // get any preexisting species
         const speciesList = population.speciesList;
         const champions = [];
+        // select champions from each one and store them in an array
         for (let species of speciesList) {
             const champion = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0];
             champions.push(champion);
+            // clear species field for all other species members
             species.members.forEach(member => member.species = null);
             species.members = [champion];
         }
+        // store all remaining and unspeciated members in an array
         const toSpeciate = population.members.filter(member => member.species == null);
-        for (let champion of champions) {
-            const count = toSpeciate.length;
-            for (let i = 0; i < count; i++) {
-                const brain = toSpeciate.shift();
-                const result = Species.Compare(champion, brain);
-                if (result <= Species.DynamicThreshold) {
-                    brain.species = champion.species;
-                    brain.species.members.push(brain);
-                }
-                else
-                    toSpeciate.push(brain);
-            }
-        }
+        // while loop to go over each unspeciated member
         while (toSpeciate.length > 0) {
-            const champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
-            champion.species = new Species(champion.population);
-            champion.species.members.push(champion);
+            // there can either be an array of champions from the previous generation
+            // or no champions
+            let champion;
+            // this selects a random champion from the unspeciated array
+            if (champions.length == 0) {
+                champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
+                // create a species for the champion
+                champion.species = new Species(champion.population);
+                champion.species.members.push(champion);
+            }
+            // this takes a champion from the front of the champions array
+            else
+                champion = champions.shift();
+            // for loop to go over the remaining members of the unspeciated array
+            // this will group them together with the champion if they are
+            // compatible or throw them back at the end of the array
             const count = toSpeciate.length;
             for (let i = 0; i < count; i++) {
                 const brain = toSpeciate.shift();
-                const result = Species.Compare(champion, brain);
-                if (result <= Species.DynamicThreshold) {
+                if (Species.Compare(champion, brain) <= Species.DynamicThreshold) {
                     brain.species = champion.species;
                     brain.species.members.push(brain);
                 }
