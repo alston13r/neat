@@ -41,7 +41,17 @@ class NNode {
         this.id = id;
         this.type = type;
         this.layer = layer;
-        this.activationFunction = type == NNodeType.Input ? ActivationFunction.Identity : ActivationFunction.Sigmoid;
+        switch (type) {
+            case NNodeType.Input:
+                this.activationFunction = NNode.DefaultInputActivationFunction;
+                break;
+            case NNodeType.Hidden:
+                this.activationFunction = NNode.DefaultHiddenActivationFunction;
+                break;
+            case NNodeType.Output:
+                this.activationFunction = NNode.DefaultOutputActivationFunction;
+                break;
+        }
     }
     static GenerateRandomBias() {
         return Math.random() * (NNode.MaximumBiasValue - NNode.MinimumBiasValue) + NNode.MinimumBiasValue;
@@ -103,6 +113,12 @@ class NNode {
         this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue);
     }
 }
+/** The default activation function for input nodes */
+NNode.DefaultInputActivationFunction = ActivationFunction.Identity;
+/** The default activation function for hidden nodes */
+NNode.DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
+/** The default activation function for output nodes */
+NNode.DefaultOutputActivationFunction = ActivationFunction.Tanh;
 /** Toggle for hidden node activation function mutations */
 NNode.AllowHiddenActivationMutations = true;
 /** Toggle for output node activation function mutations */
