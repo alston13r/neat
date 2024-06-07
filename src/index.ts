@@ -1,5 +1,5 @@
 const gameGraphics: Graphics = new Graphics().setSize(800, 600).appendTo(document.body)
-const population: Population = new Population(500, 11, 0, 3, 0.5)
+const population: Population = new Population(1000, 11, 0, 3, 0.5)
 
 const game: AsteroidsGame = new AsteroidsGame(gameGraphics)
 const brain: Brain = new Brain().initialize(11, 0, 3, 0.5)
@@ -31,7 +31,7 @@ function thinkBrain(brain: Brain, game: AsteroidsGame): number[] {
 }
 
 function updateFitness(pair: GameBrainPair) {
-  pair.brain.fitness = pair.game.asteroidCounter * 5 + pair.game.frameCounter / 120
+  pair.brain.fitness = (pair.game.asteroidCounter * 5) ** 4 * pair.game.frameCounter / 200
 }
 
 function addListeners(arr: GameBrainPair[]) {
