@@ -13,19 +13,31 @@ function gauss(): number {
 /**
  * Does a roulette wheel on the list of items based on the specified param values.
  * A roulette wheel will assign a portion of a "roll" to each item in the list, where
- * items with bigger portions will come up more often when rolled.
+ * items with bigger portions will come up more often when rolled. If smallValues is
+ * set to true, then the wheel will revert the values and favor smaller values instead.
  * @param items the list of items to select from
  * @param param the value to assign portions from
  * @param count the number of items to select
+ * @param smallValues boolean specifying if smaller values are favored, false by default
  * @returns the selected items
  */
-function rouletteWheel<k>(items: k[], param: string, count: number): k[] {
+function rouletteWheel<k>(items: k[], param: string, count: number, smallValues: boolean = false): k[] {
   if (count == 0) return []
   const list = items.map(item => { return { item, sum: 0 } })
-  const max = list.reduce((sum, curr) => {
-    curr.sum = sum + curr.item[param]
-    return curr.sum
-  }, 0)
+  let max: number = list.reduce((highest, curr) => curr.item[param] > highest ? curr.item[param] : highest, 0)
+
+  if (smallValues) {
+    max = list.reduce((sum, curr) => {
+      curr.sum = sum + max - curr.item[param] + max / 100
+      return curr.sum
+    }, 0)
+  } else {
+    list.reduce((sum, curr) => {
+      curr.sum = sum + curr.item[param]
+      return curr.sum
+    }, 0)
+  }
+
   const res = new Array(count).fill(0).map(() => {
     const value = Math.random() * max
     for (let x of list) {
