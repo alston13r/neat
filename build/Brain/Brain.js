@@ -250,10 +250,10 @@ class Brain {
         this.runTheNetwork();
         return this.getOutput();
     }
-    static GetFitter(brainA, brainB, fitnessType = FitnessType.Maximizing) {
-        if (fitnessType == FitnessType.Maximizing)
+    static GetFitter(brainA, brainB, fitnessType = OptimizationType.Maximizing) {
+        if (fitnessType == OptimizationType.Maximizing)
             return (brainA.fitness > brainB.fitness ? brainA : brainB);
-        if (fitnessType == FitnessType.Minimizing)
+        if (fitnessType == OptimizationType.Minimizing)
             return (brainA.fitness < brainB.fitness ? brainA : brainB);
     }
     /**

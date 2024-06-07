@@ -1,11 +1,11 @@
-/** The different ways that the neat algorithm can optimize for. */
-var FitnessType;
-(function (FitnessType) {
-    /** Specifies the algorithm should try to maximize fitness, the more positive the better */
-    FitnessType[FitnessType["Maximizing"] = 0] = "Maximizing";
-    /** Specifies the algorithm should try to minimize fitness, the closer to 0 the better */
-    FitnessType[FitnessType["Minimizing"] = 1] = "Minimizing";
-})(FitnessType || (FitnessType = {}));
+/** The different ways the neat algorithm can optimize the fitness function. */
+var OptimizationType;
+(function (OptimizationType) {
+    /** Specifies the algorithm should try to maximize the fitness function */
+    OptimizationType[OptimizationType["Maximizing"] = 0] = "Maximizing";
+    /** Specifies the algorithm should try to minimize the fitness function */
+    OptimizationType[OptimizationType["Minimizing"] = 1] = "Minimizing";
+})(OptimizationType || (OptimizationType = {}));
 /**
  * Utility class to manage a population. Has a method for finding a solution to a
  * set of TrainingValues, or an array of input-output values. TODO making a
@@ -35,7 +35,7 @@ class Neat {
     findSolution(trainingValues, desiredError, populationSize = 1000, maxGenerations = 1000, updateInterval = 10) {
         const population = new Population(populationSize, trainingValues.inputSize, 0, trainingValues.outputSize, 1)
             .setGraphics(this.graphics)
-            .setFitnessType(FitnessType.Minimizing);
+            .setFitnessType(OptimizationType.Minimizing);
         return new Promise(resolve => {
             function iterate() {
                 // if the population's fittest member ever has the desired fitness, resolve it

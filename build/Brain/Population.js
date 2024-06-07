@@ -24,7 +24,7 @@ class Population {
         /** An array of the population's members */
         this.members = [];
         /** The type of fitness that this population favors */
-        this.fitnessType = FitnessType.Maximizing;
+        this.fitnessType = OptimizationType.Maximizing;
         this.popSize = popSize;
         this.inputN = inputN;
         this.hiddenN = hiddenN;
@@ -111,21 +111,31 @@ class Population {
                 length: species.members.length
             };
         });
-        let highest = -Infinity;
-        let lowest = Infinity;
-        for (let item of items) {
-            if (item.fitness > highest)
-                highest = item.fitness;
-            if (item.fitness < lowest)
-                lowest = item.fitness;
+        // if fitness should be increasing to as high as possible
+        if (this.fitnessType == OptimizationType.Maximizing) {
+            const avg = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize;
+            items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length);
         }
-        for (let item of items) {
-            item.fitness = highest - item.fitness + lowest;
+        // if fitness should be decreasing to 0
+        else if (this.fitnessType == OptimizationType.Minimizing) {
+            let highest = -Infinity;
+            let lowest = Infinity;
+            for (let item of items) {
+                if (item.fitness > highest)
+                    highest = item.fitness;
+                if (item.fitness < lowest)
+                    lowest = item.fitness;
+            }
+            for (let item of items) {
+                item.fitness = highest - item.fitness + lowest;
+            }
+            const total = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0);
+            for (let item of items) {
+                item.species.allowedOffspring = maxSize * item.fitness * item.length / total;
+            }
         }
-        const total = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0);
-        for (let item of items) {
-            item.species.allowedOffspring = maxSize * item.fitness * item.length / total;
-        }
+        // ensure that the allowed offspring values are whole numbers and total
+        // to the population size
         roundNicely(list, 'allowedOffspring', maxSize);
     }
     /**
@@ -206,15 +216,7 @@ class Population {
     static GeneratePairings(list, offspringN) {
         if (offspringN == 0)
             return [];
-        const parents = rouletteWheel(list, 'fitness', offspringN * 2, list[0].population.fitnessType == FitnessType.Minimizing);
-        for (let p of parents) {
-            if (!(p instanceof Brain)) {
-                console.log(list, offspringN);
-                console.log('uasdfg');
-                console.log(parents);
-                break;
-            }
-        }
+        const parents = rouletteWheel(list, 'fitness', offspringN * 2, list[0].population.fitnessType == OptimizationType.Minimizing);
         return new Array(offspringN).fill(0).map(() => {
             return { p1: parents.pop(), p2: parents.pop() };
         });
@@ -229,7 +231,7 @@ class Population {
         if (softLimit == 0)
             return [];
         const res = [];
-        const sorted = [...list].sort((a, b) => (fitnessType == FitnessType.Maximizing ? 1 : -1) * (b.fitness - a.fitness));
+        const sorted = [...list].sort((a, b) => (fitnessType == OptimizationType.Maximizing ? 1 : -1) * (b.fitness - a.fitness));
         const amount = Math.min(Math.round(Population.ElitePercent * list.length), softLimit);
         for (let i = 0; i < amount; i++) {
             const eliteMember = sorted[i];
@@ -259,7 +261,7 @@ class Population {
             return `${i}: ${a} ${this.speciation ? ' -> ' + b : ''}`;
         };
         this.members.slice()
-            .sort((a, b) => (this.fitnessType == FitnessType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
+            .sort((a, b) => (this.fitnessType == OptimizationType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
             .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
             .forEach(member => member.draw());
         if (this.speciation) {
