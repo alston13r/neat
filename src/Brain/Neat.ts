@@ -1,5 +1,3 @@
-let exposedPopulation: Population;
-
 /**
  * Utility class to manage a population. Has a method for finding a solution to a
  * set of TrainingValues, or an array of input-output values. TODO making a
@@ -37,8 +35,6 @@ class Neat {
       .setGraphics(this.graphics)
     population.draw()
 
-    exposedPopulation = population
-
     return new Promise(resolve => {
       function iterate() {
         // if the population's fittest member ever has the desired fitness, resolve it
@@ -69,6 +65,7 @@ class Neat {
           })
           population.updateFittestEver()
           population.speciate()
+          population.graphics.bg()
           population.draw()
 
           setTimeout(iterate, updateInterval)
