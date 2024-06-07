@@ -53,8 +53,11 @@ class NNode {
                 break;
         }
     }
+    /**
+     * Helper method to generate a random bias value between the minimum and maximum values.
+     */
     static GenerateRandomBias() {
-        return Math.random() * (NNode.MaximumBiasValue - NNode.MinimumBiasValue) + NNode.MinimumBiasValue;
+        return lerp(Math.random(), 0, 1, this.MinimumBiasValue, this.MaximumBiasValue);
     }
     /**
      * Activates the weighted sum of input values for this node. This adds the bias node before activation and

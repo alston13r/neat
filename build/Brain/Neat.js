@@ -1,3 +1,11 @@
+/** The different ways that the neat algorithm can optimize for. */
+var FitnessType;
+(function (FitnessType) {
+    /** Specifies the algorithm should try to maximize fitness, the more positive the better */
+    FitnessType[FitnessType["Maximizing"] = 0] = "Maximizing";
+    /** Specifies the algorithm should try to minimize fitness, the closer to 0 the better */
+    FitnessType[FitnessType["Minimizing"] = 1] = "Minimizing";
+})(FitnessType || (FitnessType = {}));
 /**
  * Utility class to manage a population. Has a method for finding a solution to a
  * set of TrainingValues, or an array of input-output values. TODO making a
@@ -18,20 +26,20 @@ class Neat {
      * If the algorithm runs beyond the specified max generations, this resolves with the
      * fittest member it made during the algorithm.
      * @param trainingValues the values to find a solution for
-     * @param desiredFitness the desired fitness of the solution
+     * @param desiredError the desired fitness of the solution
      * @param populationSize the size of the population
      * @param maxGenerations the maximum number of generations to run for
      * @param updateInterval the delay between generations
      * @returns a promise that will resolve with the solution
      */
-    findSolution(trainingValues, desiredFitness, populationSize = 1000, maxGenerations = 1000, updateInterval = 10) {
+    findSolution(trainingValues, desiredError, populationSize = 1000, maxGenerations = 1000, updateInterval = 10) {
         const population = new Population(populationSize, trainingValues.inputSize, 0, trainingValues.outputSize, 1)
-            .setGraphics(this.graphics);
-        population.draw();
+            .setGraphics(this.graphics)
+            .setFitnessType(FitnessType.Minimizing);
         return new Promise(resolve => {
             function iterate() {
                 // if the population's fittest member ever has the desired fitness, resolve it
-                if (population.fittestEver && population.fittestEver.fitness >= desiredFitness)
+                if (population.fittestEver && population.fittestEver.fitness <= desiredError)
                     resolve(population.fittestEver);
                 // if the population has run for too many generations, resolve the fittest ever
                 else if (population.generationCounter >= maxGenerations)
@@ -39,24 +47,28 @@ class Neat {
                 else {
                     population.nextGeneration();
                     // fitness calculation
-                    // takes the average of 5 run throughs of a random order of training values
+                    // takes the results of 5 run throughs of a random order of training values
                     // this ensures that, if recurrent connections are enabled, the solution's
                     // fitness wasn't just a fluke from that random ordering
-                    const maxFitness = trainingValues.length * trainingValues.outputSize;
                     population.members.forEach(member => {
-                        let fitnessSum = 0;
-                        for (let i = 0; i < 5; i++) {
-                            let tempFitness = maxFitness;
-                            for (let value of trainingValues.random) {
+                        member.fitness = 0;
+                        if (Brain.AllowRecurrent) {
+                            for (let i = 0; i < 5; i++) {
+                                for (let value of desiredValues.random) {
+                                    const actual = member.think(value.inputs);
+                                    const errors = value.outputs.map((expected, i) => Math.abs(expected - actual[i]));
+                                    errors.forEach(error => member.fitness += error);
+                                }
+                            }
+                            member.fitness /= 5;
+                        }
+                        else {
+                            for (let value of desiredValues.random) {
                                 const actual = member.think(value.inputs);
                                 const errors = value.outputs.map((expected, i) => Math.abs(expected - actual[i]));
-                                const errorSum = errors.reduce((sum, curr) => sum + curr);
-                                tempFitness -= errorSum;
+                                errors.forEach(error => member.fitness += error);
                             }
-                            fitnessSum += tempFitness;
                         }
-                        fitnessSum /= 5;
-                        member.fitness = fitnessSum;
                     });
                     population.updateFittestEver();
                     population.speciate();
