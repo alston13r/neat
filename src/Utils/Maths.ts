@@ -23,20 +23,22 @@ function gauss(): number {
  */
 function rouletteWheel<k>(items: k[], param: string, count: number, smallValues: boolean = false): k[] {
   if (count == 0) return []
-  const list = items.map(item => { return { item, sum: 0 } })
-  let max: number = list.reduce((highest, curr) => curr.item[param] > highest ? curr.item[param] : highest, 0)
-
-  if (smallValues) {
-    max = list.reduce((sum, curr) => {
-      curr.sum = sum + max - curr.item[param]
-      return curr.sum
-    }, 0)
-  } else {
-    list.reduce((sum, curr) => {
-      curr.sum = sum + curr.item[param]
-      return curr.sum
-    }, 0)
+  const list = items.map(item => { return { item, value: item[param], sum: 0 } })
+  let highest: number = -Infinity
+  let lowest: number = Infinity
+  for (let item of list) {
+    if (item.value > highest) highest = item.value
+    if (item.value < lowest) lowest = item.value
   }
+  if (smallValues) {
+    for (let item of list) {
+      item.value = highest - item.value + lowest
+    }
+  }
+  let max: number = list.reduce((sum, curr) => {
+    curr.sum = sum + curr.value
+    return curr.sum
+  }, 0)
 
   const res = new Array(count).fill(0).map(() => {
     const value = Math.random() * max
@@ -71,6 +73,25 @@ function clamp(x: number, minimum: number, maximum: number): number {
  */
 function lerp(x: number, a: number, b: number, c: number, d: number): number {
   return (x - a) / (b - a) * (d - c) + c
+}
+
+function roundNicely<T>(list: T[], key: string, total: number): void {
+  const copy: T[] = list.slice()
+  copy.sort((a, b) => {
+    const c: number = a[key] - Math.floor(a[key])
+    const d: number = b[key] - Math.floor(b[key])
+    if (c == d) return b[key] - a[key]
+    return d - c
+  })
+  const min: number = copy.reduce((sum, curr) => sum + Math.floor(curr[key]), 0)
+  const roundUpCount: number = Math.min(total - min, copy.length)
+  for (let i = 0; i < roundUpCount; i++) {
+    const item: T = copy.shift()
+    item[key] = Math.ceil(item[key])
+  }
+  for (let item of copy) {
+    item[key] = Math.floor(item[key])
+  }
 }
 
 /**
