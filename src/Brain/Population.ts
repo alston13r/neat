@@ -127,24 +127,37 @@ class Population {
   calculateAllowedOffspring(): void {
     const maxSize: number = this.popSize
     const list: Species[] = [...this.speciesList]
-    const avgFitness: number = list.map(species => species.getAverageFitnessAdjusted() * species.members.length)
-      .reduce((sum, curr) => sum + curr) / maxSize
-    list.forEach(species => species.allowedOffspring = species.getAverageFitnessAdjusted() / (avgFitness == 0 ? 1 : avgFitness) * species.members.length)
-    list.sort((a, b) => {
-      const c: number = a.allowedOffspring - Math.floor(a.allowedOffspring)
-      const d: number = b.allowedOffspring - Math.floor(b.allowedOffspring)
-      if (c == d) return b.allowedOffspring - a.allowedOffspring
-      return d - c
+    const items = list.map(species => {
+      return {
+        fitness: species.getAverageFitnessAdjusted(),
+        species,
+        length: species.members.length
+      }
     })
-    const min: number = list.reduce((sum, curr) => sum + Math.floor(curr.allowedOffspring), 0)
-    const roundUpCount: number = Math.min(maxSize - min, list.length)
-    for (let i = 0; i < roundUpCount; i++) {
-      const species: Species = list.shift()
-      species.allowedOffspring = Math.ceil(species.allowedOffspring)
+    // if fitness should be increasing to as high as possible
+    if (this.fitnessType == FitnessType.Maximizing) {
+      const avg: number = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize
+      items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length)
     }
-    for (let species of list) {
-      species.allowedOffspring = Math.floor(species.allowedOffspring)
+    // if fitness should be decreasing to 0
+    else if (this.fitnessType == FitnessType.Minimizing) {
+      let highest: number = -Infinity
+      let lowest: number = Infinity
+      for (let item of items) {
+        if (item.fitness > highest) highest = item.fitness
+        if (item.fitness < lowest) lowest = item.fitness
+      }
+      for (let item of items) {
+        item.fitness = highest - item.fitness + lowest
+      }
+      const total: number = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0)
+      for (let item of items) {
+        item.species.allowedOffspring = maxSize * item.fitness * item.length / total
+      }
     }
+    // ensure that the allowed offspring values are whole numbers and total
+    // to the population size
+    roundNicely(list, 'allowedOffspring', maxSize)
   }
 
   /**
