@@ -49,6 +49,19 @@ function clamp(x: number, minimum: number, maximum: number): number {
 }
 
 /**
+ * Linearly interpolates x from the range of a-b to c-d.
+ * @param x the number to interpolate
+ * @param a the initial lower bound
+ * @param b the initial upper bound
+ * @param c the final lower bound
+ * @param d the final upper bound
+ * @returns the linearly interpolated x value
+ */
+function lerp(x: number, a: number, b: number, c: number, d: number): number {
+  return (x - a) / (b - a) * (d - c) + c
+}
+
+/**
  * Utility class containing references to an assortment of activation functions.
  * An activation function normalizes a node's output value before proceeding to
  * the next layer. Activation functions are needed since neural networks are meant
