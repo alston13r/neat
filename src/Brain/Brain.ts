@@ -354,10 +354,10 @@ class Brain {
    * @param brainB the second brain
    * @param fitnessType the ideal fitness
    */
-  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: FitnessType): Brain
-  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: FitnessType = FitnessType.Maximizing): Brain {
-    if (fitnessType == FitnessType.Maximizing) return (brainA.fitness > brainB.fitness ? brainA : brainB)
-    if (fitnessType == FitnessType.Minimizing) return (brainA.fitness < brainB.fitness ? brainA : brainB)
+  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: OptimizationType): Brain
+  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: OptimizationType = OptimizationType.Maximizing): Brain {
+    if (fitnessType == OptimizationType.Maximizing) return (brainA.fitness > brainB.fitness ? brainA : brainB)
+    if (fitnessType == OptimizationType.Minimizing) return (brainA.fitness < brainB.fitness ? brainA : brainB)
   }
 
   /**

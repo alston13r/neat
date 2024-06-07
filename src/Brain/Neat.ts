@@ -1,8 +1,8 @@
-/** The different ways that the neat algorithm can optimize for. */
-enum FitnessType {
-  /** Specifies the algorithm should try to maximize fitness, the more positive the better */
+/** The different ways the neat algorithm can optimize the fitness function. */
+enum OptimizationType {
+  /** Specifies the algorithm should try to maximize the fitness function */
   Maximizing,
-  /** Specifies the algorithm should try to minimize fitness, the closer to 0 the better */
+  /** Specifies the algorithm should try to minimize the fitness function */
   Minimizing
 }
 
@@ -41,7 +41,7 @@ class Neat {
 
     const population: Population = new Population(populationSize, trainingValues.inputSize, 0, trainingValues.outputSize, 1)
       .setGraphics(this.graphics)
-      .setFitnessType(FitnessType.Minimizing)
+      .setFitnessType(OptimizationType.Minimizing)
 
     return new Promise(resolve => {
       function iterate() {

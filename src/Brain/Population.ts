@@ -31,7 +31,7 @@ class Population {
   /** A reference to the graphics object that the population can be drawn to */
   graphics: Graphics
   /** The type of fitness that this population favors */
-  fitnessType: FitnessType = FitnessType.Maximizing
+  fitnessType: OptimizationType = OptimizationType.Maximizing
 
   /**
    * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
@@ -56,7 +56,7 @@ class Population {
    * trend higher and higher or to 0, respectively.
    * @param fitnessType the fitness type
    */
-  setFitnessType(fitnessType: FitnessType): Population {
+  setFitnessType(fitnessType: OptimizationType): Population {
     this.fitnessType = fitnessType
     return this
   }
@@ -135,12 +135,12 @@ class Population {
       }
     })
     // if fitness should be increasing to as high as possible
-    if (this.fitnessType == FitnessType.Maximizing) {
+    if (this.fitnessType == OptimizationType.Maximizing) {
       const avg: number = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize
       items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length)
     }
     // if fitness should be decreasing to 0
-    else if (this.fitnessType == FitnessType.Minimizing) {
+    else if (this.fitnessType == OptimizationType.Minimizing) {
       let highest: number = -Infinity
       let lowest: number = Infinity
       for (let item of items) {
@@ -240,7 +240,7 @@ class Population {
    */
   static GeneratePairings(list: Brain[], offspringN: number): { p1: Brain, p2: Brain }[] {
     if (offspringN == 0) return []
-    const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2, list[0].population.fitnessType == FitnessType.Minimizing)
+    const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2, list[0].population.fitnessType == OptimizationType.Minimizing)
     return new Array(offspringN).fill(0).map(() => {
       return { p1: parents.pop(), p2: parents.pop() }
     })
@@ -252,10 +252,10 @@ class Population {
    * @param softLimit the soft limit for the number of elites
    * @returns the elites
    */
-  static GetElites(list: Brain[], softLimit: number, fitnessType: FitnessType): Brain[] {
+  static GetElites(list: Brain[], softLimit: number, fitnessType: OptimizationType): Brain[] {
     if (softLimit == 0) return []
     const res: Brain[] = []
-    const sorted: Brain[] = [...list].sort((a, b) => (fitnessType == FitnessType.Maximizing ? 1 : -1) * (b.fitness - a.fitness))
+    const sorted: Brain[] = [...list].sort((a, b) => (fitnessType == OptimizationType.Maximizing ? 1 : -1) * (b.fitness - a.fitness))
     const amount: number = Math.min(Math.round(Population.ElitePercent * list.length), softLimit)
     for (let i = 0; i < amount; i++) {
       const eliteMember: Brain = sorted[i]
@@ -290,7 +290,7 @@ class Population {
       return `${i}: ${a} ${this.speciation ? ' -> ' + b : ''}`
     }
     this.members.slice()
-      .sort((a, b) => (this.fitnessType == FitnessType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
+      .sort((a, b) => (this.fitnessType == OptimizationType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
       .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
       .forEach(member => member.draw())
 
