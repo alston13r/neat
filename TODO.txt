@@ -7,6 +7,8 @@ Debug a simple fully connected neural network
 
 Add toggling for 5 average fitness calculation
 
+Merge fitness and adjusted fitness
+
 Add flappy bird
 
 Add car racing
