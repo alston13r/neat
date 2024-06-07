@@ -28,7 +28,7 @@ function rouletteWheel<k>(items: k[], param: string, count: number, smallValues:
 
   if (smallValues) {
     max = list.reduce((sum, curr) => {
-      curr.sum = sum + max - curr.item[param] + max / 100
+      curr.sum = sum + max - curr.item[param]
       return curr.sum
     }, 0)
   } else {
