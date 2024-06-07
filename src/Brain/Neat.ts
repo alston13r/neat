@@ -36,13 +36,12 @@ class Neat {
    * @param updateInterval the delay between generations
    * @returns a promise that will resolve with the solution
    */
-  static FindSolution(trainingValues: TrainingValues, desiredError: number, populationSize: number = 1000,
+  findSolution(trainingValues: TrainingValues, desiredError: number, populationSize: number = 1000,
     maxGenerations: number = 1000, updateInterval: number = 10): Promise<Brain> {
 
     const population: Population = new Population(populationSize, trainingValues.inputSize, 0, trainingValues.outputSize, 1)
-      .setGraphics(graphics)
+      .setGraphics(this.graphics)
       .setFitnessType(FitnessType.Minimizing)
-    population.draw()
 
     return new Promise(resolve => {
       function iterate() {
@@ -58,8 +57,17 @@ class Neat {
           // fitness wasn't just a fluke from that random ordering
           population.members.forEach(member => {
             member.fitness = 0
-            for (let i = 0; i < 5; i++) {
-              for (let value of trainingValues.random) {
+            if (Brain.AllowRecurrent) {
+              for (let i = 0; i < 5; i++) {
+                for (let value of desiredValues.random) {
+                  const actual: number[] = member.think(value.inputs)
+                  const errors: number[] = value.outputs.map((expected, i) => Math.abs(expected - actual[i]))
+                  errors.forEach(error => member.fitness += error)
+                }
+              }
+              member.fitness /= 5
+            } else {
+              for (let value of desiredValues.random) {
                 const actual: number[] = member.think(value.inputs)
                 const errors: number[] = value.outputs.map((expected, i) => Math.abs(expected - actual[i]))
                 errors.forEach(error => member.fitness += error)
