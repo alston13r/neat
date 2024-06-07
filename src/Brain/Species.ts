@@ -118,17 +118,6 @@ class Species {
   }
 
   /**
-   * Adjusts the fitness of all members in this species. The members
-   * need to have a fitness calculated prior to this being called.
-   */
-  adjustFitness(): void {
-    const N: number = this.members.length
-    this.members.forEach(member => {
-      member.fitnessAdjusted = member.fitness / N
-    })
-  }
-
-  /**
    * Returns the average fitness of all members in this species.
    * @returns the average fitness
    */
@@ -138,11 +127,12 @@ class Species {
 
   /**
    * Returns the average adjusted fitness of all members in this species.
-   * The adjusted fitness for each member is calculated in adjustFitness().
+   * The adjusted fitness of a member is their fitness normalized to their
+   * species, fitness / N, where N is the size of the species.
    * @returns the average adjusted fitness
    */
   getAverageFitnessAdjusted(): number {
-    return this.members.reduce((sum, curr) => sum + curr.fitnessAdjusted / this.members.length, 0)
+    return this.getAverageFitness() / this.members.length
   }
 
   /**
@@ -221,7 +211,7 @@ class Species {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       return []
     } else {
-      const offspring: Brain[] = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
+      const offspring: Brain[] = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring, this.population.fitnessType) : []
       const remainingCount: number = this.allowedOffspring - offspring.length
       Population.GeneratePairings(this.members, remainingCount)
         .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))

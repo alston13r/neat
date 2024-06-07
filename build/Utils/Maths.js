@@ -12,18 +12,33 @@ function gauss() {
 /**
  * Does a roulette wheel on the list of items based on the specified param values.
  * A roulette wheel will assign a portion of a "roll" to each item in the list, where
- * items with bigger portions will come up more often when rolled.
+ * items with bigger portions will come up more often when rolled. If smallValues is
+ * set to true, then the wheel will revert the values and favor smaller values instead.
  * @param items the list of items to select from
  * @param param the value to assign portions from
  * @param count the number of items to select
+ * @param smallValues boolean specifying if smaller values are favored, false by default
  * @returns the selected items
  */
-function rouletteWheel(items, param, count) {
+function rouletteWheel(items, param, count, smallValues = false) {
     if (count == 0)
         return [];
-    const list = items.map(item => { return { item, sum: 0 }; });
-    const max = list.reduce((sum, curr) => {
-        curr.sum = sum + curr.item[param];
+    const list = items.map(item => { return { item, value: item[param], sum: 0 }; });
+    let highest = -Infinity;
+    let lowest = Infinity;
+    for (let item of list) {
+        if (item.value > highest)
+            highest = item.value;
+        if (item.value < lowest)
+            lowest = item.value;
+    }
+    if (smallValues) {
+        for (let item of list) {
+            item.value = highest - item.value + lowest;
+        }
+    }
+    let max = list.reduce((sum, curr) => {
+        curr.sum = sum + curr.value;
         return curr.sum;
     }, 0);
     const res = new Array(count).fill(0).map(() => {
@@ -46,6 +61,37 @@ function rouletteWheel(items, param, count) {
  */
 function clamp(x, minimum, maximum) {
     return Math.max(minimum, Math.min(x, maximum));
+}
+/**
+ * Linearly interpolates x from the range of a-b to c-d.
+ * @param x the number to interpolate
+ * @param a the initial lower bound
+ * @param b the initial upper bound
+ * @param c the final lower bound
+ * @param d the final upper bound
+ * @returns the linearly interpolated x value
+ */
+function lerp(x, a, b, c, d) {
+    return (x - a) / (b - a) * (d - c) + c;
+}
+function roundNicely(list, key, total) {
+    const copy = list.slice();
+    copy.sort((a, b) => {
+        const c = a[key] - Math.floor(a[key]);
+        const d = b[key] - Math.floor(b[key]);
+        if (c == d)
+            return b[key] - a[key];
+        return d - c;
+    });
+    const min = copy.reduce((sum, curr) => sum + Math.floor(curr[key]), 0);
+    const roundUpCount = Math.min(total - min, copy.length);
+    for (let i = 0; i < roundUpCount; i++) {
+        const item = copy.shift();
+        item[key] = Math.ceil(item[key]);
+    }
+    for (let item of copy) {
+        item[key] = Math.floor(item[key]);
+    }
 }
 /**
  * Utility class containing references to an assortment of activation functions.

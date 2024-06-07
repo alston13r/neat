@@ -5,6 +5,10 @@ Add 3D graphing engine for 3D ai games and stuff
 Debug a simple fully connected neural network
   NeuralNetwork
 
+Add toggling for 5 average fitness calculation
+
+Merge fitness and adjusted fitness
+
 Add flappy bird
 
 Add car racing

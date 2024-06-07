@@ -10,13 +10,10 @@
  */
 class Connection {
     /**
-     * Helper method to generate a random weight value between the minimum and maximum
-     * values. This is used since writing Math.random() in place of calling this would lead
-     * to a lot of numbers needing to be changed when you can just change the static minimum
-     * and maximum values.
+     * Helper method to generate a random weight value between the minimum and maximum values.
      */
     static GenerateRandomWeight() {
-        return Math.random() * (this.MaximumWeightValue - this.MinimumWeightValue) + this.MinimumWeightValue;
+        return lerp(Math.random(), 0, 1, this.MinimumWeightValue, this.MaximumWeightValue);
     }
     /**
      * Constructs a connection with the specified incoming node, outgoing node, weight, enabled value,
