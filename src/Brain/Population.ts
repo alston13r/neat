@@ -272,7 +272,6 @@ class Population {
   draw(): void {
     const round: (x: number, p: number) => number = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
-    this.graphics.bg()
     new TextGraphics(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
       5, 5, '#fff', 20, 'left', 'top').draw()
 
