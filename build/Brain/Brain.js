@@ -9,8 +9,6 @@ class Brain {
     constructor(population) {
         /** The current fitness of the brain */
         this.fitness = 0;
-        /** The adjusted fitness of the brain, this is the fitness normalized by its species */
-        this.fitnessAdjusted = 0;
         /** The current species this brain belongs to, null if none assigned */
         this.species = null;
         /** Boolean indicating if the brain is an elite from the prior generation */
