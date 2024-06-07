@@ -343,6 +343,24 @@ class Brain {
   }
 
   /**
+   * Returns the fitter of the two brains.
+   * @param brainA the first brain
+   * @param brainB the second brain
+   */
+  static GetFitter(brainA: Brain, brainB: Brain): Brain
+  /**
+   * Returns the fitter of the two brains based on the fitness type.
+   * @param brainA the first brain
+   * @param brainB the second brain
+   * @param fitnessType the ideal fitness
+   */
+  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: FitnessType): Brain
+  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: FitnessType = FitnessType.Maximizing): Brain {
+    if (fitnessType == FitnessType.Maximizing) return (brainA.fitness > brainB.fitness ? brainA : brainB)
+    if (fitnessType == FitnessType.Minimizing) return (brainA.fitness < brainB.fitness ? brainA : brainB)
+  }
+
+  /**
    * Clones this brain's topology and returns the clone.
    * @returns the clone
    */
