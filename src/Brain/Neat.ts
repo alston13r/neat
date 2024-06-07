@@ -12,6 +12,14 @@ enum OptimizationType {
  * method to evolve an optimal brain for a game.
  */
 class Neat {
+  /**
+   * Toggle for averaging the fitness over some number of
+   * iterations when recurrent connections are enabled
+   */
+  static AverageFitnessForRecurrentFlag: boolean = true
+  /** The number of iterations to average over when the corresponding flag is true */
+  static IterationsToAverageOverForRecurrent: number = 5
+
   /** A reference to the graphics object that this will draw to */
   graphics: Graphics
 
@@ -57,15 +65,15 @@ class Neat {
           // fitness wasn't just a fluke from that random ordering
           population.members.forEach(member => {
             member.fitness = 0
-            if (Brain.AllowRecurrent) {
-              for (let i = 0; i < 5; i++) {
+            if (Brain.AllowRecurrent && Neat.AverageFitnessForRecurrentFlag) {
+              for (let i = 0; i < Neat.IterationsToAverageOverForRecurrent; i++) {
                 for (let value of desiredValues.random) {
                   const actual: number[] = member.think(value.inputs)
                   const errors: number[] = value.outputs.map((expected, i) => Math.abs(expected - actual[i]))
                   errors.forEach(error => member.fitness += error)
                 }
               }
-              member.fitness /= 5
+              member.fitness /= Neat.IterationsToAverageOverForRecurrent
             } else {
               for (let value of desiredValues.random) {
                 const actual: number[] = member.think(value.inputs)
