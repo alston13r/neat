@@ -42,8 +42,6 @@ class Brain {
 
   /** The current fitness of the brain */
   fitness: number = 0
-  /** The adjusted fitness of the brain, this is the fitness normalized by its species */
-  fitnessAdjusted: number = 0
   /** The current species this brain belongs to, null if none assigned */
   species: Species | null = null
   /** An array of the brain's nodes */
