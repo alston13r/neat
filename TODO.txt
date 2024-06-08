@@ -7,8 +7,9 @@ Debug NeuralNetwork
 Somehow move the demo stuff into the src directory
 Convert Neat's findSolution to a static method
 
+Use Neat instead of a regular NeuralNetwork for Flappy Bird
+
 Add games
-  flappy bird
   car racing
   pendulum balancing
 
