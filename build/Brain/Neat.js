@@ -54,7 +54,7 @@ class Neat {
                         member.fitness = 0;
                         if (Brain.AllowRecurrent && Neat.AverageFitnessForRecurrentFlag) {
                             for (let i = 0; i < Neat.IterationsToAverageOverForRecurrent; i++) {
-                                for (let value of desiredValues.random) {
+                                for (let value of trainingValues.random) {
                                     const actual = member.think(value.inputs);
                                     const errors = value.outputs.map((expected, i) => Math.abs(expected - actual[i]));
                                     errors.forEach(error => member.fitness += error);
@@ -63,7 +63,7 @@ class Neat {
                             member.fitness /= Neat.IterationsToAverageOverForRecurrent;
                         }
                         else {
-                            for (let value of desiredValues.random) {
+                            for (let value of trainingValues.random) {
                                 const actual = member.think(value.inputs);
                                 const errors = value.outputs.map((expected, i) => Math.abs(expected - actual[i]));
                                 errors.forEach(error => member.fitness += error);

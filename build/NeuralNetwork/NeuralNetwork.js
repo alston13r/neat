@@ -63,8 +63,10 @@ class NeuralNetwork {
     mutateWeights() {
         this.weights.forEach(weight => Matrix.Map(weight, x => {
             if (Math.random() < NeuralNetwork.MutateWeightChance) {
-                if (Math.random() < NeuralNetwork.NudgeWeightChance)
-                    return x + gauss() * 0.5;
+                if (Math.random() < NeuralNetwork.NudgeWeightChance) {
+                    const sign = Math.random() < 0.5 ? 1 : -1;
+                    return x + sign * gauss() * 0.5;
+                }
                 return NeuralNetwork.GenerateRandomWeight();
             }
             return x;
@@ -75,8 +77,10 @@ class NeuralNetwork {
     mutateBiases() {
         this.biases.forEach(bias => Matrix.Map(bias, x => {
             if (Math.random() < NeuralNetwork.MutateBiasChance) {
-                if (Math.random() < NeuralNetwork.NudgeBiasChance)
-                    return x + gauss() * 0.5;
+                if (Math.random() < NeuralNetwork.NudgeBiasChance) {
+                    const sign = Math.random() < 0.5 ? 1 : -1;
+                    return x + sign * gauss() * 0.5;
+                }
                 return NeuralNetwork.GenerateRandomBias();
             }
             return x;
@@ -140,6 +144,22 @@ class NeuralNetwork {
             }
         }
     }
+    // TODO
+    static Copy(brain) {
+        const copy = new NeuralNetwork(brain.inputSize, brain.hiddenSizes, brain.outputSize);
+        for (let i in brain.weights)
+            copy.weights[i] = brain.weights[i];
+        for (let i in brain.biases)
+            copy.biases[i] = brain.biases[i];
+        copy.activationFunctions = brain.activationFunctions.slice().map(layer => layer.slice());
+        copy.dActivationFunctions = brain.dActivationFunctions.slice().map(layer => layer.slice());
+        copy.alpha = brain.alpha;
+        return copy;
+    }
+    // TODO
+    copy() {
+        return NeuralNetwork.Copy(this);
+    }
 }
 /** The chance for a weight to be mutated */
 NeuralNetwork.MutateWeightChance = 0.5;
@@ -160,18 +180,6 @@ NeuralNetwork.MaximumBiasValue = 1;
 /** The chance for an activation function to be mutated */
 NeuralNetwork.MutateActivationFunctionChance = 0.05;
 // class BasicNeuralNetwork {
-//   static Copy(n: BasicNeuralNetwork): BasicNeuralNetwork {
-//     let a: BasicNeuralNetwork = new BasicNeuralNetwork(n.inputSize, n.hiddenSizes, n.outputSize)
-//     for (let [i, e] of n.weights.entries()) a.weights[i] = e.copy()
-//     for (let [i, e] of n.biases.entries()) a.biases[i] = e.copy()
-//     a.activationFunction = n.activationFunction
-//     a.dActivationFunction = n.dActivationFunction
-//     a.learningRate = n.learningRate
-//     return a
-//   }
-//   copy(): BasicNeuralNetwork {
-//     return BasicNeuralNetwork.Copy(this)
-//   }
 //   static Crossover(a: BasicNeuralNetwork, b: BasicNeuralNetwork): BasicNeuralNetwork {
 //     let listErr: string = '['
 //     if (a.inputSize != b.inputSize) listErr += 'inputSize'
