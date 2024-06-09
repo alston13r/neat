@@ -1,7 +1,7 @@
 class Bird {
   size: number = 32
   x: number = 64
-  y: number = graphics.height / 2
+  y: number = xorGraphics.height / 2
   gravity: number = 0.6
   lift: number = -15
   velocity: number = 0

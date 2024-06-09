@@ -18,13 +18,13 @@ function getSliderValue(): number {
 }
 
 for (let i = 0; i < TOTAL; i++) {
-  birds[i] = new Bird().setGraphics(graphics)
+  birds[i] = new Bird().setGraphics(xorGraphics)
 }
 
-function loop(): void {
+function birdLoop(): void {
   for (let n = 0; n < getSliderValue(); n++) {
     if (counter % 100 == 0) {
-      pipes.push(new Pipe(graphics))
+      pipes.push(new Pipe(xorGraphics))
     }
     counter++
     for (let i = pipes.length - 1; i >= 0; i--) {
@@ -51,7 +51,7 @@ function loop(): void {
     }
   }
 
-  graphics.bg()
+  xorGraphics.bg()
   for (let bird of birds) {
     bird.draw()
   }
@@ -59,7 +59,7 @@ function loop(): void {
     pipe.draw()
   }
 
-  window.requestAnimationFrame(loop)
+  window.requestAnimationFrame(birdLoop)
 }
 
-window.requestAnimationFrame(loop)
+window.requestAnimationFrame(birdLoop)
