@@ -57,4 +57,4 @@ function birdLoop() {
     window.requestAnimationFrame(birdLoop);
 }
 window.requestAnimationFrame(birdLoop);
-//# sourceMappingURL=Sketch.js.map
+//# sourceMappingURL=index.js.map

@@ -2,7 +2,7 @@ class Bird {
     constructor(brain) {
         this.size = 32;
         this.x = 64;
-        this.y = graphics.height / 2;
+        this.y = xorGraphics.height / 2;
         this.gravity = 0.6;
         this.lift = -15;
         this.velocity = 0;
