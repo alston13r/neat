@@ -1,11 +1,3 @@
-type AsteroidInfo = {
-  velX: number
-  velY: number
-  angleFromShip: number
-  distanceFromShip: number
-  size: number
-}
-
 class Asteroid implements Drawable {
   static SizeCutoff = 10
 

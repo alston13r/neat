@@ -1,12 +1,3 @@
-type ShipInfo = {
-  posX: number
-  posY: number
-  velX: number
-  velY: number
-  heading: number
-  canShoot: boolean
-}
-
 class Ship implements Drawable {
   static MaxSpeed: number = 3
   static ShootDelay: number = 200

@@ -1,17 +1,18 @@
-class AsteroidsGame implements Drawable {
+class AsteroidsGame extends EventTarget implements Drawable {
   static MinAsteroids = 5
 
   asteroids: Asteroid[] = []
   spawningAsteroids: boolean = true
   asteroidCounter: number = 0
   frameCounter: number = 0
-  events: Map<GameEvent, ((game?: AsteroidsGame) => void)[]> = new Map()
   graphics: Graphics
   width: number
   height: number
   ship: Ship
 
   constructor(graphics?: Graphics) {
+    super()
+
     this.graphics = graphics
     this.width = graphics.width
     this.height = graphics.height
@@ -19,28 +20,55 @@ class AsteroidsGame implements Drawable {
     for (let i = 0; i < AsteroidsGame.MinAsteroids; i++) {
       this.createAsteroid()
     }
-    this.addEventListener(AsteroidEvent.AsteroidDestroyed, (game: AsteroidsGame) => game.asteroidCounter++)
-    this.addEventListener(GameEvent.FrameUpdate, (game: AsteroidsGame) => game.frameCounter++)
-    this.dispatch(GameEvent.Start)
+
+    this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++)
+    this.addEventListener('update', (ev) => ev.detail.game.frameCounter++)
+
+    // this.addEventListener('')
+
+    // this.addEventListener()
+    // this.addEventListener(AsteroidEvent.AsteroidDestroyed, (game: AsteroidsGame) => game.asteroidCounter++)
+    // this.addEventListener(GameEvent.FrameUpdate, (game: AsteroidsGame) => game.frameCounter++)
+    // this.dispatch(GameEvent.Start)
   }
 
-  addEventListener(event: GameEvent, callback: (game?: AsteroidsGame) => void): AsteroidsGame {
-    let arr: ((game?: AsteroidsGame) => void)[]
-    if (this.events.has(event)) {
-      arr = this.events.get(event)
-    } else {
-      arr = []
-      this.events.set(event, arr)
-    }
-    arr.push(callback)
-    return this
-  }
+  // addEventListener(type: string, callback: GameEventListenerOrGameEventListenerObject | null, options?: GameAddEventListenerOptions): void {
+  //   if (this.events.has(type))
+  //     //     let arr: ((game?: AsteroidsGame) => void)[]
+  //     // if (this.events.has(event)) {
+  //     //   arr = this.events.get(event)
+  //     // } else {
+  //     //   arr = []
+  //     //   this.events.set(event, arr)
+  //     // }
+  //     // arr.push(callback)
+  //     // return this
+  //     throw new Error("Method not implemented.")
+  // }
+  // dispatchEvent(event: GameEvent): boolean {
+  //   throw new Error("Method not implemented.")
+  // }
+  // removeEventListener(type: string, callback: GameEventListenerOrGameEventListenerObject | null): void {
+  //   throw new Error("Method not implemented.")
+  // }
 
-  dispatch(event: GameEvent) {
-    if (this.events.has(event)) {
-      this.events.get(event).forEach(callback => callback(this))
-    }
-  }
+  // addEventListener(event: GameEvent, callback: (game?: AsteroidsGame) => void): AsteroidsGame {
+  //   let arr: ((game?: AsteroidsGame) => void)[]
+  //   if (this.events.has(event)) {
+  //     arr = this.events.get(event)
+  //   } else {
+  //     arr = []
+  //     this.events.set(event, arr)
+  //   }
+  //   arr.push(callback)
+  //   return this
+  // }
+
+  // dispatch(event: GameEvent) {
+  //   if (this.events.has(event)) {
+  //     this.events.get(event).forEach(callback => callback(this))
+  //   }
+  // }
 
   createShip(): Ship {
     const ship: Ship = new Ship(this, new Vector(this.width / 2, this.height / 2))
