@@ -1,10 +1,15 @@
 class AsteroidsGame {
+    static MinAsteroids = 5;
+    asteroids = [];
+    spawningAsteroids = true;
+    asteroidCounter = 0;
+    frameCounter = 0;
+    events = new Map();
+    graphics;
+    width;
+    height;
+    ship;
     constructor(graphics) {
-        this.asteroids = [];
-        this.spawningAsteroids = true;
-        this.asteroidCounter = 0;
-        this.frameCounter = 0;
-        this.events = new Map();
         this.graphics = graphics;
         this.width = graphics.width;
         this.height = graphics.height;
@@ -111,5 +116,4 @@ class AsteroidsGame {
         return this.getAsteroidsByDistance().map(asteroid => asteroid.getInfo());
     }
 }
-AsteroidsGame.MinAsteroids = 5;
 //# sourceMappingURL=Game.js.map

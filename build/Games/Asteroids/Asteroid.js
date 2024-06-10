@@ -1,4 +1,15 @@
 class Asteroid {
+    static SizeCutoff = 10;
+    graphics;
+    game;
+    pos;
+    radius;
+    offsets;
+    velocity;
+    maxR;
+    minR;
+    collisionRadius;
+    points;
     constructor(game, pos, radius) {
         this.game = game;
         this.graphics = game.graphics;
@@ -73,5 +84,4 @@ class Asteroid {
         };
     }
 }
-Asteroid.SizeCutoff = 10;
 //# sourceMappingURL=Asteroid.js.map

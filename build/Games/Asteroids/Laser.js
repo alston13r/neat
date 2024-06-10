@@ -1,6 +1,11 @@
 class Laser {
+    static Speed = 5;
+    graphics;
+    ship;
+    pos;
+    velocity;
+    radius = 5;
     constructor(ship) {
-        this.radius = 5;
         this.ship = ship;
         ship.lasers.push(this);
         this.graphics = ship.graphics;
@@ -33,5 +38,4 @@ class Laser {
             this.terminate();
     }
 }
-Laser.Speed = 5;
 //# sourceMappingURL=Laser.js.map

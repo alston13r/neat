@@ -13,6 +13,15 @@ var OptimizationType;
  */
 class Neat {
     /**
+     * Toggle for averaging the fitness over some number of
+     * iterations when recurrent connections are enabled
+     */
+    static AverageFitnessForRecurrentFlag = true;
+    /** The number of iterations to average over when the corresponding flag is true */
+    static IterationsToAverageOverForRecurrent = 5;
+    /** A reference to the graphics object that this will draw to */
+    graphics;
+    /**
      * Sets the local reference for graphics to the specified object.
      * @param graphics the graphics to set
      * @returns a refrence to this Neat object
@@ -81,11 +90,4 @@ class Neat {
         });
     }
 }
-/**
- * Toggle for averaging the fitness over some number of
- * iterations when recurrent connections are enabled
- */
-Neat.AverageFitnessForRecurrentFlag = true;
-/** The number of iterations to average over when the corresponding flag is true */
-Neat.IterationsToAverageOverForRecurrent = 5;
 //# sourceMappingURL=Neat.js.map

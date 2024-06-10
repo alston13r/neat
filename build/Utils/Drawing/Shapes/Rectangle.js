@@ -2,6 +2,13 @@
  * TODO
  */
 class Rectangle {
+    point;
+    size;
+    graphics;
+    fill;
+    color;
+    stroke;
+    lineWidth;
     /**
      * TODO
      * @param graphics

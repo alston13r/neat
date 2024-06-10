@@ -2,6 +2,13 @@
  * TODO
  */
 class Circle {
+    point;
+    graphics;
+    radius;
+    fill;
+    color;
+    stroke;
+    lineWidth;
     /**
      * TODO
      * @param graphics

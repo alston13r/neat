@@ -5,6 +5,32 @@
  * offspring for the next generation.
  */
 class Population {
+    /** The percent of members who get carried over as elites */
+    static ElitePercent = 0.3;
+    /** Toggle for speciation between generations */
+    speciation = true;
+    /** Toggle for elitism */
+    elitism = true;
+    /** A counter for the current generation */
+    generationCounter = 0;
+    /** An array of the population's members */
+    members = [];
+    /** The number of members the population will always have */
+    popSize;
+    /** The number of input nodes that members will be initialized with */
+    inputN;
+    /** The number of hidden nodes that members will be initialized with */
+    hiddenN;
+    /** The number of output nodes that members will be initialized with */
+    outputN;
+    /** The enabled connections percent that members will be initialized with */
+    enabledChance;
+    /** A reference to the population's fittest member ever */
+    fittestEver;
+    /** A reference to the graphics object that the population can be drawn to */
+    graphics;
+    /** The type of fitness that this population favors */
+    fitnessType = OptimizationType.Maximizing;
     /**
      * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
      * and chance for connections to start enabled.
@@ -15,16 +41,6 @@ class Population {
      * @param enabledChance the chance for connections to start enabled
      */
     constructor(popSize, inputN, hiddenN, outputN, enabledChance = 1) {
-        /** Toggle for speciation between generations */
-        this.speciation = true;
-        /** Toggle for elitism */
-        this.elitism = true;
-        /** A counter for the current generation */
-        this.generationCounter = 0;
-        /** An array of the population's members */
-        this.members = [];
-        /** The type of fitness that this population favors */
-        this.fitnessType = OptimizationType.Maximizing;
         this.popSize = popSize;
         this.inputN = inputN;
         this.hiddenN = hiddenN;
@@ -279,6 +295,4 @@ class Population {
         }
     }
 }
-/** The percent of members who get carried over as elites */
-Population.ElitePercent = 0.3;
 //# sourceMappingURL=Population.js.map

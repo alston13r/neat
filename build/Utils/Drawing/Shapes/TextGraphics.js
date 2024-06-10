@@ -2,6 +2,13 @@
  * TODO
  */
 class TextGraphics {
+    point;
+    graphics;
+    text;
+    color;
+    size;
+    align;
+    baseline;
     /**
      * TODO
      * @param graphics

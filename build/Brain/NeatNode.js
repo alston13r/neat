@@ -17,6 +17,44 @@ var NNodeType;
  * was already taken.
  */
 class NNode {
+    /** The default activation function for input nodes */
+    static DefaultInputActivationFunction = ActivationFunction.Identity;
+    /** The default activation function for hidden nodes */
+    static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
+    /** The default activation function for output nodes */
+    static DefaultOutputActivationFunction = ActivationFunction.Tanh;
+    /** Toggle for hidden node activation function mutations */
+    static AllowHiddenActivationMutations = true;
+    /** Toggle for output node activation function mutations */
+    static AllowOutputActivationMutations = false;
+    /** The chance for an activation function to get mutated */
+    static MutateActivationFunctionChance = 0.03;
+    /** The chance for the bias weight to get mutated */
+    static MutateBiasChance = 0.03;
+    /** The chance for the bias to be nudged rather than randomized when mutated */
+    static NudgeBiasChance = 0.9;
+    /** The minimum value that a bias can be */
+    static MinimumBiasValue = -10;
+    /** The maximum value that a bias can be */
+    static MaximumBiasValue = 10;
+    /** The node's unique numerical identifier within the Brain */
+    id;
+    /** The node's type, can be Input, Hidden, or Output */
+    type;
+    /** The node's layer within the Brain's topology */
+    layer;
+    /** The weighted sum of the node's incoming connection values */
+    sumInput = 0;
+    /** The activated sum input */
+    sumOutput = 0;
+    /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
+    bias = NNode.GenerateRandomBias();
+    /** An array of incoming connections */
+    connectionsIn = [];
+    /** An array of outgoing connections */
+    connectionsOut = [];
+    /** The activation function for this node */
+    activationFunction;
     /**
      * Constructs a brain node with the specified id, node type, and layer. The id
      * is used as an identifier for connection innovation ids. Node ids are generated
@@ -28,16 +66,6 @@ class NNode {
      * @param layer the node's layer
      */
     constructor(id, type, layer) {
-        /** The weighted sum of the node's incoming connection values */
-        this.sumInput = 0;
-        /** The activated sum input */
-        this.sumOutput = 0;
-        /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
-        this.bias = NNode.GenerateRandomBias();
-        /** An array of incoming connections */
-        this.connectionsIn = [];
-        /** An array of outgoing connections */
-        this.connectionsOut = [];
         this.id = id;
         this.type = type;
         this.layer = layer;
@@ -116,24 +144,4 @@ class NNode {
         this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue);
     }
 }
-/** The default activation function for input nodes */
-NNode.DefaultInputActivationFunction = ActivationFunction.Identity;
-/** The default activation function for hidden nodes */
-NNode.DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
-/** The default activation function for output nodes */
-NNode.DefaultOutputActivationFunction = ActivationFunction.Tanh;
-/** Toggle for hidden node activation function mutations */
-NNode.AllowHiddenActivationMutations = true;
-/** Toggle for output node activation function mutations */
-NNode.AllowOutputActivationMutations = false;
-/** The chance for an activation function to get mutated */
-NNode.MutateActivationFunctionChance = 0.03;
-/** The chance for the bias weight to get mutated */
-NNode.MutateBiasChance = 0.03;
-/** The chance for the bias to be nudged rather than randomized when mutated */
-NNode.NudgeBiasChance = 0.9;
-/** The minimum value that a bias can be */
-NNode.MinimumBiasValue = -10;
-/** The maximum value that a bias can be */
-NNode.MaximumBiasValue = 10;
 //# sourceMappingURL=NeatNode.js.map

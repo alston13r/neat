@@ -2,6 +2,11 @@
  * TODO
  */
 class Line {
+    point1;
+    point2;
+    graphics;
+    color;
+    lineWidth;
     /**
      * TODO
      * @param graphics
