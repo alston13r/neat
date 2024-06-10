@@ -1,18 +1,12 @@
+Convert game events to built in Event and games to EventTargets
 Make drawing the population better
-
 Add 3D graphing engine for 3D games and stuff
-
 Debug NeuralNetwork
-
-Somehow move the demo stuff into the src directory
 Convert Neat's findSolution to a static method
-
 Use Neat instead of a regular NeuralNetwork for Flappy Bird
-
 Add games
   car racing
   pendulum balancing
-
 JSDoc
   NeuralNetwork
     NeuralNetwork
