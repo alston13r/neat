@@ -1,4 +1,3 @@
-Convert game events to built in Event and games to EventTargets
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
 Debug NeuralNetwork
