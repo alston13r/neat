@@ -26,8 +26,8 @@ function updateFitness(pair) {
 }
 function addListeners(arr) {
     arr.forEach(pair => {
-        pair.game.addEventListener(AsteroidEvent.AsteroidDestroyed, () => updateFitness(pair));
-        pair.game.addEventListener(GameEvent.End, () => updateFitness(pair));
+        pair.game.addEventListener('asteroiddestroyed', () => updateFitness(pair));
+        pair.game.addEventListener('end', () => updateFitness(pair));
     });
 }
 const fittestRecords = [];

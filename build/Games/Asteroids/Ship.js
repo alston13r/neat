@@ -31,8 +31,8 @@ class Ship {
     }
     kill() {
         this.alive = false;
-        this.game.dispatch(ShipEvent.ShipDied);
-        this.game.dispatch(GameEvent.End);
+        this.game.dispatchEvent(new CustomEvent('shipdestroyed', { detail: this.getInfo() }));
+        this.game.dispatchEvent(new CustomEvent('end', { detail: this.game.getInfo() }));
     }
     loadInputs(straight = 0, turn = 0, shoot = 0) {
         this.push(straight);
@@ -95,6 +95,9 @@ class Ship {
     }
     getInfo() {
         return {
+            game: this.game,
+            ship: this,
+            alive: this.alive,
             posX: this.pos.x / this.game.width,
             posY: this.pos.y / this.game.height,
             velX: this.velocity.x / Ship.MaxSpeed,
