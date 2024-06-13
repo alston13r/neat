@@ -1,4 +1,21 @@
 class Ship {
+    static MaxSpeed = 3;
+    static ShootDelay = 200;
+    static TopAngle = 0;
+    static SideAngle = 2.4;
+    static TopDistance = 20;
+    static SideDistance = 20;
+    pos;
+    game;
+    graphics;
+    heading;
+    velocity;
+    lasers;
+    canShoot;
+    alive;
+    top;
+    left;
+    right;
     constructor(game, pos) {
         this.game = game;
         this.graphics = game.graphics;
@@ -14,8 +31,8 @@ class Ship {
     }
     kill() {
         this.alive = false;
-        this.game.dispatch(ShipEvent.ShipDied);
-        this.game.dispatch(GameEvent.End);
+        this.game.dispatchEvent(new CustomEvent('shipdestroyed', { detail: this.getInfo() }));
+        this.game.dispatchEvent(new CustomEvent('end', { detail: this.game.getInfo() }));
     }
     loadInputs(straight = 0, turn = 0, shoot = 0) {
         this.push(straight);
@@ -78,6 +95,9 @@ class Ship {
     }
     getInfo() {
         return {
+            game: this.game,
+            ship: this,
+            alive: this.alive,
             posX: this.pos.x / this.game.width,
             posY: this.pos.y / this.game.height,
             velX: this.velocity.x / Ship.MaxSpeed,
@@ -87,10 +107,4 @@ class Ship {
         };
     }
 }
-Ship.MaxSpeed = 3;
-Ship.ShootDelay = 200;
-Ship.TopAngle = 0;
-Ship.SideAngle = 2.4;
-Ship.TopDistance = 20;
-Ship.SideDistance = 20;
 //# sourceMappingURL=Ship.js.map

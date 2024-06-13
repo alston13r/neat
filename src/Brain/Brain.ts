@@ -1,4 +1,21 @@
 /**
+ * Type outlining the options available for drawing a brain.
+ * xOffset and yOffset specify the x and y offsets within the
+ * local graphics canvas, both default to 0. maxWidth and
+ * maxHeight specify the maximum width and height that the
+ * brain's display can take up, defaults to the local graphics'
+ * width and height. outline specifies whether or not to outline
+ * the bounding box with white, defaults to false.
+ */
+type BrainDrawingOptions = {
+  xOffset?: number
+  yOffset?: number
+  maxWidth?: number
+  maxHeight?: number
+  outline?: boolean
+}
+
+/**
  * The brain is the main class in the neat algorithm. From the neat algorithm, a brain
  * differs from the ordinary fulley connected neural networks in that its topology, or
  * the number of nodes and which connections between them exist, can change. This class
@@ -25,8 +42,6 @@ class Brain {
 
   /** The current fitness of the brain */
   fitness: number = 0
-  /** The adjusted fitness of the brain, this is the fitness normalized by its species */
-  fitnessAdjusted: number = 0
   /** The current species this brain belongs to, null if none assigned */
   species: Species | null = null
   /** An array of the brain's nodes */
@@ -326,6 +341,24 @@ class Brain {
   }
 
   /**
+   * Returns the fitter of the two brains.
+   * @param brainA the first brain
+   * @param brainB the second brain
+   */
+  static GetFitter(brainA: Brain, brainB: Brain): Brain
+  /**
+   * Returns the fitter of the two brains based on the fitness type.
+   * @param brainA the first brain
+   * @param brainB the second brain
+   * @param fitnessType the ideal fitness
+   */
+  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: OptimizationType): Brain
+  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: OptimizationType = OptimizationType.Maximizing): Brain {
+    if (fitnessType == OptimizationType.Maximizing) return (brainA.fitness > brainB.fitness ? brainA : brainB)
+    if (fitnessType == OptimizationType.Minimizing) return (brainA.fitness < brainB.fitness ? brainA : brainB)
+  }
+
+  /**
    * Clones this brain's topology and returns the clone.
    * @returns the clone
    */
@@ -401,18 +434,25 @@ class Brain {
 
   /**
    * Draws this brain to the local graphics.
+   * @param options the options to draw the brain with
    */
-  draw(xOffset: number, yOffset: number, width: number, height: number, outline: boolean = false) {
+  draw(options: BrainDrawingOptions = {}): void {
+    options.xOffset ||= 0
+    options.yOffset ||= 0
+    options.maxWidth ||= this.graphics.width
+    options.maxHeight ||= this.graphics.height
+    options.outline ||= false
+
     const nodePositions: Map<NNode, Vector> = new Map<NNode, Vector>()
 
     const maxLayer: number = this.outputNodes[0].layer
-    const dx: number = width / (maxLayer + 1)
+    const dx: number = options.maxWidth / (maxLayer + 1)
 
     for (let i = 1; i <= maxLayer; i++) {
       const currNodes: NNode[] = this.nodes.filter(n => n.layer == i)
-      const dy: number = height / (currNodes.length + 1)
+      const dy: number = options.maxHeight / (currNodes.length + 1)
       for (let j = 1; j <= currNodes.length; j++) {
-        nodePositions.set(currNodes[j - 1], new Vector(i * dx + xOffset, j * dy + yOffset))
+        nodePositions.set(currNodes[j - 1], new Vector(i * dx + options.xOffset, j * dy + options.yOffset))
       }
     }
 
@@ -447,8 +487,9 @@ class Brain {
 
     this.graphics.createText(this.fitness.toString(), 10, 10, '#fff', 10, 'left', 'top').draw()
 
-    if (outline) {
-      this.graphics.createRectangle(xOffset, yOffset, width, height, false, '#fff', true, 1).draw()
+    if (options.outline) {
+      this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight,
+        false, '#fff', true, 1).draw()
     }
   }
 }

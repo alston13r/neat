@@ -80,8 +80,11 @@ class NNode {
     }
   }
 
+  /**
+   * Helper method to generate a random bias value between the minimum and maximum values.
+   */
   static GenerateRandomBias(): number {
-    return Math.random() * (NNode.MaximumBiasValue - NNode.MinimumBiasValue) + NNode.MinimumBiasValue
+    return lerp(Math.random(), 0, 1, this.MinimumBiasValue, this.MaximumBiasValue)
   }
 
   /**

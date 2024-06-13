@@ -1,17 +1,12 @@
 Make drawing the population better
-
-Add 3D graphing engine for 3D ai games and stuff
-
-Debug a simple fully connected neural network
-  NeuralNetwork
-
-Add flappy bird
-
-Add car racing
-
-Add pendulum balancing
-
-JSDoc stuff
+Add 3D graphing engine for 3D games and stuff
+Debug NeuralNetwork
+Convert Neat's findSolution to a static method
+Use Neat instead of a regular NeuralNetwork for Flappy Bird
+Add games
+  car racing
+  pendulum balancing
+JSDoc
   NeuralNetwork
     NeuralNetwork
   Games
@@ -34,5 +29,3 @@ JSDoc stuff
         Rectangle
         TextGraphics
         Triangle
-
-Convert the GameEvent classes into enums

@@ -2,6 +2,8 @@
  * TODO
  */
 class Graphics {
+    canvas;
+    ctx;
     /**
      * TODO
      * @param canvas

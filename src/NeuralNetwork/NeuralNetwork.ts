@@ -101,7 +101,10 @@ class NeuralNetwork {
   mutateWeights(): void {
     this.weights.forEach(weight => Matrix.Map(weight, x => {
       if (Math.random() < NeuralNetwork.MutateWeightChance) {
-        if (Math.random() < NeuralNetwork.NudgeWeightChance) return x + gauss() * 0.5
+        if (Math.random() < NeuralNetwork.NudgeWeightChance) {
+          const sign: number = Math.random() < 0.5 ? 1 : -1
+          return x + sign * gauss() * 0.5
+        }
         return NeuralNetwork.GenerateRandomWeight()
       }
       return x
@@ -113,7 +116,10 @@ class NeuralNetwork {
   mutateBiases(): void {
     this.biases.forEach(bias => Matrix.Map(bias, x => {
       if (Math.random() < NeuralNetwork.MutateBiasChance) {
-        if (Math.random() < NeuralNetwork.NudgeBiasChance) return x + gauss() * 0.5
+        if (Math.random() < NeuralNetwork.NudgeBiasChance) {
+          const sign: number = Math.random() < 0.5 ? 1 : -1
+          return x + sign * gauss() * 0.5
+        }
         return NeuralNetwork.GenerateRandomBias()
       }
       return x
@@ -185,23 +191,25 @@ class NeuralNetwork {
       }
     }
   }
+
+  // TODO
+  static Copy(brain: NeuralNetwork): NeuralNetwork {
+    const copy: NeuralNetwork = new NeuralNetwork(brain.inputSize, brain.hiddenSizes, brain.outputSize)
+    for (let i in brain.weights) copy.weights[i] = brain.weights[i]
+    for (let i in brain.biases) copy.biases[i] = brain.biases[i]
+    copy.activationFunctions = brain.activationFunctions.slice().map(layer => layer.slice())
+    copy.dActivationFunctions = brain.dActivationFunctions.slice().map(layer => layer.slice())
+    copy.alpha = brain.alpha
+    return copy
+  }
+
+  // TODO
+  copy(): NeuralNetwork {
+    return NeuralNetwork.Copy(this)
+  }
 }
 
 // class BasicNeuralNetwork {
-
-//   static Copy(n: BasicNeuralNetwork): BasicNeuralNetwork {
-//     let a: BasicNeuralNetwork = new BasicNeuralNetwork(n.inputSize, n.hiddenSizes, n.outputSize)
-//     for (let [i, e] of n.weights.entries()) a.weights[i] = e.copy()
-//     for (let [i, e] of n.biases.entries()) a.biases[i] = e.copy()
-//     a.activationFunction = n.activationFunction
-//     a.dActivationFunction = n.dActivationFunction
-//     a.learningRate = n.learningRate
-//     return a
-//   }
-
-//   copy(): BasicNeuralNetwork {
-//     return BasicNeuralNetwork.Copy(this)
-//   }
 
 //   static Crossover(a: BasicNeuralNetwork, b: BasicNeuralNetwork): BasicNeuralNetwork {
 //     let listErr: string = '['

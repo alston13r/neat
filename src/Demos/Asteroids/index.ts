@@ -36,8 +36,8 @@ function updateFitness(pair: GameBrainPair) {
 
 function addListeners(arr: GameBrainPair[]) {
   arr.forEach(pair => {
-    pair.game.addEventListener(AsteroidEvent.AsteroidDestroyed, () => updateFitness(pair))
-    pair.game.addEventListener(GameEvent.End, () => updateFitness(pair))
+    pair.game.addEventListener('asteroiddestroyed', () => updateFitness(pair))
+    pair.game.addEventListener('end', () => updateFitness(pair))
   })
 }
 

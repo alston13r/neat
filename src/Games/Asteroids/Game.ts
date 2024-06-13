@@ -1,17 +1,18 @@
-class AsteroidsGame implements Drawable {
+class AsteroidsGame extends EventTarget implements Drawable {
   static MinAsteroids = 5
 
   asteroids: Asteroid[] = []
   spawningAsteroids: boolean = true
   asteroidCounter: number = 0
   frameCounter: number = 0
-  events: Map<GameEvent, ((game?: AsteroidsGame) => void)[]> = new Map()
   graphics: Graphics
   width: number
   height: number
   ship: Ship
 
   constructor(graphics?: Graphics) {
+    super()
+
     this.graphics = graphics
     this.width = graphics.width
     this.height = graphics.height
@@ -19,38 +20,24 @@ class AsteroidsGame implements Drawable {
     for (let i = 0; i < AsteroidsGame.MinAsteroids; i++) {
       this.createAsteroid()
     }
-    this.addEventListener(AsteroidEvent.AsteroidDestroyed, (game: AsteroidsGame) => game.asteroidCounter++)
-    this.addEventListener(GameEvent.FrameUpdate, (game: AsteroidsGame) => game.frameCounter++)
-    this.dispatch(GameEvent.Start)
-  }
 
-  addEventListener(event: GameEvent, callback: (game?: AsteroidsGame) => void): AsteroidsGame {
-    let arr: ((game?: AsteroidsGame) => void)[]
-    if (this.events.has(event)) {
-      arr = this.events.get(event)
-    } else {
-      arr = []
-      this.events.set(event, arr)
-    }
-    arr.push(callback)
-    return this
-  }
+    this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++)
+    this.addEventListener('update', (ev) => ev.detail.game.frameCounter++)
 
-  dispatch(event: GameEvent) {
-    if (this.events.has(event)) {
-      this.events.get(event).forEach(callback => callback(this))
-    }
+    // figure out how to dispatch start event
+    // maybe add a delay or modify constructor to take listener
   }
 
   createShip(): Ship {
     const ship: Ship = new Ship(this, new Vector(this.width / 2, this.height / 2))
-    this.dispatch(ShipEvent.ShipCreated)
+    this.dispatchEvent(new CustomEvent<ShipInfo>('shipcreated', { detail: ship.getInfo() }))
     return ship
   }
 
   createAsteroid(emit?: boolean): void {
-    this.asteroids.push(new Asteroid(this, new Vector(0, 0)))
-    if (emit) this.dispatch(AsteroidEvent.AsteroidCreated)
+    const asteroid: Asteroid = new Asteroid(this, new Vector(0, 0))
+    this.asteroids.push(asteroid)
+    if (emit) this.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroidcreated', { detail: asteroid.getInfo() }))
   }
 
   loadInputs(keys: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }) {
@@ -90,7 +77,7 @@ class AsteroidsGame implements Drawable {
   }
 
   update(keysPressed?: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }): void {
-    this.dispatch(GameEvent.FrameUpdate)
+    this.dispatchEvent(new CustomEvent<GameInfo>('update', { detail: this.getInfo() }))
     if (keysPressed) this.loadInputs(keysPressed)
     this.ship.update()
     for (let asteroid of this.asteroids) {
@@ -126,5 +113,15 @@ class AsteroidsGame implements Drawable {
 
   asteroidsInfo(): AsteroidInfo[] {
     return this.getAsteroidsByDistance().map(asteroid => asteroid.getInfo())
+  }
+
+  getInfo(): GameInfo {
+    return {
+      game: this,
+      graphics: this.graphics,
+      frameCounter: this.frameCounter,
+      width: this.width,
+      height: this.height
+    }
   }
 }

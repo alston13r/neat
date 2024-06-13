@@ -2,6 +2,8 @@
  * TODO
  */
 class Vector {
+    x;
+    y;
     /**
      * TODO
      * @param x

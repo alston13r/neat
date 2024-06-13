@@ -1,4 +1,15 @@
 class Asteroid {
+    static SizeCutoff = 10;
+    graphics;
+    game;
+    pos;
+    radius;
+    offsets;
+    velocity;
+    maxR;
+    minR;
+    collisionRadius;
+    points;
     constructor(game, pos, radius) {
         this.game = game;
         this.graphics = game.graphics;
@@ -27,7 +38,7 @@ class Asteroid {
             return;
         this.game.asteroids.push(new Asteroid(this.game, this.pos, half));
         this.game.asteroids.push(new Asteroid(this.game, this.pos, half));
-        this.game.dispatch(AsteroidEvent.AsteroidDestroyed);
+        this.game.dispatchEvent(new CustomEvent('asteroiddestoryed', { detail: this.getInfo() }));
     }
     draw() {
         const points = this.points.map(point => point.add(this.pos));
@@ -65,6 +76,8 @@ class Asteroid {
     getInfo() {
         let d = this.pos.sub(this.game.ship.pos);
         return {
+            game: this.game,
+            asteroid: this,
             velX: this.velocity.x / 1.5,
             velY: this.velocity.y / 1.5,
             angleFromShip: Math.atan2(d.y, d.x) / 2 / Math.PI,
@@ -73,5 +86,4 @@ class Asteroid {
         };
     }
 }
-Asteroid.SizeCutoff = 10;
 //# sourceMappingURL=Asteroid.js.map

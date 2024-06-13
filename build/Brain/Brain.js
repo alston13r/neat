@@ -6,15 +6,41 @@
  * data.
  */
 class Brain {
+    /** Toggle for new connections */
+    static AllowNewConnections = true;
+    /** Toggle for connection disabling */
+    static AllowDisablingConnections = false;
+    /** Toggle for allowing recurrent connections */
+    static AllowRecurrent = false;
+    /** The chance for a new connection to be made */
+    static AddConnectionChance = 0.4;
+    /** The chance for a connection to be disabled */
+    static DisableConnectionChance = 0.05;
+    /** The chance for a connection to be reenabled */
+    static ReenableConnectionChance = 0.25;
+    /** Toggle for new nodes */
+    static AllowNewNodes = true;
+    /** The chance for a new node to be made */
+    static AddANodeChance = 0.03;
+    /** The current fitness of the brain */
+    fitness = 0;
+    /** The current species this brain belongs to, null if none assigned */
+    species = null;
+    /** An array of the brain's nodes */
+    nodes;
+    /** An array of the brain's input nodes */
+    inputNodes;
+    /** An array of the brain's output nodes */
+    outputNodes;
+    /** An array of the brain's connections */
+    connections;
+    /** Boolean indicating if the brain is an elite from the prior generation */
+    isElite = false;
+    /** A reference to the graphics object that the brain can be drawn to */
+    graphics;
+    /** A reference to this brain's population */
+    population;
     constructor(population) {
-        /** The current fitness of the brain */
-        this.fitness = 0;
-        /** The adjusted fitness of the brain, this is the fitness normalized by its species */
-        this.fitnessAdjusted = 0;
-        /** The current species this brain belongs to, null if none assigned */
-        this.species = null;
-        /** Boolean indicating if the brain is an elite from the prior generation */
-        this.isElite = false;
         this.population = population;
     }
     initialize(inputN, hiddenN, outputN, enabledChance = 1) {
@@ -250,6 +276,12 @@ class Brain {
         this.runTheNetwork();
         return this.getOutput();
     }
+    static GetFitter(brainA, brainB, fitnessType = OptimizationType.Maximizing) {
+        if (fitnessType == OptimizationType.Maximizing)
+            return (brainA.fitness > brainB.fitness ? brainA : brainB);
+        if (fitnessType == OptimizationType.Minimizing)
+            return (brainA.fitness < brainB.fitness ? brainA : brainB);
+    }
     /**
      * Clones this brain's topology and returns the clone.
      * @returns the clone
@@ -320,16 +352,22 @@ class Brain {
     }
     /**
      * Draws this brain to the local graphics.
+     * @param options the options to draw the brain with
      */
-    draw(xOffset, yOffset, width, height, outline = false) {
+    draw(options = {}) {
+        options.xOffset ||= 0;
+        options.yOffset ||= 0;
+        options.maxWidth ||= this.graphics.width;
+        options.maxHeight ||= this.graphics.height;
+        options.outline ||= false;
         const nodePositions = new Map();
         const maxLayer = this.outputNodes[0].layer;
-        const dx = width / (maxLayer + 1);
+        const dx = options.maxWidth / (maxLayer + 1);
         for (let i = 1; i <= maxLayer; i++) {
             const currNodes = this.nodes.filter(n => n.layer == i);
-            const dy = height / (currNodes.length + 1);
+            const dy = options.maxHeight / (currNodes.length + 1);
             for (let j = 1; j <= currNodes.length; j++) {
-                nodePositions.set(currNodes[j - 1], new Vector(i * dx + xOffset, j * dy + yOffset));
+                nodePositions.set(currNodes[j - 1], new Vector(i * dx + options.xOffset, j * dy + options.yOffset));
             }
         }
         const circleArray = [];
@@ -358,25 +396,9 @@ class Brain {
         connectionArray.forEach(line => line.draw());
         textArray.forEach(text => text.draw());
         this.graphics.createText(this.fitness.toString(), 10, 10, '#fff', 10, 'left', 'top').draw();
-        if (outline) {
-            this.graphics.createRectangle(xOffset, yOffset, width, height, false, '#fff', true, 1).draw();
+        if (options.outline) {
+            this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight, false, '#fff', true, 1).draw();
         }
     }
 }
-/** Toggle for new connections */
-Brain.AllowNewConnections = true;
-/** Toggle for connection disabling */
-Brain.AllowDisablingConnections = false;
-/** Toggle for allowing recurrent connections */
-Brain.AllowRecurrent = false;
-/** The chance for a new connection to be made */
-Brain.AddConnectionChance = 0.4;
-/** The chance for a connection to be disabled */
-Brain.DisableConnectionChance = 0.05;
-/** The chance for a connection to be reenabled */
-Brain.ReenableConnectionChance = 0.25;
-/** Toggle for new nodes */
-Brain.AllowNewNodes = true;
-/** The chance for a new node to be made */
-Brain.AddANodeChance = 0.03;
 //# sourceMappingURL=Brain.js.map

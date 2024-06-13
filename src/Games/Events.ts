@@ -1,15 +1,13 @@
-class GameEvent {
-  static #Start: GameEvent = new GameEvent('start')
-  static #End: GameEvent = new GameEvent('end')
-  static #FrameUpdate: GameEvent = new GameEvent('frame update')
+interface GameInfo {
+  graphics: Graphics
+  frameCounter: number
+  width: number
+  height: number
+  game: any
+}
 
-  symbol: Symbol
-
-  constructor(type: string) {
-    this.symbol = Symbol(type)
-  }
-
-  static get Start(): GameEvent { return GameEvent.#Start }
-  static get End(): GameEvent { return GameEvent.#End }
-  static get FrameUpdate(): GameEvent { return GameEvent.#FrameUpdate }
+interface GameEventMap {
+  'start': CustomEvent<GameInfo>
+  'end': CustomEvent<GameInfo>
+  'update': CustomEvent<GameInfo>
 }

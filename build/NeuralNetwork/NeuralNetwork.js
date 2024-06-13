@@ -1,7 +1,32 @@
 // TODO
 class NeuralNetwork {
+    /** The chance for a weight to be mutated */
+    static MutateWeightChance = 0.5;
+    /** The chance for a weight to be nudged when mutated, rather than randomized */
+    static NudgeWeightChance = 0.8;
+    /** The minimum value that a weight can be */
+    static MinimumWeightValue = -1;
+    /** The maximum value that a weight can be */
+    static MaximumWeightValue = 1;
+    /** The chance for a bias to be mutated */
+    static MutateBiasChance = 0.5;
+    /** The chance for a bias to be nudged when mutated, rather than randomized */
+    static NudgeBiasChance = 0.8;
+    /** The minimum value that a bias can be */
+    static MinimumBiasValue = -1;
+    /** The maximum value that a bias can be */
+    static MaximumBiasValue = 1;
+    /** The chance for an activation function to be mutated */
+    static MutateActivationFunctionChance = 0.05;
+    inputSize;
+    outputSize;
+    hiddenSizes;
+    weights;
+    biases;
+    activationFunctions;
+    dActivationFunctions;
+    alpha = 0.01;
     constructor(a, b, c) {
-        this.alpha = 0.01;
         this.inputSize = a;
         if (c == null) {
             this.hiddenSizes = [];
@@ -63,8 +88,10 @@ class NeuralNetwork {
     mutateWeights() {
         this.weights.forEach(weight => Matrix.Map(weight, x => {
             if (Math.random() < NeuralNetwork.MutateWeightChance) {
-                if (Math.random() < NeuralNetwork.NudgeWeightChance)
-                    return x + gauss() * 0.5;
+                if (Math.random() < NeuralNetwork.NudgeWeightChance) {
+                    const sign = Math.random() < 0.5 ? 1 : -1;
+                    return x + sign * gauss() * 0.5;
+                }
                 return NeuralNetwork.GenerateRandomWeight();
             }
             return x;
@@ -75,8 +102,10 @@ class NeuralNetwork {
     mutateBiases() {
         this.biases.forEach(bias => Matrix.Map(bias, x => {
             if (Math.random() < NeuralNetwork.MutateBiasChance) {
-                if (Math.random() < NeuralNetwork.NudgeBiasChance)
-                    return x + gauss() * 0.5;
+                if (Math.random() < NeuralNetwork.NudgeBiasChance) {
+                    const sign = Math.random() < 0.5 ? 1 : -1;
+                    return x + sign * gauss() * 0.5;
+                }
                 return NeuralNetwork.GenerateRandomBias();
             }
             return x;
@@ -140,38 +169,24 @@ class NeuralNetwork {
             }
         }
     }
+    // TODO
+    static Copy(brain) {
+        const copy = new NeuralNetwork(brain.inputSize, brain.hiddenSizes, brain.outputSize);
+        for (let i in brain.weights)
+            copy.weights[i] = brain.weights[i];
+        for (let i in brain.biases)
+            copy.biases[i] = brain.biases[i];
+        copy.activationFunctions = brain.activationFunctions.slice().map(layer => layer.slice());
+        copy.dActivationFunctions = brain.dActivationFunctions.slice().map(layer => layer.slice());
+        copy.alpha = brain.alpha;
+        return copy;
+    }
+    // TODO
+    copy() {
+        return NeuralNetwork.Copy(this);
+    }
 }
-/** The chance for a weight to be mutated */
-NeuralNetwork.MutateWeightChance = 0.5;
-/** The chance for a weight to be nudged when mutated, rather than randomized */
-NeuralNetwork.NudgeWeightChance = 0.8;
-/** The minimum value that a weight can be */
-NeuralNetwork.MinimumWeightValue = -1;
-/** The maximum value that a weight can be */
-NeuralNetwork.MaximumWeightValue = 1;
-/** The chance for a bias to be mutated */
-NeuralNetwork.MutateBiasChance = 0.5;
-/** The chance for a bias to be nudged when mutated, rather than randomized */
-NeuralNetwork.NudgeBiasChance = 0.8;
-/** The minimum value that a bias can be */
-NeuralNetwork.MinimumBiasValue = -1;
-/** The maximum value that a bias can be */
-NeuralNetwork.MaximumBiasValue = 1;
-/** The chance for an activation function to be mutated */
-NeuralNetwork.MutateActivationFunctionChance = 0.05;
 // class BasicNeuralNetwork {
-//   static Copy(n: BasicNeuralNetwork): BasicNeuralNetwork {
-//     let a: BasicNeuralNetwork = new BasicNeuralNetwork(n.inputSize, n.hiddenSizes, n.outputSize)
-//     for (let [i, e] of n.weights.entries()) a.weights[i] = e.copy()
-//     for (let [i, e] of n.biases.entries()) a.biases[i] = e.copy()
-//     a.activationFunction = n.activationFunction
-//     a.dActivationFunction = n.dActivationFunction
-//     a.learningRate = n.learningRate
-//     return a
-//   }
-//   copy(): BasicNeuralNetwork {
-//     return BasicNeuralNetwork.Copy(this)
-//   }
 //   static Crossover(a: BasicNeuralNetwork, b: BasicNeuralNetwork): BasicNeuralNetwork {
 //     let listErr: string = '['
 //     if (a.inputSize != b.inputSize) listErr += 'inputSize'

@@ -9,15 +9,32 @@
  * of the next propagation.
  */
 class Connection {
+    /** The minimum value that a weight can be */
+    static MinimumWeightValue = -10;
+    /** The maximum value that a weight can be */
+    static MaximumWeightValue = 10;
+    /** The chance for the weight to get mutated */
+    static MutateWeightChance = 0.8;
+    /** The chance for the weight to be nudged rather than randomized when mutated */
+    static NudgeWeightChance = 0.9;
     /**
-     * Helper method to generate a random weight value between the minimum and maximum
-     * values. This is used since writing Math.random() in place of calling this would lead
-     * to a lot of numbers needing to be changed when you can just change the static minimum
-     * and maximum values.
+     * Helper method to generate a random weight value between the minimum and maximum values.
      */
     static GenerateRandomWeight() {
-        return Math.random() * (this.MaximumWeightValue - this.MinimumWeightValue) + this.MinimumWeightValue;
+        return lerp(Math.random(), 0, 1, this.MinimumWeightValue, this.MaximumWeightValue);
     }
+    /** This connection's incoming node */
+    inNode;
+    /** This connection's outgoing node */
+    outNode;
+    /** This connection's weight */
+    weight;
+    /** Whether or not this Connection is enabled */
+    enabled;
+    /** Whether or not this Connection is recurrent */
+    recurrent;
+    /** This Connection's innovation id */
+    innovationID;
     /**
      * Constructs a connection with the specified incoming node, outgoing node, weight, enabled value,
      * and recurrent value. A connection will take the incoming node's sum output value, multiply it
@@ -65,12 +82,4 @@ class Connection {
         this.weight = clamp(this.weight, Connection.MinimumWeightValue, Connection.MaximumWeightValue);
     }
 }
-/** The minimum value that a weight can be */
-Connection.MinimumWeightValue = -10;
-/** The maximum value that a weight can be */
-Connection.MaximumWeightValue = 10;
-/** The chance for the weight to get mutated */
-Connection.MutateWeightChance = 0.8;
-/** The chance for the weight to be nudged rather than randomized when mutated */
-Connection.NudgeWeightChance = 0.9;
 //# sourceMappingURL=Connection.js.map

@@ -1,12 +1,3 @@
-type ShipInfo = {
-  posX: number
-  posY: number
-  velX: number
-  velY: number
-  heading: number
-  canShoot: boolean
-}
-
 class Ship implements Drawable {
   static MaxSpeed: number = 3
   static ShootDelay: number = 200
@@ -44,8 +35,8 @@ class Ship implements Drawable {
 
   kill(): void {
     this.alive = false
-    this.game.dispatch(ShipEvent.ShipDied)
-    this.game.dispatch(GameEvent.End)
+    this.game.dispatchEvent(new CustomEvent<ShipInfo>('shipdestroyed', { detail: this.getInfo() }))
+    this.game.dispatchEvent(new CustomEvent<GameInfo>('end', { detail: this.game.getInfo() }))
   }
 
   loadInputs(straight: number = 0, turn: number = 0, shoot: number = 0): void {
@@ -108,6 +99,9 @@ class Ship implements Drawable {
 
   getInfo(): ShipInfo {
     return {
+      game: this.game,
+      ship: this,
+      alive: this.alive,
       posX: this.pos.x / this.game.width,
       posY: this.pos.y / this.game.height,
       velX: this.velocity.x / Ship.MaxSpeed,

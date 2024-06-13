@@ -1,10 +1,15 @@
-class AsteroidsGame {
+class AsteroidsGame extends EventTarget {
+    static MinAsteroids = 5;
+    asteroids = [];
+    spawningAsteroids = true;
+    asteroidCounter = 0;
+    frameCounter = 0;
+    graphics;
+    width;
+    height;
+    ship;
     constructor(graphics) {
-        this.asteroids = [];
-        this.spawningAsteroids = true;
-        this.asteroidCounter = 0;
-        this.frameCounter = 0;
-        this.events = new Map();
+        super();
         this.graphics = graphics;
         this.width = graphics.width;
         this.height = graphics.height;
@@ -12,36 +17,21 @@ class AsteroidsGame {
         for (let i = 0; i < AsteroidsGame.MinAsteroids; i++) {
             this.createAsteroid();
         }
-        this.addEventListener(AsteroidEvent.AsteroidDestroyed, (game) => game.asteroidCounter++);
-        this.addEventListener(GameEvent.FrameUpdate, (game) => game.frameCounter++);
-        this.dispatch(GameEvent.Start);
-    }
-    addEventListener(event, callback) {
-        let arr;
-        if (this.events.has(event)) {
-            arr = this.events.get(event);
-        }
-        else {
-            arr = [];
-            this.events.set(event, arr);
-        }
-        arr.push(callback);
-        return this;
-    }
-    dispatch(event) {
-        if (this.events.has(event)) {
-            this.events.get(event).forEach(callback => callback(this));
-        }
+        this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++);
+        this.addEventListener('update', (ev) => ev.detail.game.frameCounter++);
+        // figure out how to dispatch start event
+        // maybe add a delay or modify constructor to take listener
     }
     createShip() {
         const ship = new Ship(this, new Vector(this.width / 2, this.height / 2));
-        this.dispatch(ShipEvent.ShipCreated);
+        this.dispatchEvent(new CustomEvent('shipcreated', { detail: ship.getInfo() }));
         return ship;
     }
     createAsteroid(emit) {
-        this.asteroids.push(new Asteroid(this, new Vector(0, 0)));
+        const asteroid = new Asteroid(this, new Vector(0, 0));
+        this.asteroids.push(asteroid);
         if (emit)
-            this.dispatch(AsteroidEvent.AsteroidCreated);
+            this.dispatchEvent(new CustomEvent('asteroidcreated', { detail: asteroid.getInfo() }));
     }
     loadInputs(keys) {
         const straight = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0);
@@ -76,7 +66,7 @@ class AsteroidsGame {
         }
     }
     update(keysPressed) {
-        this.dispatch(GameEvent.FrameUpdate);
+        this.dispatchEvent(new CustomEvent('update', { detail: this.getInfo() }));
         if (keysPressed)
             this.loadInputs(keysPressed);
         this.ship.update();
@@ -110,6 +100,14 @@ class AsteroidsGame {
     asteroidsInfo() {
         return this.getAsteroidsByDistance().map(asteroid => asteroid.getInfo());
     }
+    getInfo() {
+        return {
+            game: this,
+            graphics: this.graphics,
+            frameCounter: this.frameCounter,
+            width: this.width,
+            height: this.height
+        };
+    }
 }
-AsteroidsGame.MinAsteroids = 5;
 //# sourceMappingURL=Game.js.map

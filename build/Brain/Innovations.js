@@ -3,6 +3,14 @@
  * the connection construction process.
  */
 class Innovations {
+    /** The current global innovation index, this increments when an innovation is made */
+    static InnovationIndex = 0;
+    /**
+     * A Map containing all currently known innovations. The keys are a concatenation of
+     * the input node id, a colon, and the output node id. The values are the innovation ids
+     * which are made whenever a new innovation is found.
+     */
+    static InnovationMap = new Map();
     /**
      * Helper method to retrieve innovation ids and generate them if they are new.
      * @param inNode the connection's incoming node
@@ -20,12 +28,4 @@ class Innovations {
         return this.InnovationMap.get(innovationString);
     }
 }
-/** The current global innovation index, this increments when an innovation is made */
-Innovations.InnovationIndex = 0;
-/**
- * A Map containing all currently known innovations. The keys are a concatenation of
- * the input node id, a colon, and the output node id. The values are the innovation ids
- * which are made whenever a new innovation is found.
- */
-Innovations.InnovationMap = new Map();
 //# sourceMappingURL=Innovations.js.map

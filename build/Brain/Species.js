@@ -6,15 +6,31 @@
  * and the desired number.
  */
 class Species {
+    /** The weight that excess connections have in the compatibility difference */
+    static ExcessFactor = 1;
+    /** The weight that disjoint connections have in the compatibility difference */
+    static DisjointFactor = 1;
+    /** The weight that the average of weight difference have in the compatibility difference  */
+    static WeightFactor = 0.4;
+    /** The number of generations that a species can run for simultaneously without improvement without being penalized */
+    static GenerationPenalization = 15;
+    /** The current target number of species */
+    static TargetSpecies = 10;
+    /** The current compatibility threshold used for comparisons */
+    static DynamicThreshold = 100;
+    /** The compatibility threshold step size */
+    static DynamicThresholdStepSize = 0.5;
+    /** A reference to this species' containing population */
+    population;
+    /** An array of this species' members */
+    members = [];
+    /** The number of allowed offspring this species can produce */
+    allowedOffspring = 0;
+    /** The number of generations since this species has improved */
+    gensSinceImproved = 0;
+    /** Record of this species' highest fitness value */
+    highestFitness = 0;
     constructor(population) {
-        /** An array of this species' members */
-        this.members = [];
-        /** The number of allowed offspring this species can produce */
-        this.allowedOffspring = 0;
-        /** The number of generations since this species has improved */
-        this.gensSinceImproved = 0;
-        /** Record of this species' highest fitness value */
-        this.highestFitness = 0;
         this.population = population;
     }
     /**
@@ -87,16 +103,6 @@ class Species {
         return excess + disjoint + weights;
     }
     /**
-     * Adjusts the fitness of all members in this species. The members
-     * need to have a fitness calculated prior to this being called.
-     */
-    adjustFitness() {
-        const N = this.members.length;
-        this.members.forEach(member => {
-            member.fitnessAdjusted = member.fitness / N;
-        });
-    }
-    /**
      * Returns the average fitness of all members in this species.
      * @returns the average fitness
      */
@@ -105,11 +111,12 @@ class Species {
     }
     /**
      * Returns the average adjusted fitness of all members in this species.
-     * The adjusted fitness for each member is calculated in adjustFitness().
+     * The adjusted fitness of a member is their fitness normalized to their
+     * species, fitness / N, where N is the size of the species.
      * @returns the average adjusted fitness
      */
     getAverageFitnessAdjusted() {
-        return this.members.reduce((sum, curr) => sum + curr.fitnessAdjusted / this.members.length, 0);
+        return this.getAverageFitness() / this.members.length;
     }
     /**
      * Updates the gensSinceImproved counter to indicate the number of generations
@@ -188,7 +195,7 @@ class Species {
             return [];
         }
         else {
-            const offspring = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
+            const offspring = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring, this.population.fitnessType) : [];
             const remainingCount = this.allowedOffspring - offspring.length;
             Population.GeneratePairings(this.members, remainingCount)
                 .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)));
@@ -196,18 +203,4 @@ class Species {
         }
     }
 }
-/** The weight that excess connections have in the compatibility difference */
-Species.ExcessFactor = 1;
-/** The weight that disjoint connections have in the compatibility difference */
-Species.DisjointFactor = 1;
-/** The weight that the average of weight difference have in the compatibility difference  */
-Species.WeightFactor = 0.4;
-/** The number of generations that a species can run for simultaneously without improvement without being penalized */
-Species.GenerationPenalization = 15;
-/** The current target number of species */
-Species.TargetSpecies = 10;
-/** The current compatibility threshold used for comparisons */
-Species.DynamicThreshold = 100;
-/** The compatibility threshold step size */
-Species.DynamicThresholdStepSize = 0.5;
 //# sourceMappingURL=Species.js.map

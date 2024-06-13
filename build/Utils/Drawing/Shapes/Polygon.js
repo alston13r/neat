@@ -1,4 +1,10 @@
 class Polygon {
+    graphics;
+    points;
+    fill;
+    color;
+    stroke;
+    lineWidth;
     constructor(graphics, points, fill = true, color = '#fff', stroke = false, lineWidth = 1) {
         this.graphics = graphics;
         this.points = points;

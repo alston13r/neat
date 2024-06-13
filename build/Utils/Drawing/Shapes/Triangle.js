@@ -2,6 +2,14 @@
  * TODO
  */
 class Triangle {
+    point1;
+    point2;
+    point3;
+    graphics;
+    fill;
+    color;
+    stroke;
+    lineWidth;
     /**
      * TODO
      */
