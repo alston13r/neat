@@ -19,47 +19,9 @@ class AsteroidsGame extends EventTarget {
         }
         this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++);
         this.addEventListener('update', (ev) => ev.detail.game.frameCounter++);
-        // this.addEventListener('')
-        // this.addEventListener()
-        // this.addEventListener(AsteroidEvent.AsteroidDestroyed, (game: AsteroidsGame) => game.asteroidCounter++)
-        // this.addEventListener(GameEvent.FrameUpdate, (game: AsteroidsGame) => game.frameCounter++)
-        // this.dispatch(GameEvent.Start)
+        // figure out how to dispatch start event
+        // maybe add a delay or modify constructor to take listener
     }
-    // addEventListener(type: string, callback: GameEventListenerOrGameEventListenerObject | null, options?: GameAddEventListenerOptions): void {
-    //   if (this.events.has(type))
-    //     //     let arr: ((game?: AsteroidsGame) => void)[]
-    //     // if (this.events.has(event)) {
-    //     //   arr = this.events.get(event)
-    //     // } else {
-    //     //   arr = []
-    //     //   this.events.set(event, arr)
-    //     // }
-    //     // arr.push(callback)
-    //     // return this
-    //     throw new Error("Method not implemented.")
-    // }
-    // dispatchEvent(event: GameEvent): boolean {
-    //   throw new Error("Method not implemented.")
-    // }
-    // removeEventListener(type: string, callback: GameEventListenerOrGameEventListenerObject | null): void {
-    //   throw new Error("Method not implemented.")
-    // }
-    // addEventListener(event: GameEvent, callback: (game?: AsteroidsGame) => void): AsteroidsGame {
-    //   let arr: ((game?: AsteroidsGame) => void)[]
-    //   if (this.events.has(event)) {
-    //     arr = this.events.get(event)
-    //   } else {
-    //     arr = []
-    //     this.events.set(event, arr)
-    //   }
-    //   arr.push(callback)
-    //   return this
-    // }
-    // dispatch(event: GameEvent) {
-    //   if (this.events.has(event)) {
-    //     this.events.get(event).forEach(callback => callback(this))
-    //   }
-    // }
     createShip() {
         const ship = new Ship(this, new Vector(this.width / 2, this.height / 2));
         this.dispatchEvent(new CustomEvent('shipcreated', { detail: ship.getInfo() }));
