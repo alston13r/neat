@@ -25,6 +25,7 @@ class AsteroidsGame extends EventTarget implements Drawable {
     this.addEventListener('update', (ev) => ev.detail.game.frameCounter++)
 
     // figure out how to dispatch start event
+    // maybe add a delay or modify constructor to take listener
   }
 
   createShip(): Ship {
