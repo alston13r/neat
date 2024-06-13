@@ -41,7 +41,8 @@ class Asteroid implements Drawable {
     if (half < Asteroid.SizeCutoff) return
     this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
     this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
-    this.game.dispatch(AsteroidEvent.AsteroidDestroyed)
+
+    this.game.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroiddestoryed', { detail: this.getInfo() }))
   }
 
   draw(): void {
@@ -77,6 +78,8 @@ class Asteroid implements Drawable {
   getInfo(): AsteroidInfo {
     let d = this.pos.sub(this.game.ship.pos)
     return {
+      game: this.game,
+      asteroid: this,
       velX: this.velocity.x / 1.5,
       velY: this.velocity.y / 1.5,
       angleFromShip: Math.atan2(d.y, d.x) / 2 / Math.PI,
