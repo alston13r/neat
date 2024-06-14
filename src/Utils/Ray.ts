@@ -45,9 +45,43 @@ class Ray implements Drawable {
   }
 
   castOntoCircle(circle: Circle): Vector {
-    circle.draw()
+    const x1: number = this.pos.x - circle.x
+    const y1: number = this.pos.y - circle.y
+    const x2: number = this.pos.x + this.dir.x - circle.x
+    const y2: number = this.pos.y + this.dir.y - circle.y
 
-    return
+    const dx: number = this.dir.x
+    const dy: number = this.dir.y
+    const dr: number = Math.sqrt(dx ** 2 + dy ** 2)
+
+    const det: number = x1 * y2 - x2 * y1
+    const disc: number = circle.radius ** 2 * dr ** 2 - det ** 2
+
+    if (disc < 0) return
+    const discSqrt: number = Math.sqrt(disc)
+
+    const sgn: number = dy < 0 ? -1 : 1
+
+    const P: number = (det * dy + sgn * dx * discSqrt) / dr ** 2
+    const Q: number = (-det * dx + Math.abs(dy) * discSqrt) / dr ** 2
+    const R: number = (det * dy - sgn * dx * discSqrt) / dr ** 2
+    const S: number = (-det * dx - Math.abs(dy) * discSqrt) / dr ** 2
+
+    const p1: Vector = new Vector(P, Q).add(circle.point)
+    const p2: Vector = new Vector(R, S).add(circle.point)
+
+    const d1: number = this.pos.distanceTo(p1)
+    const d2: number = this.pos.add(this.dir).distanceTo(p1)
+    const d3: number = this.pos.distanceTo(p2)
+    const d4: number = this.pos.add(this.dir).distanceTo(p2)
+
+    const p1Forward: boolean = d2 < d1
+    const p2Forward: boolean = d4 < d3
+
+    if (!p1Forward && !p2Forward) return
+    if (p1Forward && !p2Forward) return p1
+    if (!p1Forward && p2Forward) return p2
+    return d1 < d3 ? p1 : p2
   }
 
   draw(): void {
