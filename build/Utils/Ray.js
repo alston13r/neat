@@ -1,20 +1,25 @@
 class Ray {
     pos;
     dir;
+    graphics;
     constructor(pos, angle) {
         this.pos = pos;
         this.dir = Vector.FromAngle(angle);
+    }
+    setGraphics(graphics) {
+        this.graphics = graphics;
+        return this;
     }
     lookAt(x, y) {
         this.dir.x = x - this.pos.x;
         this.dir.y = y - this.pos.y;
         this.dir = this.dir.normal();
     }
-    cast(wall) {
-        const x1 = wall.a.x;
-        const y1 = wall.a.y;
-        const x2 = wall.b.x;
-        const y2 = wall.b.y;
+    castOntoLine(line) {
+        const x1 = line.x1;
+        const y1 = line.y1;
+        const x2 = line.x2;
+        const y2 = line.y2;
         const x3 = this.pos.x;
         const y3 = this.pos.y;
         const x4 = this.pos.x + this.dir.x;
@@ -25,15 +30,19 @@ class Ray {
         const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
         const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
         if (t > 0 && t < 1 && u > 0) {
-            const pt = new Vector();
-            pt.x = x1 + t * (x2 - x1);
-            pt.y = y1 + t * (y2 - y1);
-            return pt;
+            const point = new Vector();
+            point.x = x1 + t * (x2 - x1);
+            point.y = y1 + t * (y2 - y1);
+            return point;
         }
+    }
+    castOntoCircle(circle) {
+        circle.draw();
+        return;
     }
     draw() {
         const d = this.pos.add(this.dir.scale(10));
-        raycastingGraphics.createLine(this.pos.x, this.pos.y, d.x, d.y, '#fff').draw();
+        this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, '#fff').draw();
     }
 }
 //# sourceMappingURL=Ray.js.map

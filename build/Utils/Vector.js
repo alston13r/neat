@@ -110,5 +110,12 @@ class Vector {
     copy() {
         return new Vector(this.x, this.y);
     }
+    /**
+     * TODO
+     * @param angle
+     */
+    createRay(angle) {
+        return new Ray(this, angle);
+    }
 }
 //# sourceMappingURL=Vector.js.map
