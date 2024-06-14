@@ -123,4 +123,12 @@ class Vector {
   copy(): Vector {
     return new Vector(this.x, this.y)
   }
+
+  /**
+   * TODO
+   * @param angle 
+   */
+  createRay(angle: number): Ray {
+    return new Ray(this, angle)
+  }
 }
