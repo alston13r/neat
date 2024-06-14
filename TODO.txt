@@ -5,6 +5,7 @@ Add 3D graphing engine for 3D games and stuff
 Debug NeuralNetwork
 Convert Neat's findSolution to a static method
 Use Neat instead of a regular NeuralNetwork for Flappy Bird
+Add raycasting for ship sight
 Add games
   car racing
   pendulum balancing
