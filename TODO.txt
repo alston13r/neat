@@ -1,3 +1,4 @@
+Allow saving of neural networks and topologies
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
 Debug NeuralNetwork
