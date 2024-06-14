@@ -1,8 +1,9 @@
 const raycastingGraphics: Graphics = new Graphics().setSize(800, 600).appendToBody()
 
-let particle = new Particle().setGraphics(raycastingGraphics)
+const particle = new Particle(raycastingGraphics)
 
 const walls: Line[] = []
+const circles: Circle[] = []
 
 for (let i = 0; i < 5; i++) {
   const x1: number = Math.random() * raycastingGraphics.width
@@ -12,8 +13,17 @@ for (let i = 0; i < 5; i++) {
   walls[i] = raycastingGraphics.createLine(x1, y1, x2, y2, '#fff')
 }
 
-let mouseX: number = 0
-let mouseY: number = 0
+for (let i = 0; i < 5; i++) {
+  const x: number = Math.random() * raycastingGraphics.width
+  const y: number = Math.random() * raycastingGraphics.height
+  const r: number = Math.random() * 20 + 5
+  circles[i] = raycastingGraphics.createCircle(x, y, r, false, '#fff', true)
+}
+
+const objects: (Line | Circle)[] = (walls as any[]).concat(circles)
+
+let mouseX: number = 400
+let mouseY: number = 300
 
 window.addEventListener('mousemove', e => {
   mouseX = e.clientX
@@ -22,12 +32,15 @@ window.addEventListener('mousemove', e => {
 
 function raycastLoop() {
   raycastingGraphics.bg()
-  for (let wall of walls) {
+  for (const wall of walls) {
     wall.draw()
+  }
+  for (const circle of circles) {
+    circle.draw()
   }
   particle.update(mouseX, mouseY)
   particle.draw()
-  particle.look(walls)
+  particle.look(objects)
   window.requestAnimationFrame(raycastLoop)
 }
 
