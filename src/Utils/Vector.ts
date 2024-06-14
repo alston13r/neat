@@ -116,4 +116,11 @@ class Vector {
   distanceTo(v: Vector): number {
     return v.sub(this).mag()
   }
+
+  /**
+   * TODO
+   */
+  copy(): Vector {
+    return new Vector(this.x, this.y)
+  }
 }
