@@ -1,8 +1,10 @@
-class Particle {
+class Particle implements Drawable {
   static NumLines: number = 36
 
   pos: Vector
   rays: Ray[]
+
+  graphics: Graphics
 
   constructor() {
     this.pos = new Vector(raycastingGraphics.width / 2, raycastingGraphics.height / 2)
@@ -12,33 +14,41 @@ class Particle {
     }
   }
 
+  setGraphics(graphics: Graphics): Particle {
+    this.graphics = graphics
+    for (const ray of this.rays) {
+      ray.setGraphics(graphics)
+    }
+    return this
+  }
+
   update(x: number, y: number): void {
     this.pos.x = x
     this.pos.y = y
   }
 
-  look(walls: Boundary[]): void {
+  look(walls: Line[]): void {
     for (let ray of this.rays) {
       let closest: Vector
       let record: number = Infinity
       for (let wall of walls) {
-        const pt: Vector = ray.cast(wall)
-        if (pt) {
-          const d: number = this.pos.distanceTo(pt)
+        const point: Vector = ray.castOntoLine(wall)
+        if (point) {
+          const d: number = this.pos.distanceTo(point)
           if (d < record) {
             record = d
-            closest = pt
+            closest = point
           }
         }
       }
       if (closest) {
-        raycastingGraphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, '#fff').draw()
+        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, '#fff').draw()
       }
     }
   }
 
   draw(): void {
-    raycastingGraphics.createCircle(this.pos.x, this.pos.y, 8, true, '#fff').draw()
+    this.graphics.createCircle(this.pos.x, this.pos.y, 8, true, '#fff').draw()
     for (let ray of this.rays) {
       ray.draw()
     }
