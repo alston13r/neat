@@ -34,6 +34,13 @@ class Graphics {
     }
     /**
      * TODO
+     * @returns
+     */
+    appendToBody() {
+        return this.appendTo(document.body);
+    }
+    /**
+     * TODO
      */
     get width() {
         return this.canvas.width;

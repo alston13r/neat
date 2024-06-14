@@ -104,5 +104,11 @@ class Vector {
     distanceTo(v) {
         return v.sub(this).mag();
     }
+    /**
+     * TODO
+     */
+    copy() {
+        return new Vector(this.x, this.y);
+    }
 }
 //# sourceMappingURL=Vector.js.map
