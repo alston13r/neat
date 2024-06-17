@@ -38,7 +38,7 @@ class Asteroid {
             return;
         this.game.asteroids.push(new Asteroid(this.game, this.pos, half));
         this.game.asteroids.push(new Asteroid(this.game, this.pos, half));
-        this.game.dispatchEvent(new CustomEvent('asteroiddestoryed', { detail: this.getInfo() }));
+        this.game.dispatchEvent(new CustomEvent('asteroiddestroyed', { detail: this.getInfo() }));
     }
     draw() {
         const points = this.points.map(point => point.add(this.pos));
