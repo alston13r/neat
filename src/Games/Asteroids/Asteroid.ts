@@ -42,7 +42,7 @@ class Asteroid implements Drawable {
     this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
     this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
 
-    this.game.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroiddestoryed', { detail: this.getInfo() }))
+    this.game.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroiddestroyed', { detail: this.getInfo() }))
   }
 
   draw(): void {
