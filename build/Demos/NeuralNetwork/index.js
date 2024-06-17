@@ -23,7 +23,10 @@ for (let i = 0; i < iterationCount; i++) {
         console.log('Current error: ' + error);
     }
     if (error <= desiredError) {
-        console.log('Solution found');
+        console.log(`Solution found in ${i} iterations`);
+        for (let pair of desired.ordered) {
+            console.log('[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']');
+        }
         break;
     }
     neuralNet.backPropagation(desired);
