@@ -91,14 +91,8 @@ class AsteroidsGame extends EventTarget implements Drawable {
     this.asteroids.forEach(asteroid => asteroid.draw())
 
     if (debug) {
-      const asteroidInfo: AsteroidInfo[] = this.asteroidsInfo()
-      for (let [i, asteroid] of [...asteroidInfo].sort((a, b) => a.distanceFromShip - b.distanceFromShip).entries()) {
-        const angle: number = asteroid.angleFromShip * 2 * Math.PI
-        const distance: number = asteroid.distanceFromShip * this.graphics.size.mag()
-        const v: Vector = Vector.FromAngle(angle).scale(distance)
-        const pos: Vector = this.ship.pos
-        const added: Vector = pos.add(v)
-        new Line(this.graphics, pos.x, pos.y, added.x, added.y, i == 0 ? '#0f0' : '#f00', 1).draw()
+      for (const ray of this.ship.rays) {
+        ray.draw()
       }
     }
   }
