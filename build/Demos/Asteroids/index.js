@@ -49,7 +49,7 @@ let lastTimestamp = 0;
 function loop(timestamp) {
     const diff = timestamp - lastTimestamp; // delta time in milliseconds
     lastTimestamp = timestamp;
-    currentGenerationTimeAlive += diff / 1000;
+    currentGenerationTimeAlive += Math.min(diff / 1000, 1); // clamp delta time to 1 second
     const stillAlive = pairings.filter(pair => pair.game.ship.alive);
     if (currentGenerationTimeAlive > maxTimeAlive) {
         stillAlive.forEach(pair => pair.game.ship.kill());
