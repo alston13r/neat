@@ -1,3 +1,5 @@
+Improve raycasting
+Add workers
 Add more shapes for intersection testing with raycasting
 Make navigator site a little more cool looking
   Add some gifs of them working and individual
@@ -9,30 +11,6 @@ Add 3D graphing engine for 3D games and stuff
 Debug NeuralNetwork
 Convert Neat's findSolution to a static method
 Use Neat instead of a regular NeuralNetwork for Flappy Bird
-Add raycasting for ship sight
 Add games
   car racing
   pendulum balancing
-JSDoc
-  NeuralNetwork
-    NeuralNetwork
-  Games
-    Asteroids
-      Asteroid
-      Events
-      Game
-      Laser
-      Ship
-  Utils
-    Matrix
-    Vector
-    Drawing
-      Graphics
-      Interfaces
-      Shapes
-        Polygon
-        Circle
-        Line
-        Rectangle
-        TextGraphics
-        Triangle
