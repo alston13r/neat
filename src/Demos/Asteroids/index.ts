@@ -65,7 +65,7 @@ let lastTimestamp: number = 0
 function loop(timestamp: number) {
   const diff: number = timestamp - lastTimestamp // delta time in milliseconds
   lastTimestamp = timestamp
-  currentGenerationTimeAlive += diff / 1000
+  currentGenerationTimeAlive += Math.min(diff / 1000, 1) // clamp delta time to 1 second
 
   const stillAlive: GameBrainPair[] = pairings.filter(pair => pair.game.ship.alive)
 
