@@ -1,8 +1,25 @@
 const gameGraphics: Graphics = new Graphics().setSize(800, 600).appendTo(document.body)
 const population: Population = new Population(500, 11, 0, 3, 0.5)
 
-const game: AsteroidsGame = new AsteroidsGame(gameGraphics)
-const brain: Brain = new Brain().initialize(11, 0, 3, 0.5)
+// code for individual play
+
+// const keysPressed = {}
+// window.addEventListener('keydown', e => keysPressed[e.key] = true)
+// window.addEventListener('keyup', e => keysPressed[e.key] = false)
+
+// const game: AsteroidsGame = new AsteroidsGame(gameGraphics)
+// const brain: Brain = new Brain().initialize(11, 0, 3, 0.5)
+
+// let lastTimestamp: number = 0
+// function asteroidsLoop(timestamp: number = 0): void {
+//   gameGraphics.bg()
+//   const diff: number = timestamp - lastTimestamp
+//   lastTimestamp = timestamp
+//   game.update(keysPressed)
+//   game.draw()
+//   window.requestAnimationFrame(asteroidsLoop)
+// }
+// window.requestAnimationFrame(asteroidsLoop)
 
 const maxTimeAlive: number = 30
 let currentGenerationTimeAlive: number = 0
@@ -21,12 +38,11 @@ function thinkBrain(brain: Brain, game: AsteroidsGame): number[] {
   inputs[3] = shipInfo.velX
   inputs[4] = shipInfo.velY
   inputs[5] = shipInfo.canShoot ? 1 : 0
-  const nearestAsteroidInfo: AsteroidInfo = game.getAsteroidsByDistance()[0].getInfo()
-  inputs[6] = nearestAsteroidInfo.angleFromShip
-  inputs[7] = nearestAsteroidInfo.distanceFromShip
-  inputs[8] = nearestAsteroidInfo.velX
-  inputs[9] = nearestAsteroidInfo.velY
-  inputs[10] = nearestAsteroidInfo.size
+  inputs[6] = shipInfo.rays[0].distance
+  inputs[7] = shipInfo.rays[1].distance
+  inputs[8] = shipInfo.rays[2].distance
+  inputs[9] = shipInfo.rays[3].distance
+  inputs[10] = shipInfo.rays[4].distance
   return brain.think(inputs)
 }
 
@@ -47,7 +63,7 @@ let pairings: GameBrainPair[] = []
 
 let lastTimestamp: number = 0
 function loop(timestamp: number) {
-  const diff: number = timestamp - lastTimestamp
+  const diff: number = timestamp - lastTimestamp // delta time in milliseconds
   lastTimestamp = timestamp
   currentGenerationTimeAlive += diff / 1000
 

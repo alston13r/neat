@@ -15,6 +15,12 @@ class Vector {
     this.y = y
   }
 
+  static Add(a: Vector, b: Vector): Vector {
+    a.x += b.x
+    a.y += b.y
+    return a
+  }
+
   /**
    * TODO
    * @param v 
@@ -24,11 +30,23 @@ class Vector {
     return new Vector(this.x + v.x, this.y + v.y)
   }
 
+  static Sub(a: Vector, b: Vector): Vector {
+    a.x -= b.x
+    a.y -= b.y
+    return a
+  }
+
   /**
    * TODO
    */
   sub(v: Vector): Vector {
     return new Vector(this.x - v.x, this.y - v.y)
+  }
+
+  static Scale(v: Vector, s: number): Vector {
+    v.x *= s
+    v.y *= s
+    return v
   }
 
   /**
@@ -54,6 +72,10 @@ class Vector {
    */
   mag(): number {
     return Math.sqrt(this.x ** 2 + this.y ** 2)
+  }
+
+  static Normal(v: Vector): Vector {
+    return Vector.Scale(v, 1 / v.mag())
   }
 
   /**
@@ -115,5 +137,20 @@ class Vector {
    */
   distanceTo(v: Vector): number {
     return v.sub(this).mag()
+  }
+
+  /**
+   * TODO
+   */
+  copy(): Vector {
+    return new Vector(this.x, this.y)
+  }
+
+  /**
+   * TODO
+   * @param angle 
+   */
+  createRay(angle: number = 0): Ray {
+    return new Ray(this, angle)
   }
 }

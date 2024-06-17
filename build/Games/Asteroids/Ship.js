@@ -5,6 +5,9 @@ class Ship {
     static SideAngle = 2.4;
     static TopDistance = 20;
     static SideDistance = 20;
+    static NumRays = 5;
+    static RayDeltaTheta = 0.3;
+    static RayLength = 300;
     pos;
     game;
     graphics;
@@ -16,6 +19,7 @@ class Ship {
     top;
     left;
     right;
+    rays;
     constructor(game, pos) {
         this.game = game;
         this.graphics = game.graphics;
@@ -28,6 +32,10 @@ class Ship {
         this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(pos);
         this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos);
         this.right = Vector.FromAngle(-Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos);
+        this.rays = new Array(Ship.NumRays).fill(0).map(() => this.pos.createRay()
+            .setGraphics(this.graphics)
+            .setLength(Ship.RayLength));
+        this.updateRays();
     }
     kill() {
         this.alive = false;
@@ -41,7 +49,7 @@ class Ship {
             this.shoot();
     }
     update() {
-        this.pos = this.pos.add(this.velocity);
+        Vector.Add(this.pos, this.velocity);
         this.velocity = this.velocity.scale(0.999);
         this.wrap();
         this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(this.pos);
@@ -50,6 +58,11 @@ class Ship {
         for (let laser of [...this.lasers].reverse()) {
             laser.update();
         }
+        this.updateRays();
+    }
+    updateRays() {
+        const maxHeadingOffset = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta;
+        this.rays.forEach((ray, i) => ray.setAngle(lerp(i, 0, Ship.NumRays, this.heading - maxHeadingOffset, this.heading + maxHeadingOffset)));
     }
     push(direction) {
         if (direction == 0)
@@ -93,6 +106,28 @@ class Ship {
         this.graphics.createTriangle(this.top.x, this.top.y, this.left.x, this.left.y, this.right.x, this.right.y, false, '#fff', true).draw();
         this.lasers.forEach(laser => laser.draw());
     }
+    getRayInfo(debug = false) {
+        const info = [];
+        const asteroidCircles = this.game.asteroids.map(asteroid => asteroid.getCollisionCircle());
+        for (const ray of this.rays) {
+            const point = ray.castOntoClosest(asteroidCircles);
+            if (point) {
+                const distance = this.pos.distanceTo(point);
+                const hitting = distance <= Ship.RayLength;
+                info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) });
+                if (debug) {
+                    ray.draw(hitting ? '#0f0' : '#00f');
+                    this.graphics.createCircle(point.x, point.y, 5, true, '#f00').draw();
+                }
+            }
+            else {
+                info.push({ ray, hitting: false, distance: -1 });
+                if (debug)
+                    ray.draw();
+            }
+        }
+        return info;
+    }
     getInfo() {
         return {
             game: this.game,
@@ -103,7 +138,8 @@ class Ship {
             velX: this.velocity.x / Ship.MaxSpeed,
             velY: this.velocity.y / Ship.MaxSpeed,
             heading: this.heading / Math.PI / 2,
-            canShoot: this.canShoot
+            canShoot: this.canShoot,
+            rays: this.getRayInfo()
         };
     }
 }

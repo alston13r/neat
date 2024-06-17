@@ -73,6 +73,9 @@ class Asteroid {
     collisionWithLaser(laser) {
         return laser.pos.sub(this.pos).mag() <= this.collisionRadius;
     }
+    getCollisionCircle() {
+        return this.graphics.createCircle(this.pos.x, this.pos.y, this.collisionRadius, false, '#750101', true);
+    }
     getInfo() {
         let d = this.pos.sub(this.game.ship.pos);
         return {
@@ -80,8 +83,6 @@ class Asteroid {
             asteroid: this,
             velX: this.velocity.x / 1.5,
             velY: this.velocity.y / 1.5,
-            angleFromShip: Math.atan2(d.y, d.x) / 2 / Math.PI,
-            distanceFromShip: d.mag() / this.graphics.size.mag(),
             size: this.collisionRadius / 50
         };
     }

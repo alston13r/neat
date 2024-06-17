@@ -2,6 +2,12 @@ interface AsteroidsGameInfo {
   game: AsteroidsGame
 }
 
+interface RayInfo {
+  ray: Ray
+  hitting: boolean
+  distance: number
+}
+
 interface ShipInfo {
   game: AsteroidsGame
   ship: Ship
@@ -12,6 +18,7 @@ interface ShipInfo {
   velY: number
   heading: number
   canShoot: boolean
+  rays: RayInfo[]
 }
 
 interface AsteroidInfo {
@@ -19,8 +26,6 @@ interface AsteroidInfo {
   asteroid: Asteroid
   velX: number
   velY: number
-  angleFromShip: number
-  distanceFromShip: number
   size: number
 }
 

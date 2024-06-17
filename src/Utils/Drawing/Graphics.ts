@@ -38,6 +38,14 @@ class Graphics implements HasSize {
 
   /**
    * TODO
+   * @returns 
+   */
+  appendToBody(): Graphics {
+    return this.appendTo(document.body)
+  }
+
+  /**
+   * TODO
    */
   get width(): number {
     return this.canvas.width
