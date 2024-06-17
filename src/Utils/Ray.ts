@@ -1,11 +1,15 @@
+type CastableObject = Line | Circle
+
 class Ray implements Drawable {
   pos: Vector
   dir: Vector
   graphics: Graphics
+  length: number
 
-  constructor(pos: Vector, angle: number) {
+  constructor(pos: Vector, angle: number, length: number = 1) {
     this.pos = pos
     this.dir = Vector.FromAngle(angle)
+    this.length = length
   }
 
   setGraphics(graphics: Graphics): Ray {
@@ -16,7 +20,39 @@ class Ray implements Drawable {
   lookAt(x: number, y: number): void {
     this.dir.x = x - this.pos.x
     this.dir.y = y - this.pos.y
-    this.dir = this.dir.normal()
+    Vector.Normal(this.dir)
+  }
+
+  setAngle(theta: number): Ray {
+    this.dir = Vector.FromAngle(theta)
+    return this
+  }
+
+  setLength(length: number): Ray {
+    this.length = length
+    return this
+  }
+
+  castOntoClosest(objects: CastableObject[]): Vector {
+    let closest: Vector
+    let record: number = Infinity
+    for (const object of objects) {
+      let point: Vector
+      if (object instanceof Line) {
+        point = this.castOntoLine(object)
+      }
+      else if (object instanceof Circle) {
+        point = this.castOntoCircle(object)
+      }
+      if (point) {
+        const distance: number = this.pos.distanceTo(point)
+        if (distance < record) {
+          record = distance
+          closest = point
+        }
+      }
+    }
+    return closest
   }
 
   castOntoLine(line: Line): Vector {
@@ -84,8 +120,8 @@ class Ray implements Drawable {
     return d1 < d3 ? p1 : p2
   }
 
-  draw(): void {
-    const d: Vector = this.pos.add(this.dir.scale(10))
-    this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, '#fff').draw()
+  draw(color: string = '#fff'): void {
+    const d: Vector = this.pos.add(this.dir.scale(this.length))
+    this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, color).draw()
   }
 }
