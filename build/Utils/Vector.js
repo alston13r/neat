@@ -13,6 +13,11 @@ class Vector {
         this.x = x;
         this.y = y;
     }
+    static Add(a, b) {
+        a.x += b.x;
+        a.y += b.y;
+        return a;
+    }
     /**
      * TODO
      * @param v
@@ -21,11 +26,21 @@ class Vector {
     add(v) {
         return new Vector(this.x + v.x, this.y + v.y);
     }
+    static Sub(a, b) {
+        a.x -= b.x;
+        a.y -= b.y;
+        return a;
+    }
     /**
      * TODO
      */
     sub(v) {
         return new Vector(this.x - v.x, this.y - v.y);
+    }
+    static Scale(v, s) {
+        v.x *= s;
+        v.y *= s;
+        return v;
     }
     /**
      * TODO
@@ -48,6 +63,9 @@ class Vector {
      */
     mag() {
         return Math.sqrt(this.x ** 2 + this.y ** 2);
+    }
+    static Normal(v) {
+        return Vector.Scale(v, 1 / v.mag());
     }
     /**
      * TODO
@@ -114,7 +132,7 @@ class Vector {
      * TODO
      * @param angle
      */
-    createRay(angle) {
+    createRay(angle = 0) {
         return new Ray(this, angle);
     }
 }

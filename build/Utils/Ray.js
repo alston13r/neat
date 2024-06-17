@@ -2,9 +2,11 @@ class Ray {
     pos;
     dir;
     graphics;
-    constructor(pos, angle) {
+    length;
+    constructor(pos, angle, length = 1) {
         this.pos = pos;
         this.dir = Vector.FromAngle(angle);
+        this.length = length;
     }
     setGraphics(graphics) {
         this.graphics = graphics;
@@ -13,7 +15,36 @@ class Ray {
     lookAt(x, y) {
         this.dir.x = x - this.pos.x;
         this.dir.y = y - this.pos.y;
-        this.dir = this.dir.normal();
+        Vector.Normal(this.dir);
+    }
+    setAngle(theta) {
+        this.dir = Vector.FromAngle(theta);
+        return this;
+    }
+    setLength(length) {
+        this.length = length;
+        return this;
+    }
+    castOntoClosest(objects) {
+        let closest;
+        let record = Infinity;
+        for (const object of objects) {
+            let point;
+            if (object instanceof Line) {
+                point = this.castOntoLine(object);
+            }
+            else if (object instanceof Circle) {
+                point = this.castOntoCircle(object);
+            }
+            if (point) {
+                const distance = this.pos.distanceTo(point);
+                if (distance < record) {
+                    record = distance;
+                    closest = point;
+                }
+            }
+        }
+        return closest;
     }
     castOntoLine(line) {
         const x1 = line.x1;
@@ -70,9 +101,9 @@ class Ray {
             return p2;
         return d1 < d3 ? p1 : p2;
     }
-    draw() {
-        const d = this.pos.add(this.dir.scale(10));
-        this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, '#fff').draw();
+    draw(color = '#fff') {
+        const d = this.pos.add(this.dir.scale(this.length));
+        this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, color).draw();
     }
 }
 //# sourceMappingURL=Ray.js.map

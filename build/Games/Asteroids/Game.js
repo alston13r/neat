@@ -79,14 +79,8 @@ class AsteroidsGame extends EventTarget {
         this.ship.draw();
         this.asteroids.forEach(asteroid => asteroid.draw());
         if (debug) {
-            const asteroidInfo = this.asteroidsInfo();
-            for (let [i, asteroid] of [...asteroidInfo].sort((a, b) => a.distanceFromShip - b.distanceFromShip).entries()) {
-                const angle = asteroid.angleFromShip * 2 * Math.PI;
-                const distance = asteroid.distanceFromShip * this.graphics.size.mag();
-                const v = Vector.FromAngle(angle).scale(distance);
-                const pos = this.ship.pos;
-                const added = pos.add(v);
-                new Line(this.graphics, pos.x, pos.y, added.x, added.y, i == 0 ? '#0f0' : '#f00', 1).draw();
+            for (const ray of this.ship.rays) {
+                ray.draw();
             }
         }
     }
