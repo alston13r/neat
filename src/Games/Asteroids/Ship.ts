@@ -7,6 +7,10 @@ class Ship implements Drawable {
   static TopDistance: number = 20
   static SideDistance: number = 20
 
+  static NumRays: number = 5
+  static RayDeltaTheta: number = 0.3
+  static RayLength: number = 300
+
   pos: Vector
   game: AsteroidsGame
   graphics: Graphics
@@ -18,6 +22,7 @@ class Ship implements Drawable {
   top: Vector
   left: Vector
   right: Vector
+  rays: Ray[]
 
   constructor(game: AsteroidsGame, pos: Vector) {
     this.game = game
@@ -31,6 +36,13 @@ class Ship implements Drawable {
     this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(pos)
     this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos)
     this.right = Vector.FromAngle(-Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos)
+
+    this.rays = new Array(Ship.NumRays).fill(0).map(
+      () => this.pos.createRay()
+        .setGraphics(this.graphics)
+        .setLength(Ship.RayLength)
+    )
+    this.updateRays()
   }
 
   kill(): void {
@@ -46,7 +58,7 @@ class Ship implements Drawable {
   }
 
   update(): void {
-    this.pos = this.pos.add(this.velocity)
+    Vector.Add(this.pos, this.velocity)
     this.velocity = this.velocity.scale(0.999)
     this.wrap()
     this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(this.pos)
@@ -55,6 +67,14 @@ class Ship implements Drawable {
     for (let laser of [...this.lasers].reverse()) {
       laser.update()
     }
+    this.updateRays()
+  }
+
+  updateRays(): void {
+    const maxHeadingOffset: number = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta
+    this.rays.forEach((ray, i) => ray.setAngle(lerp(
+      i, 0, Ship.NumRays, this.heading - maxHeadingOffset, this.heading + maxHeadingOffset
+    )))
   }
 
   push(direction: number): void {
@@ -97,6 +117,31 @@ class Ship implements Drawable {
     this.lasers.forEach(laser => laser.draw())
   }
 
+  getRayInfo(debug: boolean = false): RayInfo[] {
+    const info: RayInfo[] = []
+
+    const asteroidCircles: Circle[] = this.game.asteroids.map(asteroid => asteroid.getCollisionCircle())
+
+    for (const ray of this.rays) {
+      const point: Vector = ray.castOntoClosest(asteroidCircles)
+      if (point) {
+        const distance: number = this.pos.distanceTo(point)
+        const hitting: boolean = distance <= Ship.RayLength
+        info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) })
+
+        if (debug) {
+          ray.draw(hitting ? '#0f0' : '#00f')
+          this.graphics.createCircle(point.x, point.y, 5, true, '#f00').draw()
+        }
+      } else {
+        info.push({ ray, hitting: false, distance: -1 })
+
+        if (debug) ray.draw()
+      }
+    }
+    return info
+  }
+
   getInfo(): ShipInfo {
     return {
       game: this.game,
@@ -107,7 +152,8 @@ class Ship implements Drawable {
       velX: this.velocity.x / Ship.MaxSpeed,
       velY: this.velocity.y / Ship.MaxSpeed,
       heading: this.heading / Math.PI / 2,
-      canShoot: this.canShoot
+      canShoot: this.canShoot,
+      rays: this.getRayInfo()
     }
   }
 }
