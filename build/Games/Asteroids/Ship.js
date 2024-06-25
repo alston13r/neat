@@ -1,6 +1,6 @@
 class Ship {
     static MaxSpeed = 3;
-    static ShootDelay = 200;
+    static ShootDelay = 33;
     static TopAngle = 0;
     static SideAngle = 2.4;
     static TopDistance = 20;
@@ -50,8 +50,8 @@ class Ship {
         if (shoot > 0.9)
             this.shoot();
     }
-    update(delta = 0) {
-        this.shootTimer -= delta;
+    update() {
+        this.shootTimer--;
         this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay);
         Vector.Add(this.pos, this.velocity);
         this.velocity = this.velocity.scale(0.999);

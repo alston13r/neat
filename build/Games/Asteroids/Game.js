@@ -63,11 +63,11 @@ class Asteroids extends EventTarget {
             }
         }
     }
-    update(delta = 0, keysPressed) {
+    update(keysPressed) {
         this.dispatchEvent(new CustomEvent('update', { detail: this.getInfo() }));
         if (keysPressed)
             this.loadInputs(keysPressed);
-        this.ship.update(delta);
+        this.ship.update();
         for (let asteroid of this.asteroids) {
             asteroid.update();
         }

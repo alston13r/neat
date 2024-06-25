@@ -59,8 +59,8 @@ let lastTimestamp = 0;
 function loop(timestamp) {
     const delta = clamp(timestamp - lastTimestamp, 0, 1000);
     lastTimestamp = timestamp;
-    currentGenerationTimeAlive += delta / 1000;
     for (let i = 0; i < gameScale; i++) {
+        currentGenerationTimeAlive += delta / 1000;
         const stillAlive = pairings.filter(pair => pair.game.ship.alive);
         if (currentGenerationTimeAlive > maxTimeAlive) {
             stillAlive.forEach(pair => pair.game.ship.kill());
@@ -71,7 +71,7 @@ function loop(timestamp) {
             stillAlive.forEach(pair => {
                 const brainThoughts = thinkBrain(pair.brain, pair.game);
                 pair.game.ship.loadInputs(...brainThoughts);
-                pair.game.update(delta);
+                pair.game.update();
             });
             fittest.game.draw();
             asteroidsGraphics.createText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5, { baseline: 'bottom' }).draw();
