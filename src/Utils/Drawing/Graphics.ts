@@ -72,10 +72,12 @@ class Graphics implements HasSize {
   }
 
   //TODO
-  createText(text: string, x: number, y: number, color = '#fff', size = 10,
-    align: CanvasTextDrawingStyles['textAlign'] = 'center',
-    baseline: CanvasTextDrawingStyles['textBaseline'] = 'middle'): TextGraphics {
-    return new TextGraphics(this, text, x, y, color, size, align, baseline)
+  createText(text: string, x: number, y: number, options: TextGraphicsOptions = {}): TextGraphics {
+    options.color ||= '#fff'
+    options.size ||= 10
+    options.align ||= 'left'
+    options.baseline ||= 'top'
+    return new TextGraphics(this, text, x, y, options.color, options.size, options.align, options.baseline)
   }
 
   //TODO

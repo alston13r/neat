@@ -485,7 +485,7 @@ class Brain {
     connectionArray.forEach(line => line.draw())
     textArray.forEach(text => text.draw())
 
-    this.graphics.createText(this.fitness.toString(), 10, 10, '#fff', 10, 'left', 'top').draw()
+    this.graphics.createText(this.fitness.toString(), 10, 10).draw()
 
     if (options.outline) {
       this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight,

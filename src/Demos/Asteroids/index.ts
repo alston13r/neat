@@ -85,10 +85,10 @@ function loop(timestamp: number) {
 
     fittest.game.draw()
 
-    gameGraphics.createText(`Generation: ${population.generationCounter}`, 5, gameGraphics.height - 5, '#fff', 10, 'left', 'bottom').draw()
-    gameGraphics.createText(`Alive: ${stillAlive.length} / ${population.popSize}`, 5, gameGraphics.height - 15, '#fff', 10, 'left', 'bottom').draw()
-    gameGraphics.createText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, gameGraphics.height - 25, '#fff', 10, 'left', 'bottom').draw()
-    gameGraphics.createText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, gameGraphics.height - 35, '#fff', 10, 'left', 'bottom').draw()
+    gameGraphics.createText(`Generation: ${population.generationCounter}`, 5, gameGraphics.height - 5, { baseline: 'bottom' }).draw()
+    gameGraphics.createText(`Alive: ${stillAlive.length} / ${population.popSize}`, 5, gameGraphics.height - 15, { baseline: 'bottom' }).draw()
+    gameGraphics.createText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, gameGraphics.height - 25, { baseline: 'bottom' }).draw()
+    gameGraphics.createText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, gameGraphics.height - 35, { baseline: 'bottom' }).draw()
   } else {
     currentGenerationTimeAlive = 0
     population.nextGeneration()
