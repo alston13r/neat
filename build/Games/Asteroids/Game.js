@@ -1,4 +1,4 @@
-class AsteroidsGame extends EventTarget {
+class Asteroids extends EventTarget {
     static MinAsteroids = 5;
     asteroids = [];
     spawningAsteroids = true;
@@ -14,13 +14,11 @@ class AsteroidsGame extends EventTarget {
         this.width = graphics.width;
         this.height = graphics.height;
         this.ship = this.createShip();
-        for (let i = 0; i < AsteroidsGame.MinAsteroids; i++) {
+        for (let i = 0; i < Asteroids.MinAsteroids; i++) {
             this.createAsteroid();
         }
         this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++);
         this.addEventListener('update', (ev) => ev.detail.game.frameCounter++);
-        // figure out how to dispatch start event
-        // maybe add a delay or modify constructor to take listener
     }
     createShip() {
         const ship = new Ship(this, new Vector(this.width / 2, this.height / 2));
@@ -59,17 +57,17 @@ class AsteroidsGame extends EventTarget {
         }
     }
     checkAsteroidCount() {
-        if (this.spawningAsteroids && this.asteroids.length < AsteroidsGame.MinAsteroids) {
-            for (let i = 0; i < AsteroidsGame.MinAsteroids - this.asteroids.length; i++) {
+        if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
+            for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
                 this.createAsteroid(true);
             }
         }
     }
-    update(keysPressed) {
+    update(delta = 0, keysPressed) {
         this.dispatchEvent(new CustomEvent('update', { detail: this.getInfo() }));
         if (keysPressed)
             this.loadInputs(keysPressed);
-        this.ship.update();
+        this.ship.update(delta);
         for (let asteroid of this.asteroids) {
             asteroid.update();
         }

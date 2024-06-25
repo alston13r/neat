@@ -1,5 +1,15 @@
-const gameGraphics = new Graphics().setSize(800, 600).appendTo(document.body);
-const population = new Population(500, 11, 0, 3, 0.5);
+const asteroidsGraphics = new Graphics().setSize(800, 600).appendTo(document.body);
+const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5);
+asteroidsGraphics.canvas.style.display = 'block';
+const asteroidsSlider = document.createElement('input');
+asteroidsSlider.type = 'range';
+asteroidsSlider.min = '1';
+asteroidsSlider.max = '20';
+asteroidsSlider.value = '1';
+asteroidsSlider.style.display = 'block';
+document.body.appendChild(asteroidsSlider);
+let gameScale = 1;
+asteroidsSlider.oninput = () => gameScale = parseInt(asteroidsSlider.value);
 // code for individual play
 // const keysPressed = {}
 // window.addEventListener('keydown', e => keysPressed[e.key] = true)
@@ -47,41 +57,44 @@ const fittestRecords = [];
 let pairings = [];
 let lastTimestamp = 0;
 function loop(timestamp) {
-    const diff = timestamp - lastTimestamp; // delta time in milliseconds
+    const delta = clamp(timestamp - lastTimestamp, 0, 1000);
     lastTimestamp = timestamp;
-    currentGenerationTimeAlive += Math.min(diff / 1000, 1); // clamp delta time to 1 second
-    const stillAlive = pairings.filter(pair => pair.game.ship.alive);
-    if (currentGenerationTimeAlive > maxTimeAlive) {
-        stillAlive.forEach(pair => pair.game.ship.kill());
-    }
-    if (stillAlive.length > 0) {
-        const fittest = stillAlive.reduce((best, curr) => curr.brain.fitness > best.brain.fitness ? curr : best);
-        gameGraphics.bg();
-        stillAlive.forEach(pair => {
-            const brainThoughts = thinkBrain(pair.brain, pair.game);
-            pair.game.ship.loadInputs(...brainThoughts);
-            pair.game.update();
-        });
-        fittest.game.draw();
-        gameGraphics.createText(`Generation: ${population.generationCounter}`, 5, gameGraphics.height - 5, { baseline: 'bottom' }).draw();
-        gameGraphics.createText(`Alive: ${stillAlive.length} / ${population.popSize}`, 5, gameGraphics.height - 15, { baseline: 'bottom' }).draw();
-        gameGraphics.createText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, gameGraphics.height - 25, { baseline: 'bottom' }).draw();
-        gameGraphics.createText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, gameGraphics.height - 35, { baseline: 'bottom' }).draw();
-    }
-    else {
-        currentGenerationTimeAlive = 0;
-        population.nextGeneration();
-        if (population.generationCounter > 0) {
-            population.speciate();
-            fittestRecords.push(population.getFittest());
+    currentGenerationTimeAlive += delta / 1000;
+    for (let i = 0; i < gameScale; i++) {
+        const stillAlive = pairings.filter(pair => pair.game.ship.alive);
+        if (currentGenerationTimeAlive > maxTimeAlive) {
+            stillAlive.forEach(pair => pair.game.ship.kill());
         }
-        pairings = population.members.map(member => {
-            return {
-                brain: member,
-                game: new AsteroidsGame(gameGraphics)
-            };
-        });
-        addListeners(pairings);
+        if (stillAlive.length > 0) {
+            const fittest = stillAlive.reduce((best, curr) => curr.brain.fitness > best.brain.fitness ? curr : best);
+            asteroidsGraphics.bg();
+            stillAlive.forEach(pair => {
+                const brainThoughts = thinkBrain(pair.brain, pair.game);
+                pair.game.ship.loadInputs(...brainThoughts);
+                pair.game.update(delta);
+            });
+            fittest.game.draw();
+            asteroidsGraphics.createText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5, { baseline: 'bottom' }).draw();
+            asteroidsGraphics.createText(`Alive: ${stillAlive.length} / ${asteroidsPopulation.popSize}`, 5, asteroidsGraphics.height - 15, { baseline: 'bottom' }).draw();
+            asteroidsGraphics.createText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, asteroidsGraphics.height - 25, { baseline: 'bottom' }).draw();
+            asteroidsGraphics.createText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, asteroidsGraphics.height - 35, { baseline: 'bottom' }).draw();
+            asteroidsGraphics.createText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45, { baseline: 'bottom' }).draw();
+        }
+        else {
+            currentGenerationTimeAlive = 0;
+            asteroidsPopulation.nextGeneration();
+            if (asteroidsPopulation.generationCounter > 0) {
+                asteroidsPopulation.speciate();
+                fittestRecords.push(asteroidsPopulation.getFittest());
+            }
+            pairings = asteroidsPopulation.members.map(member => {
+                return {
+                    brain: member,
+                    game: new Asteroids(asteroidsGraphics)
+                };
+            });
+            addListeners(pairings);
+        }
     }
     window.requestAnimationFrame(loop);
 }
