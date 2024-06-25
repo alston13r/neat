@@ -282,7 +282,7 @@ class Population {
     const round: (x: number, p: number) => number = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
     new TextGraphics(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
-      5, 5, '#fff', 20, 'left', 'top').draw()
+      5, 5, { size: 20 }).draw()
 
     const getMemberText = (brain: Brain, i: number) => {
       const a: number = round(brain.fitness, 5)
@@ -291,12 +291,12 @@ class Population {
     }
     this.members.slice()
       .sort((a, b) => (this.fitnessType == OptimizationType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
-      .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10, '#fff', 10, 'left', 'top'))
+      .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10))
       .forEach(member => member.draw())
 
     if (this.speciation) {
       new TextGraphics(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
-        250, 5, '#fff', 20, 'left', 'top')
+        250, 5, { size: 20 })
         .draw()
 
       const getSpeciesText = (species: Species) => {
@@ -306,7 +306,7 @@ class Population {
         const d: number = species.gensSinceImproved
         return `<${a}, ${d}> ${b} -> ${c}`
       }
-      this.speciesList.map((s, i) => new TextGraphics(this.graphics, getSpeciesText(s), 250, 25 + i * 10, '#fff', 10, 'left', 'top'))
+      this.speciesList.map((s, i) => new TextGraphics(this.graphics, getSpeciesText(s), 250, 25 + i * 10))
         .forEach(species => species.draw())
     }
   }
