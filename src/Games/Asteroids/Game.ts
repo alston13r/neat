@@ -73,10 +73,10 @@ class Asteroids extends EventTarget implements Drawable {
     }
   }
 
-  update(delta: number = 0, keysPressed?: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }): void {
+  update(keysPressed?: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }): void {
     this.dispatchEvent(new CustomEvent<GameInfo>('update', { detail: this.getInfo() }))
     if (keysPressed) this.loadInputs(keysPressed)
-    this.ship.update(delta)
+    this.ship.update()
     for (let asteroid of this.asteroids) {
       asteroid.update()
     }

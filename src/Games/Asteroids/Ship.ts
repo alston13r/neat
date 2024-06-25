@@ -1,6 +1,6 @@
 class Ship implements Drawable {
   static MaxSpeed: number = 3
-  static ShootDelay: number = 200
+  static ShootDelay: number = 33
 
   static TopAngle: number = 0
   static SideAngle: number = 2.4
@@ -61,8 +61,8 @@ class Ship implements Drawable {
     if (shoot > 0.9) this.shoot()
   }
 
-  update(delta: number = 0): void {
-    this.shootTimer -= delta
+  update(): void {
+    this.shootTimer--
     this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay)
     Vector.Add(this.pos, this.velocity)
     this.velocity = this.velocity.scale(0.999)

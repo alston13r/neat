@@ -1,4 +1,3 @@
-Convert time factor for shoot delay to a frame factor
 Improve creation of population with an options object
 Improve raycasting
 Add workers
