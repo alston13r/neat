@@ -1,3 +1,5 @@
+Improve creation of population with an options object
+  or somthn
 Improve raycasting
 Add workers
 Add more shapes for intersection testing with raycasting
