@@ -79,9 +79,10 @@ let lastTimestamp: number = 0
 function loop(timestamp: number) {
   const delta: number = clamp(timestamp - lastTimestamp, 0, 1000)
   lastTimestamp = timestamp
-  currentGenerationTimeAlive += delta / 1000
 
   for (let i = 0; i < gameScale; i++) {
+    currentGenerationTimeAlive += delta / 1000
+
     const stillAlive: GameBrainPair[] = pairings.filter(pair => pair.game.ship.alive)
 
     if (currentGenerationTimeAlive > maxTimeAlive) {
@@ -95,7 +96,7 @@ function loop(timestamp: number) {
       stillAlive.forEach(pair => {
         const brainThoughts: number[] = thinkBrain(pair.brain, pair.game)
         pair.game.ship.loadInputs(...brainThoughts)
-        pair.game.update(delta)
+        pair.game.update()
       })
 
       fittest.game.draw()
