@@ -1,6 +1,3 @@
-/**
- * TODO
- */
 class TextGraphics {
     point;
     graphics;
@@ -9,42 +6,22 @@ class TextGraphics {
     size;
     align;
     baseline;
-    /**
-     * TODO
-     * @param graphics
-     * @param text
-     * @param x
-     * @param y
-     * @param color
-     * @param size
-     * @param align
-     * @param baseline
-     */
-    constructor(graphics, text, x, y, color = '#fff', size = 10, align = 'center', baseline = 'middle') {
+    constructor(graphics, text, x, y, options = {}) {
         this.graphics = graphics;
         this.text = text;
         this.point = new Vector(x, y);
         this.text = text;
-        this.color = color;
-        this.size = size;
-        this.align = align;
-        this.baseline = baseline;
+        this.color = options.color || '#fff';
+        this.size = options.size || 10;
+        this.align = options.align || 'left';
+        this.baseline = options.baseline || 'top';
     }
-    /**
-     * TODO
-     */
     get x() {
         return this.point.x;
     }
-    /**
-   * TODO
-   */
     get y() {
         return this.point.y;
     }
-    /**
-     * TODO
-     */
     draw() {
         const ctx = this.graphics.ctx;
         ctx.fillStyle = this.color;

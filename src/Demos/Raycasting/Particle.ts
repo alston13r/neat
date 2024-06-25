@@ -41,7 +41,7 @@ class Particle implements Drawable {
         }
       }
       if (closest) {
-        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, '#fff').draw()
+        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, { color: '#fff' }).draw()
       }
     }
   }
@@ -61,7 +61,7 @@ class Particle implements Drawable {
         }
       }
       if (closest) {
-        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, '#fff').draw()
+        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, { color: '#fff' }).draw()
       }
     }
   }
@@ -81,13 +81,13 @@ class Particle implements Drawable {
         }
       }
       if (closest) {
-        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, '#fff').draw()
+        this.graphics.createLine(this.pos.x, this.pos.y, closest.x, closest.y, { color: '#fff' }).draw()
       }
     }
   }
 
   draw(): void {
-    this.graphics.createCircle(this.pos.x, this.pos.y, 8, true, '#fff').draw()
+    this.graphics.createCircle(this.pos.x, this.pos.y, 8).draw()
     for (let ray of this.rays) {
       ray.draw()
     }

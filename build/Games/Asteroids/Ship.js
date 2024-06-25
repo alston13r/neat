@@ -14,12 +14,12 @@ class Ship {
     heading;
     velocity;
     lasers;
-    canShoot;
     alive;
     top;
     left;
     right;
     rays;
+    shootTimer = 0;
     constructor(game, pos) {
         this.game = game;
         this.graphics = game.graphics;
@@ -27,7 +27,6 @@ class Ship {
         this.heading = -Math.PI / 2;
         this.velocity = new Vector();
         this.lasers = [];
-        this.canShoot = true;
         this.alive = true;
         this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(pos);
         this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos);
@@ -36,6 +35,9 @@ class Ship {
             .setGraphics(this.graphics)
             .setLength(Ship.RayLength));
         this.updateRays();
+    }
+    get canShoot() {
+        return this.shootTimer <= 0;
     }
     kill() {
         this.alive = false;
@@ -48,7 +50,9 @@ class Ship {
         if (shoot > 0.9)
             this.shoot();
     }
-    update() {
+    update(delta = 0) {
+        this.shootTimer -= delta;
+        this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay);
         Vector.Add(this.pos, this.velocity);
         this.velocity = this.velocity.scale(0.999);
         this.wrap();
@@ -96,14 +100,11 @@ class Ship {
     shoot() {
         if (this.canShoot) {
             new Laser(this);
-            this.canShoot = false;
-            setTimeout(() => {
-                this.canShoot = true;
-            }, Ship.ShootDelay);
+            this.shootTimer = Ship.ShootDelay;
         }
     }
     draw() {
-        this.graphics.createTriangle(this.top.x, this.top.y, this.left.x, this.left.y, this.right.x, this.right.y, false, '#fff', true).draw();
+        this.graphics.createTriangle(...this.top.toXY(), ...this.left.toXY(), ...this.right.toXY(), { fill: false, stroke: true }).draw();
         this.lasers.forEach(laser => laser.draw());
     }
     getRayInfo(debug = false) {
@@ -117,7 +118,7 @@ class Ship {
                 info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) });
                 if (debug) {
                     ray.draw(hitting ? '#0f0' : '#00f');
-                    this.graphics.createCircle(point.x, point.y, 5, true, '#f00').draw();
+                    this.graphics.createCircle(point.x, point.y, 5, { color: '#f00' }).draw();
                 }
             }
             else {

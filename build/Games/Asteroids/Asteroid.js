@@ -42,7 +42,7 @@ class Asteroid {
     }
     draw() {
         const points = this.points.map(point => point.add(this.pos));
-        this.graphics.createPolygon(points, false, '#fff', true).draw();
+        this.graphics.createPolygon(points, { fill: false, stroke: true }).draw();
     }
     wrap() {
         const x = this.pos.x;
@@ -74,7 +74,7 @@ class Asteroid {
         return laser.pos.sub(this.pos).mag() <= this.collisionRadius;
     }
     getCollisionCircle() {
-        return this.graphics.createCircle(this.pos.x, this.pos.y, this.collisionRadius, false, '#750101', true);
+        return this.graphics.createCircle(this.pos.x, this.pos.y, this.collisionRadius, { fill: false, stroke: true, color: '#750101' });
     }
     getInfo() {
         let d = this.pos.sub(this.game.ship.pos);

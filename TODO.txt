@@ -1,3 +1,4 @@
+Improve creation of population with an options object
 Improve raycasting
 Add workers
 Add more shapes for intersection testing with raycasting
@@ -5,7 +6,6 @@ Make navigator site a little more cool looking
   Add some gifs of them working and individual
   tiles for each demo page
 Allow saving of neural networks and topologies
-Allow scaling time for games
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
 Debug NeuralNetwork

@@ -1,4 +1,4 @@
-class AsteroidsGame extends EventTarget implements Drawable {
+class Asteroids extends EventTarget implements Drawable {
   static MinAsteroids = 5
 
   asteroids: Asteroid[] = []
@@ -17,15 +17,12 @@ class AsteroidsGame extends EventTarget implements Drawable {
     this.width = graphics.width
     this.height = graphics.height
     this.ship = this.createShip()
-    for (let i = 0; i < AsteroidsGame.MinAsteroids; i++) {
+    for (let i = 0; i < Asteroids.MinAsteroids; i++) {
       this.createAsteroid()
     }
 
     this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++)
     this.addEventListener('update', (ev) => ev.detail.game.frameCounter++)
-
-    // figure out how to dispatch start event
-    // maybe add a delay or modify constructor to take listener
   }
 
   createShip(): Ship {
@@ -69,17 +66,17 @@ class AsteroidsGame extends EventTarget implements Drawable {
   }
 
   checkAsteroidCount(): void {
-    if (this.spawningAsteroids && this.asteroids.length < AsteroidsGame.MinAsteroids) {
-      for (let i = 0; i < AsteroidsGame.MinAsteroids - this.asteroids.length; i++) {
+    if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
+      for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
         this.createAsteroid(true)
       }
     }
   }
 
-  update(keysPressed?: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }): void {
+  update(delta: number = 0, keysPressed?: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }): void {
     this.dispatchEvent(new CustomEvent<GameInfo>('update', { detail: this.getInfo() }))
     if (keysPressed) this.loadInputs(keysPressed)
-    this.ship.update()
+    this.ship.update(delta)
     for (let asteroid of this.asteroids) {
       asteroid.update()
     }

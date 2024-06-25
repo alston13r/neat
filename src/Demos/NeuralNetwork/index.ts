@@ -55,16 +55,16 @@ function neuralNetLoop(): void {
     neuralNet.mutateActivationFunctions()
   }
 
-  neuralNetGraphics.createText(`Current iteration: ${currentIteration}`, 5, 5, '#fff', 20, 'left', 'top').draw()
+  neuralNetGraphics.createText(`Current iteration: ${currentIteration}`, 5, 5, { size: 20 }).draw()
 
   for (let [i, pair] of desired.ordered.entries()) {
     neuralNetGraphics.createText(
       '[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']',
-      5, 25 + i * 20, '#fff', 20, 'left', 'top'
+      5, 25 + i * 20, { size: 20 }
     ).draw()
   }
 
-  if (solutionFound) neuralNetGraphics.createText('solution', 5, 105, '#fff', 20, 'left', 'top').draw()
+  if (solutionFound) neuralNetGraphics.createText('solution', 5, 105, { size: 20 }).draw()
   else if (currentIteration < maxIterations) window.requestAnimationFrame(neuralNetLoop)
 }
 

@@ -1,32 +1,20 @@
-/**
- * TODO
- */
 interface Drawable {
   graphics: Graphics
   draw(): void
 }
 
-/**
- * TODO
- */
 interface HasSize {
   size: Vector
   width: number
   height: number
 }
 
-/**
- * TODO
- */
 interface HasPoint {
   point: Vector
   x: number
   y: number
 }
 
-/**
- * TODO
- */
 interface HasTwoPoints {
   point1: Vector
   point2: Vector
@@ -36,9 +24,6 @@ interface HasTwoPoints {
   y2: number
 }
 
-/**
- * TODO
- */
 interface HasThreePoints {
   point1: Vector
   point2: Vector

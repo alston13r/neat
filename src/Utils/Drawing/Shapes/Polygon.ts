@@ -6,14 +6,13 @@ class Polygon implements Drawable {
   stroke: boolean
   lineWidth: number
 
-  constructor(graphics: Graphics, points: Vector[], fill: boolean = true,
-    color: string = '#fff', stroke: boolean = false, lineWidth: number = 1) {
+  constructor(graphics: Graphics, points: Vector[], options: PolygonGraphicsOptions = {}) {
     this.graphics = graphics
     this.points = points
-    this.fill = fill
-    this.color = color
-    this.stroke = stroke
-    this.lineWidth = lineWidth
+    this.fill = options.fill == undefined ? true : options.fill
+    this.color = options.color || '#fff'
+    this.stroke = options.stroke == undefined ? false : options.stroke
+    this.lineWidth = options.lineWidth || 1
   }
 
   draw(): void {

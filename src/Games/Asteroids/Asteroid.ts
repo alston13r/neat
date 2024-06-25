@@ -2,7 +2,7 @@ class Asteroid implements Drawable {
   static SizeCutoff = 10
 
   graphics: Graphics
-  game: AsteroidsGame
+  game: Asteroids
   pos: Vector
   radius: number
   offsets: number[]
@@ -12,7 +12,7 @@ class Asteroid implements Drawable {
   collisionRadius: number
   points: Vector[]
 
-  constructor(game: AsteroidsGame, pos: Vector, radius?: number) {
+  constructor(game: Asteroids, pos: Vector, radius?: number) {
     this.game = game
     this.graphics = game.graphics
     this.pos = pos
@@ -47,7 +47,7 @@ class Asteroid implements Drawable {
 
   draw(): void {
     const points: Vector[] = this.points.map(point => point.add(this.pos))
-    this.graphics.createPolygon(points, false, '#fff', true).draw()
+    this.graphics.createPolygon(points, { fill: false, stroke: true }).draw()
   }
 
   wrap(): void {
@@ -76,7 +76,8 @@ class Asteroid implements Drawable {
   }
 
   getCollisionCircle(): Circle {
-    return this.graphics.createCircle(this.pos.x, this.pos.y, this.collisionRadius, false, '#750101', true)
+    return this.graphics.createCircle(this.pos.x, this.pos.y, this.collisionRadius,
+      { fill: false, stroke: true, color: '#750101' })
   }
 
   getInfo(): AsteroidInfo {

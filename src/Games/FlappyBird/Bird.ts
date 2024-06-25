@@ -23,8 +23,9 @@ class Bird {
   }
 
   draw(many: boolean = false): void {
-    this.graphics.createCircle(this.pos.x, this.pos.y, Bird.Size, false,
-      `rgba(255, 255, 255, ${many ? 0.4 : 1})`, true).draw()
+    this.graphics.createCircle(this.pos.x, this.pos.y, Bird.Size,
+      { fill: false, stroke: true, color: `rgba(255, 255, 255, ${many ? 0.4 : 1})` },
+    ).draw()
   }
 
   loadInputs(up: number = 0): void {

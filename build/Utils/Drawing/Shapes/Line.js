@@ -1,56 +1,28 @@
-/**
- * TODO
- */
 class Line {
     point1;
     point2;
     graphics;
     color;
     lineWidth;
-    /**
-     * TODO
-     * @param graphics
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @param color
-     * @param lineWidth
-     */
-    constructor(graphics, x1, y1, x2, y2, color = '#0f0', lineWidth = 1) {
+    constructor(graphics, x1, y1, x2, y2, options = {}) {
         this.graphics = graphics;
         this.point1 = new Vector(x1, y1);
         this.point2 = new Vector(x2, y2);
-        this.color = color;
-        this.lineWidth = lineWidth;
+        this.color = options.color || '#0f0';
+        this.lineWidth = options.lineWidth || 1;
     }
-    /**
-     * TODO
-     */
     get x1() {
         return this.point1.x;
     }
-    /**
-     * TODO
-     */
     get y1() {
         return this.point1.y;
     }
-    /**
-     * TODO
-     */
     get x2() {
         return this.point2.x;
     }
-    /**
-     * TODO
-     */
     get y2() {
         return this.point2.y;
     }
-    /**
-     * TODO
-     */
     draw() {
         const ctx = this.graphics.ctx;
         ctx.strokeStyle = this.color;

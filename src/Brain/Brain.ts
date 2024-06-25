@@ -28,7 +28,7 @@ class Brain {
   /** Toggle for connection disabling */
   static AllowDisablingConnections: boolean = false
   /** Toggle for allowing recurrent connections */
-  static AllowRecurrent: boolean = false
+  static AllowRecurrent: boolean = true
   /** The chance for a new connection to be made */
   static AddConnectionChance: number = 0.4
   /** The chance for a connection to be disabled */
@@ -460,9 +460,9 @@ class Brain {
     const textArray: TextGraphics[] = []
 
     for (let [node, pos] of nodePositions) {
-      circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, true, '#fff')) // base
-      circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, true, '#f00')) // input
-      circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, true, '#00f')) // output
+      circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, { color: '#fff' })) // base
+      circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, { color: '#f00' })) // input
+      circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, { color: '#00f' })) // output
       textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17))
       textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
     }
@@ -478,18 +478,17 @@ class Brain {
       else if (connection.recurrent) color = '#22f'
       const point1: Vector = inputNodePos.add(new Vector(7, 0))
       const point2: Vector = outputNodePos.sub(new Vector(7, 0))
-      connectionArray.push(this.graphics.createLine(point1.x, point1.y, point2.x, point2.y, color))
+      connectionArray.push(this.graphics.createLine(point1.x, point1.y, point2.x, point2.y, { color }))
     }
 
     circleArray.forEach(circle => circle.draw())
     connectionArray.forEach(line => line.draw())
     textArray.forEach(text => text.draw())
 
-    this.graphics.createText(this.fitness.toString(), 10, 10, '#fff', 10, 'left', 'top').draw()
+    this.graphics.createText(this.fitness.toString(), 10, 10).draw()
 
     if (options.outline) {
-      this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight,
-        false, '#fff', true, 1).draw()
+      this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight).draw()
     }
   }
 }
