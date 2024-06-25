@@ -28,7 +28,7 @@ class Brain {
   /** Toggle for connection disabling */
   static AllowDisablingConnections: boolean = false
   /** Toggle for allowing recurrent connections */
-  static AllowRecurrent: boolean = false
+  static AllowRecurrent: boolean = true
   /** The chance for a new connection to be made */
   static AddConnectionChance: number = 0.4
   /** The chance for a connection to be disabled */
