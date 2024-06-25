@@ -2,7 +2,7 @@ class Asteroid implements Drawable {
   static SizeCutoff = 10
 
   graphics: Graphics
-  game: AsteroidsGame
+  game: Asteroids
   pos: Vector
   radius: number
   offsets: number[]
@@ -12,7 +12,7 @@ class Asteroid implements Drawable {
   collisionRadius: number
   points: Vector[]
 
-  constructor(game: AsteroidsGame, pos: Vector, radius?: number) {
+  constructor(game: Asteroids, pos: Vector, radius?: number) {
     this.game = game
     this.graphics = game.graphics
     this.pos = pos

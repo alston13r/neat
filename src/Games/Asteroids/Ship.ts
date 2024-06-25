@@ -12,26 +12,26 @@ class Ship implements Drawable {
   static RayLength: number = 300
 
   pos: Vector
-  game: AsteroidsGame
+  game: Asteroids
   graphics: Graphics
   heading: number
   velocity: Vector
   lasers: Laser[]
-  canShoot: boolean
   alive: boolean
   top: Vector
   left: Vector
   right: Vector
   rays: Ray[]
 
-  constructor(game: AsteroidsGame, pos: Vector) {
+  shootTimer: number = 0
+
+  constructor(game: Asteroids, pos: Vector) {
     this.game = game
     this.graphics = game.graphics
     this.pos = pos || new Vector()
     this.heading = -Math.PI / 2
     this.velocity = new Vector()
     this.lasers = []
-    this.canShoot = true
     this.alive = true
     this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(pos)
     this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos)
@@ -43,6 +43,10 @@ class Ship implements Drawable {
         .setLength(Ship.RayLength)
     )
     this.updateRays()
+  }
+
+  get canShoot(): boolean {
+    return this.shootTimer <= 0
   }
 
   kill(): void {
@@ -57,7 +61,9 @@ class Ship implements Drawable {
     if (shoot > 0.9) this.shoot()
   }
 
-  update(): void {
+  update(delta: number = 0): void {
+    this.shootTimer -= delta
+    this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay)
     Vector.Add(this.pos, this.velocity)
     this.velocity = this.velocity.scale(0.999)
     this.wrap()
@@ -105,10 +111,7 @@ class Ship implements Drawable {
   shoot(): void {
     if (this.canShoot) {
       new Laser(this)
-      this.canShoot = false
-      setTimeout(() => {
-        this.canShoot = true
-      }, Ship.ShootDelay)
+      this.shootTimer = Ship.ShootDelay
     }
   }
 

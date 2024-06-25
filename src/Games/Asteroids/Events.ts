@@ -1,5 +1,5 @@
 interface AsteroidsGameInfo {
-  game: AsteroidsGame
+  game: Asteroids
 }
 
 interface RayInfo {
@@ -9,7 +9,7 @@ interface RayInfo {
 }
 
 interface ShipInfo {
-  game: AsteroidsGame
+  game: Asteroids
   ship: Ship
   alive: boolean
   posX: number
@@ -22,7 +22,7 @@ interface ShipInfo {
 }
 
 interface AsteroidInfo {
-  game: AsteroidsGame
+  game: Asteroids
   asteroid: Asteroid
   velX: number
   velY: number
@@ -36,9 +36,9 @@ interface AsteroidsEventMap extends GameEventMap {
   'asteroiddestroyed': CustomEvent<AsteroidInfo>
 }
 
-interface AsteroidsGame extends EventTarget {
-  addEventListener<K extends keyof AsteroidsEventMap>(type: K, listener: (this: AsteroidsGame, ev: AsteroidsEventMap[K]) => void, options?: boolean | AddEventListenerOptions): void
+interface Asteroids extends EventTarget {
+  addEventListener<K extends keyof AsteroidsEventMap>(type: K, listener: (this: Asteroids, ev: AsteroidsEventMap[K]) => void, options?: boolean | AddEventListenerOptions): void
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void
-  removeEventListener<K extends keyof AsteroidsEventMap>(type: K, listener: (this: AsteroidsGame, ev: AsteroidsEventMap[K]) => void, options?: boolean | EventListenerOptions): void
+  removeEventListener<K extends keyof AsteroidsEventMap>(type: K, listener: (this: Asteroids, ev: AsteroidsEventMap[K]) => void, options?: boolean | EventListenerOptions): void
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void
 }
