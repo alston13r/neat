@@ -113,7 +113,8 @@ class Ship implements Drawable {
   }
 
   draw(): void {
-    this.graphics.createTriangle(this.top.x, this.top.y, this.left.x, this.left.y, this.right.x, this.right.y, false, '#fff', true).draw()
+    this.graphics.createTriangle(...this.top.toXY(), ...this.left.toXY(), ...this.right.toXY(),
+      { fill: false, stroke: true }).draw()
     this.lasers.forEach(laser => laser.draw())
   }
 
@@ -131,7 +132,7 @@ class Ship implements Drawable {
 
         if (debug) {
           ray.draw(hitting ? '#0f0' : '#00f')
-          this.graphics.createCircle(point.x, point.y, 5, true, '#f00').draw()
+          this.graphics.createCircle(point.x, point.y, 5, { color: '#f00' }).draw()
         }
       } else {
         info.push({ ray, hitting: false, distance: -1 })

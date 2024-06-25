@@ -22,7 +22,7 @@ class Laser implements Drawable {
   }
 
   draw(): void {
-    this.graphics.createCircle(this.pos.x, this.pos.y, this.radius, false, '#fff', true).draw()
+    this.graphics.createCircle(this.pos.x, this.pos.y, this.radius, { fill: false, stroke: true }).draw()
   }
 
   terminate(): void {

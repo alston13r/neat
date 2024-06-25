@@ -1,6 +1,3 @@
-/**
- * TODO
- */
 class TextGraphics implements HasPoint, Drawable {
   point: Vector
   graphics: Graphics
@@ -10,46 +7,25 @@ class TextGraphics implements HasPoint, Drawable {
   align: CanvasTextDrawingStyles['textAlign']
   baseline: CanvasTextDrawingStyles['textBaseline']
 
-  /**
-   * TODO
-   * @param graphics 
-   * @param text 
-   * @param x 
-   * @param y 
-   * @param color 
-   * @param size 
-   * @param align 
-   * @param baseline 
-   */
-  constructor(graphics: Graphics, text: string, x: number, y: number, color = '#fff', size = 10,
-    align: CanvasTextDrawingStyles['textAlign'] = 'center', baseline: CanvasTextDrawingStyles['textBaseline'] = 'middle') {
+  constructor(graphics: Graphics, text: string, x: number, y: number, options: TextGraphicsOptions = {}) {
     this.graphics = graphics
     this.text = text
     this.point = new Vector(x, y)
     this.text = text
-    this.color = color
-    this.size = size
-    this.align = align
-    this.baseline = baseline
+    this.color = options.color || '#fff'
+    this.size = options.size || 10
+    this.align = options.align || 'left'
+    this.baseline = options.baseline || 'top'
   }
 
-  /**
-   * TODO
-   */
   get x(): number {
     return this.point.x
   }
 
-  /**
- * TODO
- */
   get y(): number {
     return this.point.y
   }
 
-  /**
-   * TODO
-   */
   draw(): void {
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
     ctx.fillStyle = this.color

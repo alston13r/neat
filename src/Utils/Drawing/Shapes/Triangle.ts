@@ -1,7 +1,4 @@
-/**
- * TODO
- */
-class Triangle implements HasThreePoints, Drawable {
+class TriangleGraphics implements HasThreePoints, Drawable {
   point1: Vector
   point2: Vector
   point3: Vector
@@ -11,66 +8,42 @@ class Triangle implements HasThreePoints, Drawable {
   stroke: boolean
   lineWidth: number
 
-  /**
-   * TODO
-   */
   constructor(graphics: Graphics, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number,
-    fill: boolean = true, color: string = '#fff', stroke: boolean = false, lineWidth: number = 1) {
+    options: TriangleGraphicsOptions = {}) {
     this.graphics = graphics
     this.point1 = new Vector(x1, y1)
     this.point2 = new Vector(x2, y2)
     this.point3 = new Vector(x3, y3)
-    this.fill = fill
-    this.color = color
-    this.stroke = stroke
-    this.lineWidth = lineWidth
+    this.fill = options.fill == undefined ? true : options.fill
+    this.color = options.color || '#fff'
+    this.stroke = options.stroke == undefined ? false : options.stroke
+    this.lineWidth = options.lineWidth || 1
   }
 
-  /**
-   * TODO
-   */
   get x1(): number {
     return this.point1.x
   }
 
-  /**
-   * TODO
-   */
   get y1(): number {
     return this.point1.y
   }
 
-  /**
-   * TODO
-   */
   get x2(): number {
     return this.point2.x
   }
 
-  /**
-   * TODO
-   */
   get y2(): number {
     return this.point2.y
   }
 
-  /**
-   * TODO
-   */
   get x3(): number {
     return this.point3.x
   }
 
-  /**
-   * TODO
-   */
   get y3(): number {
     return this.point3.y
   }
 
-  /**
-   * TODO
-   */
   draw(): void {
     if (!this.fill && !this.stroke) return
     const ctx: CanvasRenderingContext2D = this.graphics.ctx

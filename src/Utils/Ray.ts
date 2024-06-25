@@ -122,6 +122,6 @@ class Ray implements Drawable {
 
   draw(color: string = '#fff'): void {
     const d: Vector = this.pos.add(this.dir.scale(this.length))
-    this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, color).draw()
+    this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, { color }).draw()
   }
 }
