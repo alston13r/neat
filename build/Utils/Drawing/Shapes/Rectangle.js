@@ -1,6 +1,3 @@
-/**
- * TODO
- */
 class Rectangle {
     point;
     size;
@@ -9,54 +6,27 @@ class Rectangle {
     color;
     stroke;
     lineWidth;
-    /**
-     * TODO
-     * @param graphics
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param fill
-     * @param color
-     * @param stroke
-     * @param lineWidth
-     */
-    constructor(graphics, x, y, width, height, fill = true, color = '#fff', stroke = false, lineWidth = 1) {
+    constructor(graphics, x, y, width, height, options = {}) {
         this.graphics = graphics;
         this.point = new Vector(x, y);
         this.size = new Vector(width, height);
-        this.fill = fill;
-        this.color = color;
-        this.stroke = stroke;
-        this.lineWidth = lineWidth;
+        this.fill = options.fill == undefined ? true : options.fill;
+        this.color = options.color || '#fff';
+        this.stroke = options.stroke == undefined ? false : options.stroke;
+        this.lineWidth = options.lineWidth || 1;
     }
-    /**
-     * TODO
-     */
     get x() {
         return this.point.x;
     }
-    /**
-     * TODO
-     */
     get y() {
         return this.point.y;
     }
-    /**
-     * TODO
-     */
     get width() {
         return this.size.x;
     }
-    /**
-     * TODO
-     */
     get height() {
         return this.size.y;
     }
-    /**
-     * TODO
-     */
     draw() {
         if (!this.fill && !this.stroke)
             return;

@@ -18,7 +18,7 @@ class Laser {
         this.wrap();
     }
     draw() {
-        this.graphics.createCircle(this.pos.x, this.pos.y, this.radius, false, '#fff', true).draw();
+        this.graphics.createCircle(this.pos.x, this.pos.y, this.radius, { fill: false, stroke: true }).draw();
     }
     terminate() {
         this.ship.lasers.splice(this.ship.lasers.indexOf(this), 1);

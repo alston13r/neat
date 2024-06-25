@@ -103,7 +103,7 @@ class Ray {
     }
     draw(color = '#fff') {
         const d = this.pos.add(this.dir.scale(this.length));
-        this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, color).draw();
+        this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, { color }).draw();
     }
 }
 //# sourceMappingURL=Ray.js.map
