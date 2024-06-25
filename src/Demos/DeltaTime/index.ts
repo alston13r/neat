@@ -1,5 +1,5 @@
 const asteroidsGraphics: Graphics = new Graphics().setSize(800, 600).appendToBody()
-const asteroidsGame: Asteroids = new Asteroids()
+const asteroidsGame: DeltaTimeAsteroids = new DeltaTimeAsteroids()
 
 asteroidsGame.setGraphics(asteroidsGraphics)
 
@@ -10,5 +10,9 @@ function deltaTimeLoop(timestamp?: number): void {
   lastDeltaTimeTimestamp = timestamp
 
   asteroidsGame.draw()
-  asteroidsGraphics.createText(deltaTime.toString(), 5, 5, '#fff', 20, 'left', 'top')
+  asteroidsGraphics.createText(deltaTime.toString(), 5, 5, '#fff', 20, 'left', 'top').draw()
+
+  window.requestAnimationFrame(deltaTimeLoop)
 }
+
+window.requestAnimationFrame(deltaTimeLoop)
