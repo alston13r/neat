@@ -1,30 +1,30 @@
-class DeltaTimeAsteroids extends EventTarget implements Drawable {
-  // static MinAsteroids = 5
+// class DeltaTimeAsteroids extends EventTarget implements Drawable {
+//   // static MinAsteroids = 5
 
-  graphics: Graphics
+//   graphics: Graphics
 
-  draw(): void {
-    this.graphics.bg()
-  }
+//   draw(): void {
+//     this.graphics.bg()
+//   }
 
-  setGraphics(graphics: Graphics): DeltaTimeAsteroids {
-    this.graphics = graphics
-    return this
-  }
+//   setGraphics(graphics: Graphics): DeltaTimeAsteroids {
+//     this.graphics = graphics
+//     return this
+//   }
 
-  ship: DeltaTimeShip
+//   ship: DeltaTimeShip
 
-  createShip(): DeltaTimeShip {
-    this.ship = new DeltaTimeShip(this)
-    this.dispatchEvent(new CustomEvent<DeltaTimeShipInfo>('shipcreated', { detail: this.ship.getInfo() }))
-    return this.ship
-  }
+//   createShip(): DeltaTimeShip {
+//     this.ship = new DeltaTimeShip(this)
+//     this.dispatchEvent(new CustomEvent<DeltaTimeShipInfo>('shipcreated', { detail: this.ship.getInfo() }))
+//     return this.ship
+//   }
 
-  update(delta: number): void {
-    this.ship.update(delta)
-  }
+//   update(delta: number): void {
+//     this.ship.update(delta)
+//   }
 
-  // initializeAsteroids(): void {
+//   // initializeAsteroids(): void {
 
-  // }
-}
+//   // }
+// }
