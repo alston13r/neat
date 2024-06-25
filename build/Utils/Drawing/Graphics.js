@@ -55,8 +55,12 @@ class Graphics {
         return new Polygon(this, points, fill, color, stroke, lineWidth);
     }
     //TODO
-    createText(text, x, y, color = '#fff', size = 10, align = 'center', baseline = 'middle') {
-        return new TextGraphics(this, text, x, y, color, size, align, baseline);
+    createText(text, x, y, options = {}) {
+        options.color ||= '#fff';
+        options.size ||= 10;
+        options.align ||= 'left';
+        options.baseline ||= 'top';
+        return new TextGraphics(this, text, x, y, options.color, options.size, options.align, options.baseline);
     }
     //TODO
     bg(color = '#000') {

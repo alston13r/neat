@@ -1,14 +1,6 @@
-/**
- * TODO
- */
 class Vector {
     x;
     y;
-    /**
-     * TODO
-     * @param x
-     * @param y
-     */
     constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
@@ -18,11 +10,6 @@ class Vector {
         a.y += b.y;
         return a;
     }
-    /**
-     * TODO
-     * @param v
-     * @returns
-     */
     add(v) {
         return new Vector(this.x + v.x, this.y + v.y);
     }
@@ -31,9 +18,6 @@ class Vector {
         a.y -= b.y;
         return a;
     }
-    /**
-     * TODO
-     */
     sub(v) {
         return new Vector(this.x - v.x, this.y - v.y);
     }
@@ -42,11 +26,6 @@ class Vector {
         v.y *= s;
         return v;
     }
-    /**
-     * TODO
-     * @param a
-     * @returns
-     */
     scale(a) {
         return new Vector(a * this.x, a * this.y);
     }
@@ -91,6 +70,11 @@ class Vector {
     }
     toXY() {
         return [this.x, this.y];
+    }
+    static CopyFrom(vector, target) {
+        vector.x = target.x;
+        vector.y = target.y;
+        return vector;
     }
 }
 //# sourceMappingURL=Vector.js.map
