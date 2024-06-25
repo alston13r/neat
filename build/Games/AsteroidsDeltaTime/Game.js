@@ -1,4 +1,5 @@
-class Asteroids extends EventTarget {
+class DeltaTimeAsteroids extends EventTarget {
+    // static MinAsteroids = 5
     graphics;
     draw() {
         this.graphics.bg();
@@ -7,8 +8,14 @@ class Asteroids extends EventTarget {
         this.graphics = graphics;
         return this;
     }
+    ship;
     constructor() {
         super();
+    }
+    createShip() {
+        this.ship = new DeltaTimeShip(this);
+        this.dispatchEvent(new CustomEvent('shipcreated', { detail: this.ship.getInfo() }));
+        return this.ship;
     }
 }
 //# sourceMappingURL=Game.js.map
