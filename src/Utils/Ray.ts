@@ -107,8 +107,8 @@ class Ray2 implements Drawable {
 
     const p1 = vec2.fromValues(P, Q)
     const p2 = vec2.fromValues(R, S)
-    vec2.add(p1, p1, circle.point)
-    vec2.add(p2, p2, circle.point)
+    vec2.add(p1, p1, circle.pos)
+    vec2.add(p2, p2, circle.pos)
 
     const posAddDir = vec2.add(vec2.create(), this.pos, this.dir)
 

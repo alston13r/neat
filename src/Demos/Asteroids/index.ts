@@ -1,4 +1,8 @@
-const asteroidsGraphics: Graphics = new Graphics().setSize(800, 600).appendTo(document.body)
+const asteroidsCanvas = graphics.createCanvas()
+graphics.setSize(asteroidsCanvas, vec2.fromValues(800, 600))
+document.body.appendChild(asteroidsCanvas)
+
+const asteroidsGraphics: Graphics = new Graphics(asteroidsCanvas)
 const asteroidsPopulation: Population = new Population(500, 11, 0, 3, 0.5)
 
 asteroidsGraphics.canvas.style.display = 'block'

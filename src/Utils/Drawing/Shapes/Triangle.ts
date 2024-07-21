@@ -47,15 +47,14 @@ class TriangleGraphics implements HasThreePoints, Drawable {
   draw(): void {
     if (!this.fill && !this.stroke) return
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
-    if (this.fill) ctx.fillStyle = this.color
-    if (this.stroke) ctx.strokeStyle = this.color
-    ctx.lineWidth = this.lineWidth
-    ctx.beginPath()
-    ctx.moveTo(this.x1, this.y1)
-    ctx.lineTo(this.x2, this.y2)
-    ctx.lineTo(this.x3, this.y3)
-    ctx.closePath()
-    if (this.fill) ctx.fill()
-    if (this.stroke) ctx.stroke()
+    if (this.fill) {
+      ctx.fillStyle = this.color
+      graphics.fillTriangle(ctx, this.point1, this.point2, this.point3)
+    }
+    if (this.stroke) {
+      ctx.lineWidth = this.lineWidth
+      ctx.strokeStyle = this.color
+      graphics.strokeTriangle(ctx, this.point1, this.point2, this.point3)
+    }
   }
 }

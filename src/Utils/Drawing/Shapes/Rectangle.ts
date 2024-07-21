@@ -1,5 +1,5 @@
 class Rectangle implements HasPoint, HasSize, Drawable {
-  point: Vec2
+  pos: Vec2
   size: Vec2
   graphics: Graphics
   fill: boolean
@@ -10,7 +10,7 @@ class Rectangle implements HasPoint, HasSize, Drawable {
   constructor(graphics: Graphics, x: number, y: number, width: number, height: number,
     options: RectangleGraphicsOptions = {}) {
     this.graphics = graphics
-    this.point = vec2.fromValues(x, y)
+    this.pos = vec2.fromValues(x, y)
     this.size = vec2.fromValues(width, height)
     this.fill = options.fill == undefined ? true : options.fill
     this.color = options.color || '#fff'
@@ -19,11 +19,11 @@ class Rectangle implements HasPoint, HasSize, Drawable {
   }
 
   get x(): number {
-    return this.point[0]
+    return this.pos[0]
   }
 
   get y(): number {
-    return this.point[1]
+    return this.pos[1]
   }
 
   get width(): number {
@@ -39,12 +39,12 @@ class Rectangle implements HasPoint, HasSize, Drawable {
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
     if (this.fill) {
       ctx.fillStyle = this.color
-      ctx.fillRect(this.x, this.y, this.width, this.height)
+      graphics.fillRect(ctx, this.pos, this.size)
     }
     if (this.stroke) {
       ctx.lineWidth = this.lineWidth
       ctx.strokeStyle = this.color
-      ctx.strokeRect(this.x, this.y, this.width, this.height)
+      graphics.strokeRect(ctx, this.pos, this.size)
     }
   }
 }

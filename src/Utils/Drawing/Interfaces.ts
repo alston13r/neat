@@ -10,14 +10,14 @@ interface HasSize {
 }
 
 interface HasPoint {
-  point: Vec2
+  pos: Vec2
   x: number
   y: number
 }
 
 interface HasTwoPoints {
-  point1: Vec2
-  point2: Vec2
+  pos1: Vec2
+  pos2: Vec2
   x1: number
   y1: number
   x2: number

@@ -1,5 +1,5 @@
 class Circle implements HasPoint, Drawable {
-  point: Vec2
+  pos: Vec2
   graphics: Graphics
   radius: number
   fill: boolean
@@ -10,7 +10,7 @@ class Circle implements HasPoint, Drawable {
   constructor(graphics: Graphics, x: number, y: number, radius: number = 10,
     options: CircleGraphicsOptions = {}) {
     this.graphics = graphics
-    this.point = vec2.fromValues(x, y)
+    this.pos = vec2.fromValues(x, y)
     this.radius = radius
     this.fill = options.fill == undefined ? true : options.fill
     this.color = options.color || '#fff'
@@ -19,26 +19,24 @@ class Circle implements HasPoint, Drawable {
   }
 
   get x(): number {
-    return this.point[0]
+    return this.pos[0]
   }
 
   get y(): number {
-    return this.point[1]
+    return this.pos[1]
   }
 
   draw(): void {
     if (!this.fill && !this.stroke) return
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
     if (this.fill) {
       ctx.fillStyle = this.color
-      ctx.fill()
+      graphics.fillCircle(ctx, this.pos, this.radius)
     }
     if (this.stroke) {
       ctx.lineWidth = this.lineWidth
       ctx.strokeStyle = this.color
-      ctx.stroke()
+      graphics.strokeCircle(ctx, this.pos, this.radius)
     }
   }
 }
