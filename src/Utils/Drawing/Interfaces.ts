@@ -4,20 +4,20 @@ interface Drawable {
 }
 
 interface HasSize {
-  size: Vector
+  size: Vec2
   width: number
   height: number
 }
 
 interface HasPoint {
-  point: Vector
+  point: Vec2
   x: number
   y: number
 }
 
 interface HasTwoPoints {
-  point1: Vector
-  point2: Vector
+  point1: Vec2
+  point2: Vec2
   x1: number
   y1: number
   x2: number
@@ -25,9 +25,9 @@ interface HasTwoPoints {
 }
 
 interface HasThreePoints {
-  point1: Vector
-  point2: Vector
-  point3: Vector
+  point1: Vec2
+  point2: Vec2
+  point3: Vec2
   x1: number
   y1: number
   x2: number

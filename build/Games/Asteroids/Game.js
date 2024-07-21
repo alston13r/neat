@@ -21,12 +21,12 @@ class Asteroids extends EventTarget {
         this.addEventListener('update', (ev) => ev.detail.game.frameCounter++);
     }
     createShip() {
-        const ship = new Ship(this, new Vector(this.width / 2, this.height / 2));
+        const ship = new Ship(this, vec2.fromValues(this.width / 2, this.height / 2));
         this.dispatchEvent(new CustomEvent('shipcreated', { detail: ship.getInfo() }));
         return ship;
     }
     createAsteroid(emit) {
-        const asteroid = new Asteroid(this, new Vector(0, 0));
+        const asteroid = new Asteroid(this, vec2.create());
         this.asteroids.push(asteroid);
         if (emit)
             this.dispatchEvent(new CustomEvent('asteroidcreated', { detail: asteroid.getInfo() }));
@@ -84,8 +84,8 @@ class Asteroids extends EventTarget {
     }
     getAsteroidsByDistance() {
         return [...this.asteroids].sort((a, b) => {
-            const da = this.ship.pos.distanceTo(a.pos);
-            const db = this.ship.pos.distanceTo(b.pos);
+            const da = vec2.distance(this.ship.pos, a.pos);
+            const db = vec2.distance(this.ship.pos, b.pos);
             return da - db;
         });
     }

@@ -3,8 +3,8 @@ class Laser implements Drawable {
 
   graphics: Graphics
   ship: Ship
-  pos: Vector
-  velocity: Vector
+  pos: Vec2
+  velocity: Vec2
   radius: number = 5
 
   constructor(ship: Ship) {
@@ -13,16 +13,16 @@ class Laser implements Drawable {
     this.graphics = ship.graphics
     this.graphics = ship.graphics
     this.pos = ship.top
-    this.velocity = Vector.FromAngle(ship.heading).scale(Laser.Speed)
+    this.velocity = vec2.fromAngle(ship.heading, Laser.Speed)
   }
 
   update(): void {
-    this.pos = this.pos.add(this.velocity)
+    vec2.add(this.pos, this.pos, this.velocity)
     this.wrap()
   }
 
   draw(): void {
-    this.graphics.createCircle(this.pos.x, this.pos.y, this.radius, { fill: false, stroke: true }).draw()
+    this.graphics.createCircle(this.pos[0], this.pos[1], this.radius, { fill: false, stroke: true }).draw()
   }
 
   terminate(): void {
@@ -30,10 +30,10 @@ class Laser implements Drawable {
   }
 
   wrap(): void {
-    const x: number = this.pos.x
-    const y: number = this.pos.y
-    const w: number = this.ship.game.width
-    const h: number = this.ship.game.height
+    const x = this.pos[0]
+    const y = this.pos[1]
+    const w = this.ship.game.width
+    const h = this.ship.game.height
     if (x > w) this.terminate()
     else if (x < 0) this.terminate()
     else if (y > h) this.terminate()

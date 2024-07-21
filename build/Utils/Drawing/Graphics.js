@@ -24,7 +24,7 @@ class Graphics {
         return this.canvas.height;
     }
     get size() {
-        return new Vector(this.width, this.height);
+        return vec2.fromValues(this.width, this.height);
     }
     createCircle(x, y, radius = 10, options) {
         return new Circle(this, x, y, radius, options);

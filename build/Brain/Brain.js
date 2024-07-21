@@ -367,17 +367,19 @@ class Brain {
             const currNodes = this.nodes.filter(n => n.layer == i);
             const dy = options.maxHeight / (currNodes.length + 1);
             for (let j = 1; j <= currNodes.length; j++) {
-                nodePositions.set(currNodes[j - 1], new Vector(i * dx + options.xOffset, j * dy + options.yOffset));
+                nodePositions.set(currNodes[j - 1], vec2.fromValues(i * dx + options.xOffset, j * dy + options.yOffset));
             }
         }
         const circleArray = [];
         const textArray = [];
         for (let [node, pos] of nodePositions) {
-            circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, { color: '#fff' })); // base
-            circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, { color: '#f00' })); // input
-            circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, { color: '#00f' })); // output
-            textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17));
-            textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15));
+            const px = pos[0];
+            const py = pos[1];
+            circleArray.push(this.graphics.createCircle(px, py, 10, { color: '#fff' })); // base
+            circleArray.push(this.graphics.createCircle(px + 7, py, 3, { color: '#f00' })); // input
+            circleArray.push(this.graphics.createCircle(px - 7, py, 3, { color: '#00f' })); // output
+            textArray.push(this.graphics.createText(node.layer.toString(), px, py + 17));
+            textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, px, py - 15));
         }
         const connectionArray = [];
         for (let connection of this.connections) {
@@ -388,9 +390,11 @@ class Brain {
                 color = '#f00';
             else if (connection.recurrent)
                 color = '#22f';
-            const point1 = inputNodePos.add(new Vector(7, 0));
-            const point2 = outputNodePos.sub(new Vector(7, 0));
-            connectionArray.push(this.graphics.createLine(point1.x, point1.y, point2.x, point2.y, { color }));
+            const point1 = vec2.create();
+            const point2 = vec2.create();
+            vec2.add(point1, inputNodePos, vec2.fromValues(7, 0));
+            vec2.add(point2, outputNodePos, vec2.fromValues(-7, 0));
+            connectionArray.push(this.graphics.createLine(point1[0], point1[1], point2[0], point2[1], { color }));
         }
         circleArray.forEach(circle => circle.draw());
         connectionArray.forEach(line => line.draw());

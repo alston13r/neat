@@ -8,24 +8,24 @@ class Rectangle {
     lineWidth;
     constructor(graphics, x, y, width, height, options = {}) {
         this.graphics = graphics;
-        this.point = new Vector(x, y);
-        this.size = new Vector(width, height);
+        this.point = vec2.fromValues(x, y);
+        this.size = vec2.fromValues(width, height);
         this.fill = options.fill == undefined ? true : options.fill;
         this.color = options.color || '#fff';
         this.stroke = options.stroke == undefined ? false : options.stroke;
         this.lineWidth = options.lineWidth || 1;
     }
     get x() {
-        return this.point.x;
+        return this.point[0];
     }
     get y() {
-        return this.point.y;
+        return this.point[1];
     }
     get width() {
-        return this.size.x;
+        return this.size[0];
     }
     get height() {
-        return this.size.y;
+        return this.size[1];
     }
     draw() {
         if (!this.fill && !this.stroke)

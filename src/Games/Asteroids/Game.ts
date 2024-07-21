@@ -26,21 +26,21 @@ class Asteroids extends EventTarget implements Drawable {
   }
 
   createShip(): Ship {
-    const ship: Ship = new Ship(this, new Vector(this.width / 2, this.height / 2))
+    const ship = new Ship(this, vec2.fromValues(this.width / 2, this.height / 2))
     this.dispatchEvent(new CustomEvent<ShipInfo>('shipcreated', { detail: ship.getInfo() }))
     return ship
   }
 
   createAsteroid(emit?: boolean): void {
-    const asteroid: Asteroid = new Asteroid(this, new Vector(0, 0))
+    const asteroid = new Asteroid(this, vec2.create())
     this.asteroids.push(asteroid)
     if (emit) this.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroidcreated', { detail: asteroid.getInfo() }))
   }
 
   loadInputs(keys: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }) {
-    const straight: number = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0)
-    const turn: number = (keys['ArrowLeft'] ? -1 : 0) + (keys['ArrowRight'] ? 1 : 0)
-    const shoot: number = (keys[' '] ? 1 : 0)
+    const straight = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0)
+    const turn = (keys['ArrowLeft'] ? -1 : 0) + (keys['ArrowRight'] ? 1 : 0)
+    const shoot = (keys[' '] ? 1 : 0)
     this.ship.loadInputs(straight, turn, shoot)
   }
 
@@ -83,7 +83,7 @@ class Asteroids extends EventTarget implements Drawable {
     this.collisions()
   }
 
-  draw(debug: boolean = false): void {
+  draw(debug = false): void {
     this.ship.draw()
     this.asteroids.forEach(asteroid => asteroid.draw())
 
@@ -95,9 +95,9 @@ class Asteroids extends EventTarget implements Drawable {
   }
 
   getAsteroidsByDistance(): Asteroid[] {
-    return [...this.asteroids].sort((a: Asteroid, b: Asteroid) => {
-      const da: number = this.ship.pos.distanceTo(a.pos)
-      const db: number = this.ship.pos.distanceTo(b.pos)
+    return [...this.asteroids].sort((a, b) => {
+      const da = vec2.distance(this.ship.pos, a.pos)
+      const db = vec2.distance(this.ship.pos, b.pos)
       return da - db
     })
   }

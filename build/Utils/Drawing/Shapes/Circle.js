@@ -8,7 +8,7 @@ class Circle {
     lineWidth;
     constructor(graphics, x, y, radius = 10, options = {}) {
         this.graphics = graphics;
-        this.point = new Vector(x, y);
+        this.point = vec2.fromValues(x, y);
         this.radius = radius;
         this.fill = options.fill == undefined ? true : options.fill;
         this.color = options.color || '#fff';
@@ -16,10 +16,10 @@ class Circle {
         this.lineWidth = options.lineWidth || 1;
     }
     get x() {
-        return this.point.x;
+        return this.point[0];
     }
     get y() {
-        return this.point.y;
+        return this.point[1];
     }
     draw() {
         if (!this.fill && !this.stroke)
