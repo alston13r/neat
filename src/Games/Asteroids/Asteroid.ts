@@ -40,8 +40,7 @@ class Asteroid implements Drawable {
     const half = this.radius / 2
     if (half < Asteroid.SizeCutoff) return
     this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
-    this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
-
+    this.game.asteroids.push(new Asteroid(this.game, vec2.copy(vec2.create(), this.pos), half))
     this.game.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroiddestroyed', { detail: this.getInfo() }))
   }
 
