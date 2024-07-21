@@ -88,8 +88,8 @@ class Ray2 {
         const S = (-det * dx - Math.abs(dy) * discSqrt) / dr ** 2;
         const p1 = vec2.fromValues(P, Q);
         const p2 = vec2.fromValues(R, S);
-        vec2.add(p1, p1, circle.point);
-        vec2.add(p2, p2, circle.point);
+        vec2.add(p1, p1, circle.pos);
+        vec2.add(p2, p2, circle.pos);
         const posAddDir = vec2.add(vec2.create(), this.pos, this.dir);
         const d1 = vec2.distance(this.pos, p1);
         const d2 = vec2.distance(posAddDir, p1);

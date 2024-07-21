@@ -1,5 +1,5 @@
 class Circle {
-    point;
+    pos;
     graphics;
     radius;
     fill;
@@ -8,7 +8,7 @@ class Circle {
     lineWidth;
     constructor(graphics, x, y, radius = 10, options = {}) {
         this.graphics = graphics;
-        this.point = vec2.fromValues(x, y);
+        this.pos = vec2.fromValues(x, y);
         this.radius = radius;
         this.fill = options.fill == undefined ? true : options.fill;
         this.color = options.color || '#fff';
@@ -16,25 +16,23 @@ class Circle {
         this.lineWidth = options.lineWidth || 1;
     }
     get x() {
-        return this.point[0];
+        return this.pos[0];
     }
     get y() {
-        return this.point[1];
+        return this.pos[1];
     }
     draw() {
         if (!this.fill && !this.stroke)
             return;
         const ctx = this.graphics.ctx;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         if (this.fill) {
             ctx.fillStyle = this.color;
-            ctx.fill();
+            graphics.fillCircle(ctx, this.pos, this.radius);
         }
         if (this.stroke) {
             ctx.lineWidth = this.lineWidth;
             ctx.strokeStyle = this.color;
-            ctx.stroke();
+            graphics.strokeCircle(ctx, this.pos, this.radius);
         }
     }
 }

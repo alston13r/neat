@@ -1,5 +1,5 @@
 class Rectangle {
-    point;
+    pos;
     size;
     graphics;
     fill;
@@ -8,7 +8,7 @@ class Rectangle {
     lineWidth;
     constructor(graphics, x, y, width, height, options = {}) {
         this.graphics = graphics;
-        this.point = vec2.fromValues(x, y);
+        this.pos = vec2.fromValues(x, y);
         this.size = vec2.fromValues(width, height);
         this.fill = options.fill == undefined ? true : options.fill;
         this.color = options.color || '#fff';
@@ -16,10 +16,10 @@ class Rectangle {
         this.lineWidth = options.lineWidth || 1;
     }
     get x() {
-        return this.point[0];
+        return this.pos[0];
     }
     get y() {
-        return this.point[1];
+        return this.pos[1];
     }
     get width() {
         return this.size[0];
@@ -33,12 +33,12 @@ class Rectangle {
         const ctx = this.graphics.ctx;
         if (this.fill) {
             ctx.fillStyle = this.color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            graphics.fillRect(ctx, this.pos, this.size);
         }
         if (this.stroke) {
             ctx.lineWidth = this.lineWidth;
             ctx.strokeStyle = this.color;
-            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            graphics.strokeRect(ctx, this.pos, this.size);
         }
     }
 }

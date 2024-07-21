@@ -1,3 +1,4 @@
+const TwoPi = Math.PI * 2;
 /**
  * Returns a random normally distributed gaussian number.
  * @returns the number

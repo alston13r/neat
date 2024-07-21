@@ -17,22 +17,15 @@ class Polygon {
         if (!this.fill && !this.stroke)
             return;
         const ctx = this.graphics.ctx;
-        ctx.beginPath();
-        for (let [i, p] of this.points.entries()) {
-            if (i == 0)
-                ctx.moveTo(p[0], p[1]);
-            else
-                ctx.lineTo(p[0], p[1]);
-        }
-        this.graphics.ctx.closePath();
         if (this.fill) {
             ctx.fillStyle = this.color;
+            graphics.fillPolygon(ctx, this.points, this.points.length);
             ctx.fill();
         }
         if (this.stroke) {
             ctx.lineWidth = this.lineWidth;
             ctx.strokeStyle = this.color;
-            ctx.stroke();
+            graphics.strokePolygon(ctx, this.points, this.points.length);
         }
     }
 }

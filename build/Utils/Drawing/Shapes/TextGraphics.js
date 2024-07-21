@@ -1,5 +1,5 @@
 class TextGraphics {
-    point;
+    pos;
     graphics;
     text;
     color;
@@ -9,7 +9,7 @@ class TextGraphics {
     constructor(graphics, text, x, y, options = {}) {
         this.graphics = graphics;
         this.text = text;
-        this.point = vec2.fromValues(x, y);
+        this.pos = vec2.fromValues(x, y);
         this.text = text;
         this.color = options.color || '#fff';
         this.size = options.size || 10;
@@ -17,10 +17,10 @@ class TextGraphics {
         this.baseline = options.baseline || 'top';
     }
     get x() {
-        return this.point[0];
+        return this.pos[0];
     }
     get y() {
-        return this.point[1];
+        return this.pos[1];
     }
     draw() {
         const ctx = this.graphics.ctx;
@@ -28,7 +28,7 @@ class TextGraphics {
         ctx.textAlign = this.align;
         ctx.textBaseline = this.baseline;
         ctx.font = this.size + 'px arial';
-        ctx.fillText(this.text, this.x, this.y);
+        graphics.fillText(ctx, this.text, this.pos);
     }
 }
 //# sourceMappingURL=TextGraphics.js.map

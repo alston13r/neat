@@ -1,4 +1,7 @@
-const asteroidsGraphics = new Graphics().setSize(800, 600).appendTo(document.body);
+const asteroidsCanvas = graphics.createCanvas();
+graphics.setSize(asteroidsCanvas, vec2.fromValues(800, 600));
+document.body.appendChild(asteroidsCanvas);
+const asteroidsGraphics = new Graphics(asteroidsCanvas);
 const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5);
 asteroidsGraphics.canvas.style.display = 'block';
 const asteroidsSlider = document.createElement('input');
