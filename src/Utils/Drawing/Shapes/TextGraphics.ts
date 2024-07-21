@@ -1,5 +1,5 @@
 class TextGraphics implements HasPoint, Drawable {
-  point: Vector
+  point: Vec2
   graphics: Graphics
   text: string
   color: string
@@ -10,7 +10,7 @@ class TextGraphics implements HasPoint, Drawable {
   constructor(graphics: Graphics, text: string, x: number, y: number, options: TextGraphicsOptions = {}) {
     this.graphics = graphics
     this.text = text
-    this.point = new Vector(x, y)
+    this.point = vec2.fromValues(x, y)
     this.text = text
     this.color = options.color || '#fff'
     this.size = options.size || 10
@@ -19,11 +19,11 @@ class TextGraphics implements HasPoint, Drawable {
   }
 
   get x(): number {
-    return this.point.x
+    return this.point[0]
   }
 
   get y(): number {
-    return this.point.y
+    return this.point[1]
   }
 
   draw(): void {

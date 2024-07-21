@@ -3,7 +3,7 @@ interface AsteroidsGameInfo {
 }
 
 interface RayInfo {
-  ray: Ray
+  ray: Ray2
   hitting: boolean
   distance: number
 }

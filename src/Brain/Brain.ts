@@ -443,7 +443,7 @@ class Brain {
     options.maxHeight ||= this.graphics.height
     options.outline ||= false
 
-    const nodePositions: Map<NNode, Vector> = new Map<NNode, Vector>()
+    const nodePositions: Map<NNode, Vec2> = new Map<NNode, Vec2>()
 
     const maxLayer: number = this.outputNodes[0].layer
     const dx: number = options.maxWidth / (maxLayer + 1)
@@ -452,7 +452,7 @@ class Brain {
       const currNodes: NNode[] = this.nodes.filter(n => n.layer == i)
       const dy: number = options.maxHeight / (currNodes.length + 1)
       for (let j = 1; j <= currNodes.length; j++) {
-        nodePositions.set(currNodes[j - 1], new Vector(i * dx + options.xOffset, j * dy + options.yOffset))
+        nodePositions.set(currNodes[j - 1], vec2.fromValues(i * dx + options.xOffset, j * dy + options.yOffset))
       }
     }
 
@@ -460,25 +460,29 @@ class Brain {
     const textArray: TextGraphics[] = []
 
     for (let [node, pos] of nodePositions) {
-      circleArray.push(this.graphics.createCircle(pos.x, pos.y, 10, { color: '#fff' })) // base
-      circleArray.push(this.graphics.createCircle(pos.x + 7, pos.y, 3, { color: '#f00' })) // input
-      circleArray.push(this.graphics.createCircle(pos.x - 7, pos.y, 3, { color: '#00f' })) // output
-      textArray.push(this.graphics.createText(node.layer.toString(), pos.x, pos.y + 17))
-      textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, pos.x, pos.y - 15))
+      const px = pos[0]
+      const py = pos[1]
+      circleArray.push(this.graphics.createCircle(px, py, 10, { color: '#fff' })) // base
+      circleArray.push(this.graphics.createCircle(px + 7, py, 3, { color: '#f00' })) // input
+      circleArray.push(this.graphics.createCircle(px - 7, py, 3, { color: '#00f' })) // output
+      textArray.push(this.graphics.createText(node.layer.toString(), px, py + 17))
+      textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, px, py - 15))
     }
 
     const connectionArray = []
 
     for (let connection of this.connections) {
-      const inputNodePos: Vector = nodePositions.get(connection.inNode)
-      const outputNodePos: Vector = nodePositions.get(connection.outNode)
+      const inputNodePos = nodePositions.get(connection.inNode)
+      const outputNodePos = nodePositions.get(connection.outNode)
 
       let color: string = '#0f0'
       if (!connection.enabled) color = '#f00'
       else if (connection.recurrent) color = '#22f'
-      const point1: Vector = inputNodePos.add(new Vector(7, 0))
-      const point2: Vector = outputNodePos.sub(new Vector(7, 0))
-      connectionArray.push(this.graphics.createLine(point1.x, point1.y, point2.x, point2.y, { color }))
+      const point1 = vec2.create()
+      const point2 = vec2.create()
+      vec2.add(point1, inputNodePos, vec2.fromValues(7, 0))
+      vec2.add(point2, outputNodePos, vec2.fromValues(-7, 0))
+      connectionArray.push(this.graphics.createLine(point1[0], point1[1], point2[0], point2[1], { color }))
     }
 
     circleArray.forEach(circle => circle.draw())

@@ -1,12 +1,12 @@
 class Polygon implements Drawable {
   graphics: Graphics
-  points: Vector[]
+  points: Vec2[]
   fill: boolean
   color: string
   stroke: boolean
   lineWidth: number
 
-  constructor(graphics: Graphics, points: Vector[], options: PolygonGraphicsOptions = {}) {
+  constructor(graphics: Graphics, points: Vec2[], options: PolygonGraphicsOptions = {}) {
     this.graphics = graphics
     this.points = points
     this.fill = options.fill == undefined ? true : options.fill
@@ -20,8 +20,8 @@ class Polygon implements Drawable {
     const ctx: CanvasRenderingContext2D = this.graphics.ctx
     ctx.beginPath()
     for (let [i, p] of this.points.entries()) {
-      if (i == 0) ctx.moveTo(p.x, p.y)
-      else ctx.lineTo(p.x, p.y)
+      if (i == 0) ctx.moveTo(p[0], p[1])
+      else ctx.lineTo(p[0], p[1])
     }
     this.graphics.ctx.closePath()
     if (this.fill) {

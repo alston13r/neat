@@ -30,8 +30,8 @@ class Graphics implements HasSize {
     return this.canvas.height
   }
 
-  get size(): Vector {
-    return new Vector(this.width, this.height)
+  get size(): Vec2 {
+    return vec2.fromValues(this.width, this.height)
   }
 
   createCircle(x: number, y: number, radius: number = 10, options?: CircleGraphicsOptions): Circle {
@@ -52,7 +52,7 @@ class Graphics implements HasSize {
     return new TriangleGraphics(this, x1, y1, x2, y2, x3, y3, options)
   }
 
-  createPolygon(points: Vector[], options?: PolygonGraphicsOptions): Polygon {
+  createPolygon(points: Vec2[], options?: PolygonGraphicsOptions): Polygon {
     return new Polygon(this, points, options)
   }
 
