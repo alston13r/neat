@@ -1,11 +1,11 @@
-class Ray {
+class Ray2 {
     pos;
     dir;
     graphics;
     length;
-    constructor(pos, angle, length = 1) {
+    constructor(pos, angle = 0, length = 1) {
         this.pos = pos;
-        this.dir = Vector.FromAngle(angle);
+        this.dir = vec2.fromAngle(angle);
         this.length = length;
     }
     setGraphics(graphics) {
@@ -13,12 +13,11 @@ class Ray {
         return this;
     }
     lookAt(x, y) {
-        this.dir.x = x - this.pos.x;
-        this.dir.y = y - this.pos.y;
-        Vector.Normal(this.dir);
+        vec2.subtract(this.dir, vec2.fromValues(x, y), this.pos);
+        vec2.normalize(this.dir, this.dir);
     }
-    setAngle(theta) {
-        this.dir = Vector.FromAngle(theta);
+    setAngle(angle) {
+        vec2.set(this.dir, Math.cos(angle), Math.sin(angle));
         return this;
     }
     setLength(length) {
@@ -37,7 +36,7 @@ class Ray {
                 point = this.castOntoCircle(object);
             }
             if (point) {
-                const distance = this.pos.distanceTo(point);
+                const distance = vec2.distance(this.pos, point);
                 if (distance < record) {
                     record = distance;
                     closest = point;
@@ -51,29 +50,31 @@ class Ray {
         const y1 = line.y1;
         const x2 = line.x2;
         const y2 = line.y2;
-        const x3 = this.pos.x;
-        const y3 = this.pos.y;
-        const x4 = this.pos.x + this.dir.x;
-        const y4 = this.pos.y + this.dir.y;
+        const x3 = this.pos[0];
+        const y3 = this.pos[1];
+        const x4 = x3 + this.dir[0];
+        const y4 = y3 + this.dir[1];
         const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
         if (den == 0)
             return;
         const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
         const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
         if (t > 0 && t < 1 && u > 0) {
-            const point = new Vector();
-            point.x = x1 + t * (x2 - x1);
-            point.y = y1 + t * (y2 - y1);
+            const point = vec2.create();
+            point[0] = x1 + t * (x2 - x1);
+            point[1] = y1 + t * (y2 - y1);
             return point;
         }
     }
     castOntoCircle(circle) {
-        const x1 = this.pos.x - circle.x;
-        const y1 = this.pos.y - circle.y;
-        const x2 = this.pos.x + this.dir.x - circle.x;
-        const y2 = this.pos.y + this.dir.y - circle.y;
-        const dx = this.dir.x;
-        const dy = this.dir.y;
+        const px = this.pos[0];
+        const py = this.pos[1];
+        const dx = this.dir[0];
+        const dy = this.dir[1];
+        const x1 = px - circle.x;
+        const y1 = py - circle.y;
+        const x2 = px + dx - circle.x;
+        const y2 = py + dy - circle.y;
         const dr = Math.sqrt(dx ** 2 + dy ** 2);
         const det = x1 * y2 - x2 * y1;
         const disc = circle.radius ** 2 * dr ** 2 - det ** 2;
@@ -85,12 +86,15 @@ class Ray {
         const Q = (-det * dx + Math.abs(dy) * discSqrt) / dr ** 2;
         const R = (det * dy - sgn * dx * discSqrt) / dr ** 2;
         const S = (-det * dx - Math.abs(dy) * discSqrt) / dr ** 2;
-        const p1 = new Vector(P, Q).add(circle.point);
-        const p2 = new Vector(R, S).add(circle.point);
-        const d1 = this.pos.distanceTo(p1);
-        const d2 = this.pos.add(this.dir).distanceTo(p1);
-        const d3 = this.pos.distanceTo(p2);
-        const d4 = this.pos.add(this.dir).distanceTo(p2);
+        const p1 = vec2.fromValues(P, Q);
+        const p2 = vec2.fromValues(R, S);
+        vec2.add(p1, p1, circle.point);
+        vec2.add(p2, p2, circle.point);
+        const posAddDir = vec2.add(vec2.create(), this.pos, this.dir);
+        const d1 = vec2.distance(this.pos, p1);
+        const d2 = vec2.distance(posAddDir, p1);
+        const d3 = vec2.distance(this.pos, p2);
+        const d4 = vec2.distance(posAddDir, p2);
         const p1Forward = d2 < d1;
         const p2Forward = d4 < d3;
         if (!p1Forward && !p2Forward)
@@ -102,8 +106,10 @@ class Ray {
         return d1 < d3 ? p1 : p2;
     }
     draw(color = '#fff') {
-        const d = this.pos.add(this.dir.scale(this.length));
-        this.graphics.createLine(this.pos.x, this.pos.y, d.x, d.y, { color }).draw();
+        const d = vec2.copy(vec2.create(), this.dir);
+        vec2.scale(d, d, this.length);
+        vec2.add(d, d, this.pos);
+        this.graphics.createLine(this.pos[0], this.pos[1], d[0], d[1], { color }).draw();
     }
 }
 //# sourceMappingURL=Ray.js.map

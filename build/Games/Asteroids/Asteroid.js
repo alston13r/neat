@@ -16,18 +16,18 @@ class Asteroid {
         this.pos = pos;
         this.radius = radius || Math.random() * 25 + 25;
         this.offsets = new Array(Math.floor(Math.random() * 5) + 10).fill(0).map(() => Math.random() * 20 - 8);
-        this.velocity = Vector.FromAngle(Math.random() * 2 * Math.PI).scale(Math.random() * 0.5 + 1);
+        this.velocity = vec2.random(vec2.create(), Math.random() * 0.5 + 1);
         this.maxR = this.offsets.reduce((max, curr) => curr > max ? curr : max, 0) + this.radius;
         this.minR = this.offsets.reduce((min, curr) => curr < min ? curr : min) + this.radius;
         this.collisionRadius = (this.maxR + this.minR) / 2;
         this.points = this.offsets.map((x, i) => {
             let angle = i / this.offsets.length * 2 * Math.PI;
             let r = this.radius + x;
-            return Vector.FromAngle(angle).scale(r);
+            return vec2.fromAngle(angle, r);
         });
     }
     update() {
-        this.pos = this.pos.add(this.velocity);
+        vec2.add(this.pos, this.pos, this.velocity);
         this.wrap();
     }
     split() {
@@ -41,48 +41,40 @@ class Asteroid {
         this.game.dispatchEvent(new CustomEvent('asteroiddestroyed', { detail: this.getInfo() }));
     }
     draw() {
-        const points = this.points.map(point => point.add(this.pos));
+        const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos));
         this.graphics.createPolygon(points, { fill: false, stroke: true }).draw();
     }
     wrap() {
-        const x = this.pos.x;
-        const y = this.pos.y;
+        const x = this.pos[0];
+        const y = this.pos[1];
         const w = this.game.width;
         const h = this.game.height;
         if (x > w + this.radius)
-            this.pos.x = -this.radius;
+            this.pos[0] = -this.radius;
         if (x < -this.radius)
-            this.pos.x = w + this.radius;
+            this.pos[0] = w + this.radius;
         if (y > h + this.radius)
-            this.pos.y = -this.radius;
+            this.pos[1] = -this.radius;
         if (y < -this.radius)
-            this.pos.y = h + this.radius;
+            this.pos[1] = h + this.radius;
     }
     collisionWithShip() {
-        const top = this.game.ship.top;
-        const left = this.game.ship.left;
-        const right = this.game.ship.right;
-        if (top.sub(this.pos).mag() <= this.collisionRadius)
-            return true;
-        if (left.sub(this.pos).mag() <= this.collisionRadius)
-            return true;
-        if (right.sub(this.pos).mag() <= this.collisionRadius)
-            return true;
-        return false;
+        return (vec2.distance(this.pos, this.game.ship.top) <= this.collisionRadius
+            || vec2.distance(this.pos, this.game.ship.left) <= this.collisionRadius
+            || vec2.distance(this.pos, this.game.ship.right) <= this.collisionRadius);
     }
     collisionWithLaser(laser) {
-        return laser.pos.sub(this.pos).mag() <= this.collisionRadius;
+        return vec2.distance(this.pos, laser.pos) <= this.collisionRadius;
     }
     getCollisionCircle() {
-        return this.graphics.createCircle(this.pos.x, this.pos.y, this.collisionRadius, { fill: false, stroke: true, color: '#750101' });
+        return this.graphics.createCircle(this.pos[0], this.pos[1], this.collisionRadius, { fill: false, stroke: true, color: '#750101' });
     }
     getInfo() {
-        let d = this.pos.sub(this.game.ship.pos);
         return {
             game: this.game,
             asteroid: this,
-            velX: this.velocity.x / 1.5,
-            velY: this.velocity.y / 1.5,
+            velX: this.velocity[0] / 1.5,
+            velY: this.velocity[1] / 1.5,
             size: this.collisionRadius / 50
         };
     }

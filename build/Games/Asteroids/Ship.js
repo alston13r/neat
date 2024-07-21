@@ -23,15 +23,13 @@ class Ship {
     constructor(game, pos) {
         this.game = game;
         this.graphics = game.graphics;
-        this.pos = pos || new Vector();
+        this.pos = pos || vec2.create();
         this.heading = -Math.PI / 2;
-        this.velocity = new Vector();
+        this.velocity = vec2.create();
         this.lasers = [];
         this.alive = true;
-        this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(pos);
-        this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos);
-        this.right = Vector.FromAngle(-Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(pos);
-        this.rays = new Array(Ship.NumRays).fill(0).map(() => this.pos.createRay()
+        this.updateTopLeftRight();
+        this.rays = new Array(Ship.NumRays).fill(0).map(() => new Ray2(this.pos)
             .setGraphics(this.graphics)
             .setLength(Ship.RayLength));
         this.updateRays();
@@ -53,16 +51,22 @@ class Ship {
     update() {
         this.shootTimer--;
         this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay);
-        Vector.Add(this.pos, this.velocity);
-        this.velocity = this.velocity.scale(0.999);
+        vec2.add(this.pos, this.pos, this.velocity);
+        vec2.scale(this.velocity, this.velocity, 0.999);
         this.wrap();
-        this.top = Vector.FromAngle(Ship.TopAngle + this.heading).scale(Ship.TopDistance).add(this.pos);
-        this.left = Vector.FromAngle(Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(this.pos);
-        this.right = Vector.FromAngle(-Ship.SideAngle + this.heading).scale(Ship.SideDistance).add(this.pos);
+        this.updateTopLeftRight();
         for (let laser of [...this.lasers].reverse()) {
             laser.update();
         }
         this.updateRays();
+    }
+    updateTopLeftRight() {
+        this.top = vec2.fromAngle(Ship.TopAngle + this.heading, Ship.TopDistance);
+        this.left = vec2.fromAngle(Ship.SideAngle + this.heading, Ship.SideDistance);
+        this.right = vec2.fromAngle(-Ship.SideAngle + this.heading, Ship.SideDistance);
+        vec2.add(this.top, this.top, this.pos);
+        vec2.add(this.left, this.left, this.pos);
+        vec2.add(this.right, this.right, this.pos);
     }
     updateRays() {
         const maxHeadingOffset = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta;
@@ -71,25 +75,26 @@ class Ship {
     push(direction) {
         if (direction == 0)
             return;
-        const dir = Vector.FromAngle(this.heading).scale(0.1).scale(direction);
-        this.velocity = this.velocity.add(dir);
-        const speed = this.velocity.mag();
-        if (speed > Ship.MaxSpeed)
-            this.velocity = this.velocity.normal().scale(Ship.MaxSpeed);
+        const dir = vec2.fromAngle(this.heading, direction * 0.1);
+        vec2.add(this.velocity, this.velocity, dir);
+        if (vec2.length(this.velocity) > Ship.MaxSpeed) {
+            vec2.normalize(this.velocity, this.velocity);
+            vec2.scale(this.velocity, this.velocity, Ship.MaxSpeed);
+        }
     }
     wrap() {
-        const x = this.pos.x;
-        const y = this.pos.y;
+        const x = this.pos[0];
+        const y = this.pos[1];
         const w = this.game.width;
         const h = this.game.height;
         if (x > w)
-            this.pos.x = 0;
+            this.pos[0] = 0;
         if (x < 0)
-            this.pos.x = w;
+            this.pos[0] = w;
         if (y > h)
-            this.pos.y = 0;
+            this.pos[1] = 0;
         if (y < 0)
-            this.pos.y = h;
+            this.pos[1] = h;
     }
     turn(direction) {
         if (direction == 0)
@@ -104,7 +109,7 @@ class Ship {
         }
     }
     draw() {
-        this.graphics.createTriangle(...this.top.toXY(), ...this.left.toXY(), ...this.right.toXY(), { fill: false, stroke: true }).draw();
+        this.graphics.createTriangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1], { fill: false, stroke: true }).draw();
         this.lasers.forEach(laser => laser.draw());
     }
     getRayInfo(debug = false) {
@@ -113,12 +118,12 @@ class Ship {
         for (const ray of this.rays) {
             const point = ray.castOntoClosest(asteroidCircles);
             if (point) {
-                const distance = this.pos.distanceTo(point);
+                const distance = vec2.distance(this.pos, point);
                 const hitting = distance <= Ship.RayLength;
                 info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) });
                 if (debug) {
                     ray.draw(hitting ? '#0f0' : '#00f');
-                    this.graphics.createCircle(point.x, point.y, 5, { color: '#f00' }).draw();
+                    this.graphics.createCircle(point[0], point[1], 5, { color: '#f00' }).draw();
                 }
             }
             else {
@@ -134,10 +139,10 @@ class Ship {
             game: this.game,
             ship: this,
             alive: this.alive,
-            posX: this.pos.x / this.game.width,
-            posY: this.pos.y / this.game.height,
-            velX: this.velocity.x / Ship.MaxSpeed,
-            velY: this.velocity.y / Ship.MaxSpeed,
+            posX: this.pos[0] / this.game.width,
+            posY: this.pos[1] / this.game.height,
+            velX: this.velocity[0] / Ship.MaxSpeed,
+            velY: this.velocity[1] / Ship.MaxSpeed,
             heading: this.heading / Math.PI / 2,
             canShoot: this.canShoot,
             rays: this.getRayInfo()

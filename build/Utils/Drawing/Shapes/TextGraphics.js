@@ -9,7 +9,7 @@ class TextGraphics {
     constructor(graphics, text, x, y, options = {}) {
         this.graphics = graphics;
         this.text = text;
-        this.point = new Vector(x, y);
+        this.point = vec2.fromValues(x, y);
         this.text = text;
         this.color = options.color || '#fff';
         this.size = options.size || 10;
@@ -17,10 +17,10 @@ class TextGraphics {
         this.baseline = options.baseline || 'top';
     }
     get x() {
-        return this.point.x;
+        return this.point[0];
     }
     get y() {
-        return this.point.y;
+        return this.point[1];
     }
     draw() {
         const ctx = this.graphics.ctx;

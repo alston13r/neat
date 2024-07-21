@@ -20,9 +20,9 @@ class Polygon {
         ctx.beginPath();
         for (let [i, p] of this.points.entries()) {
             if (i == 0)
-                ctx.moveTo(p.x, p.y);
+                ctx.moveTo(p[0], p[1]);
             else
-                ctx.lineTo(p.x, p.y);
+                ctx.lineTo(p[0], p[1]);
         }
         this.graphics.ctx.closePath();
         if (this.fill) {

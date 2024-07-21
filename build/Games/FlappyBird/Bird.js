@@ -4,7 +4,7 @@ class Bird {
     static Lift = -10;
     static Friction = 0.98;
     pos;
-    velocity = new Vector();
+    velocity = vec2.create();
     score = 0;
     fitness = 0;
     brain;
@@ -15,25 +15,23 @@ class Bird {
     }
     setGraphics(graphics) {
         this.graphics = graphics;
-        this.pos = new Vector(64, graphics.height / 2);
+        this.pos = vec2.fromValues(64, graphics.height / 2);
         return this;
     }
     draw(many = false) {
-        this.graphics.createCircle(this.pos.x, this.pos.y, Bird.Size, { fill: false, stroke: true, color: `rgba(255, 255, 255, ${many ? 0.4 : 1})` }).draw();
+        this.graphics.createCircle(this.pos[0], this.pos[1], Bird.Size, { fill: false, stroke: true, color: `rgba(255, 255, 255, ${many ? 0.4 : 1})` }).draw();
     }
     loadInputs(up = 0) {
         if (up > 0.9)
-            this.velocity.y += Bird.Lift;
+            this.velocity[1] += Bird.Lift;
     }
     update() {
         this.score++;
-        this.velocity.y += Bird.Gravity;
-        this.velocity = this.velocity.scale(Bird.Friction);
-        this.pos = this.pos.add(this.velocity);
-        if (this.pos.y > this.graphics.height
-            || this.pos.y < 0) {
+        this.velocity[1] += Bird.Gravity;
+        vec2.scale(this.velocity, this.velocity, Bird.Friction);
+        vec2.add(this.pos, this.pos, this.velocity);
+        if (this.pos[1] > this.graphics.height || this.pos[1] < 0)
             this.alive = false;
-        }
     }
 }
 //   mutate(): void {

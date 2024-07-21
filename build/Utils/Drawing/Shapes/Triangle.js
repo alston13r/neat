@@ -9,31 +9,31 @@ class TriangleGraphics {
     lineWidth;
     constructor(graphics, x1, y1, x2, y2, x3, y3, options = {}) {
         this.graphics = graphics;
-        this.point1 = new Vector(x1, y1);
-        this.point2 = new Vector(x2, y2);
-        this.point3 = new Vector(x3, y3);
+        this.point1 = vec2.fromValues(x1, y1);
+        this.point2 = vec2.fromValues(x2, y2);
+        this.point3 = vec2.fromValues(x3, y3);
         this.fill = options.fill == undefined ? true : options.fill;
         this.color = options.color || '#fff';
         this.stroke = options.stroke == undefined ? false : options.stroke;
         this.lineWidth = options.lineWidth || 1;
     }
     get x1() {
-        return this.point1.x;
+        return this.point1[0];
     }
     get y1() {
-        return this.point1.y;
+        return this.point1[1];
     }
     get x2() {
-        return this.point2.x;
+        return this.point2[0];
     }
     get y2() {
-        return this.point2.y;
+        return this.point2[1];
     }
     get x3() {
-        return this.point3.x;
+        return this.point3[0];
     }
     get y3() {
-        return this.point3.y;
+        return this.point3[1];
     }
     draw() {
         if (!this.fill && !this.stroke)
