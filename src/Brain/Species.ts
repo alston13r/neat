@@ -122,7 +122,8 @@ class Species {
    * @returns the average fitness
    */
   getAverageFitness(): number {
-    return this.members.reduce((sum, curr) => sum + curr.fitness / this.members.length, 0)
+    const N = this.members.length
+    return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0)
   }
 
   /**
@@ -132,7 +133,8 @@ class Species {
    * @returns the average adjusted fitness
    */
   getAverageFitnessAdjusted(): number {
-    return this.getAverageFitness() / this.members.length
+    const N = this.members.length
+    return (N == 0 ? 0 : this.getAverageFitness() / N)
   }
 
   /**
