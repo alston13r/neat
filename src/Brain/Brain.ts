@@ -1,21 +1,4 @@
 /**
- * Type outlining the options available for drawing a brain.
- * xOffset and yOffset specify the x and y offsets within the
- * local graphics canvas, both default to 0. maxWidth and
- * maxHeight specify the maximum width and height that the
- * brain's display can take up, defaults to the local graphics'
- * width and height. outline specifies whether or not to outline
- * the bounding box with white, defaults to false.
- */
-type BrainDrawingOptions = {
-  xOffset?: number
-  yOffset?: number
-  maxWidth?: number
-  maxHeight?: number
-  outline?: boolean
-}
-
-/**
  * The brain is the main class in the neat algorithm. From the neat algorithm, a brain
  * differs from the ordinary fulley connected neural networks in that its topology, or
  * the number of nodes and which connections between them exist, can change. This class
@@ -334,7 +317,7 @@ class Brain {
    * @param inputs an array of inputs
    * @returns the brain's output
    */
-  think(inputs: number[]): number[] {
+  think(inputs: number[]) {
     this.loadInputs(inputs)
     this.runTheNetwork()
     return this.getOutput()
@@ -345,17 +328,8 @@ class Brain {
    * @param brainA the first brain
    * @param brainB the second brain
    */
-  static GetFitter(brainA: Brain, brainB: Brain): Brain
-  /**
-   * Returns the fitter of the two brains based on the fitness type.
-   * @param brainA the first brain
-   * @param brainB the second brain
-   * @param fitnessType the ideal fitness
-   */
-  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: OptimizationType): Brain
-  static GetFitter(brainA: Brain, brainB: Brain, fitnessType: OptimizationType = OptimizationType.Maximizing): Brain {
-    if (fitnessType == OptimizationType.Maximizing) return (brainA.fitness > brainB.fitness ? brainA : brainB)
-    if (fitnessType == OptimizationType.Minimizing) return (brainA.fitness < brainB.fitness ? brainA : brainB)
+  static GetFitter(brainA: Brain, brainB: Brain) {
+    return (brainA.fitness > brainB.fitness ? brainA : brainB)
   }
 
   /**
@@ -436,63 +410,87 @@ class Brain {
    * Draws this brain to the local graphics.
    * @param options the options to draw the brain with
    */
-  draw(options: BrainDrawingOptions = {}): void {
-    options.xOffset ||= 0
-    options.yOffset ||= 0
-    options.maxWidth ||= this.graphics.width
-    options.maxHeight ||= this.graphics.height
-    options.outline ||= false
+  draw(g: Graphics, maxWidth = 800, maxHeight = 600, xOffset = 0, yOffset = 0) {
+    const nodePositions = new Map<NNode, Vec2>()
 
-    const nodePositions: Map<NNode, Vec2> = new Map<NNode, Vec2>()
-
-    const maxLayer: number = this.outputNodes[0].layer
-    const dx: number = options.maxWidth / (maxLayer + 1)
+    const maxLayer = this.outputNodes[0].layer
+    const dx = maxWidth / (maxLayer + 1)
 
     for (let i = 1; i <= maxLayer; i++) {
-      const currNodes: NNode[] = this.nodes.filter(n => n.layer == i)
-      const dy: number = options.maxHeight / (currNodes.length + 1)
+      const currNodes = this.nodes.filter(n => n.layer == i)
+      const dy = maxHeight / (currNodes.length + 1)
       for (let j = 1; j <= currNodes.length; j++) {
-        nodePositions.set(currNodes[j - 1], vec2.fromValues(i * dx + options.xOffset, j * dy + options.yOffset))
+        nodePositions.set(currNodes[j - 1], vec2.fromValues(i * dx + xOffset, j * dy + yOffset))
       }
     }
 
-    const circleArray: Circle[] = []
-    const textArray: TextGraphics[] = []
+    const whiteCircles: Circle[] = []
+    const redCircles: Circle[] = []
+    const blueCircles: Circle[] = []
+
+    g.fillStyle = '#fff'
+    g.font = '10px arial'
+    g.textBaseline = 'middle'
+    g.textAlign = 'center'
 
     for (let [node, pos] of nodePositions) {
       const px = pos[0]
       const py = pos[1]
-      circleArray.push(this.graphics.createCircle(px, py, 10, { color: '#fff' })) // base
-      circleArray.push(this.graphics.createCircle(px + 7, py, 3, { color: '#f00' })) // input
-      circleArray.push(this.graphics.createCircle(px - 7, py, 3, { color: '#00f' })) // output
-      textArray.push(this.graphics.createText(node.layer.toString(), px, py + 17))
-      textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, px, py - 15))
+      whiteCircles.push(new Circle(px, py, 10)) // base
+      redCircles.push(new Circle(px + 7, py, 3)) // input
+      blueCircles.push(new Circle(px - 7, py, 3)) // output
+      g.fillText(node.layer.toString(), px, py + 17)
+      g.fillText(`${node.id} (${node.activationFunction.name})`, px, py - 15)
     }
 
-    const connectionArray = []
+    const enabledConnections: Line[] = []
+    const disabledConnections: Line[] = []
+    const recurrentConnections: Line[] = []
 
     for (let connection of this.connections) {
       const inputNodePos = nodePositions.get(connection.inNode)
       const outputNodePos = nodePositions.get(connection.outNode)
 
-      let color: string = '#0f0'
-      if (!connection.enabled) color = '#f00'
-      else if (connection.recurrent) color = '#22f'
       const point1 = vec2.create()
       const point2 = vec2.create()
       vec2.add(point1, inputNodePos, vec2.fromValues(7, 0))
       vec2.add(point2, outputNodePos, vec2.fromValues(-7, 0))
-      connectionArray.push(this.graphics.createLine(point1[0], point1[1], point2[0], point2[1], { color }))
+      const line = new Line(point1[0], point1[1], point2[0], point2[1])
+
+      if (connection.enabled) {
+        if (connection.recurrent) recurrentConnections.push(line)
+        else enabledConnections.push(line)
+      } else disabledConnections.push(line)
     }
 
-    circleArray.forEach(circle => circle.draw())
-    connectionArray.forEach(line => line.draw())
-    textArray.forEach(text => text.draw())
+    g.fillStyle = '#fff'
+    whiteCircles.forEach(circle => circle.fill(g))
+    g.fillStyle = '#f00'
+    redCircles.forEach(circle => circle.fill(g))
+    g.fillStyle = '#00f'
+    blueCircles.forEach(circle => circle.fill(g))
 
-    this.graphics.createText(this.fitness.toString(), 10, 10).draw()
-
-    if (options.outline) {
-      this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight).draw()
+    g.lineWidth = 1
+    if (enabledConnections.length > 0) {
+      g.strokeStyle = '#0f0'
+      enabledConnections.forEach(line => line.stroke(g))
     }
+    if (disabledConnections.length > 0) {
+      g.strokeStyle = '#f00'
+      disabledConnections.forEach(line => line.stroke(g))
+    }
+    if (recurrentConnections.length > 0) {
+      g.strokeStyle = '#22f'
+      recurrentConnections.forEach(line => line.stroke(g))
+    }
+
+    g.textAlign = 'left'
+    g.textBaseline = 'top'
+    g.fillStyle = '#fff'
+    g.fillText(this.fitness.toString(), xOffset + 10, yOffset + 10)
+
+    // if (outline) {
+    //   this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight).fill()
+    // }
   }
 }
