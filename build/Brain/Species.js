@@ -197,12 +197,23 @@ class Species {
             return [];
         }
         else {
-            const offspring = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
+            const offspring = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
             const remainingCount = this.allowedOffspring - offspring.length;
             Population.GeneratePairings(this.members, remainingCount)
                 .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)));
             return offspring;
         }
+    }
+    static GetPresets() {
+        return {
+            'ExcessFactor': Species.ExcessFactor,
+            'DisjointFactor': Species.DisjointFactor,
+            'WeightFactor': Species.WeightFactor,
+            'GenerationPenalization': Species.GenerationPenalization,
+            'TargetSpecies': Species.TargetSpecies,
+            'DynamicThreshold': Species.DynamicThreshold,
+            'DynamicThresholdStepSize': Species.DynamicThresholdStepSize
+        };
     }
 }
 //# sourceMappingURL=Species.js.map

@@ -5,12 +5,12 @@
  * offspring for the next generation.
  */
 class Population {
+    /** Toggle for speciation between generations */
+    static Speciation = true;
+    /** Toggle for elitism */
+    static Elitism = true;
     /** The percent of members who get carried over as elites */
     static ElitePercent = 0.3;
-    /** Toggle for speciation between generations */
-    speciation = true;
-    /** Toggle for elitism */
-    elitism = true;
     /** A counter for the current generation */
     generationCounter = 0;
     /** An array of the population's members */
@@ -127,7 +127,7 @@ class Population {
      * otherwise its the percentage of members that gets preserved.
      */
     produceOffspring() {
-        if (this.speciation) {
+        if (Population.Speciation) {
             const speciesList = this.speciesList;
             this.members = [];
             speciesList.forEach(species => {
@@ -145,7 +145,7 @@ class Population {
         }
         else {
             const copyOfMembers = [...this.members];
-            this.members = this.elitism ? Population.GetElites(this.members, this.popSize) : [];
+            this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : [];
             const pairings = Population.GeneratePairings(copyOfMembers, this.popSize);
             pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)));
         }
@@ -179,7 +179,7 @@ class Population {
      * adjusts the fitness of all members, and calculates the allowed offspring for each species.
      */
     speciate() {
-        if (this.speciation) {
+        if (Population.Speciation) {
             Species.Speciate(this);
             this.updateGensSinceImproved();
             this.adjustDynamicThreshold();
@@ -234,7 +234,7 @@ class Population {
         const getMemberText = (brain, i) => {
             const a = round(brain.fitness, 5);
             const b = round(brain.fitness / brain.species.members.length, 5);
-            return `${i + 1}: ${a} ${this.speciation ? ' -> ' + b : ''}`;
+            return `${i + 1}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`;
         };
         g.font = '10px arial';
         this.members.slice()
@@ -243,7 +243,7 @@ class Population {
             .forEach((brain, i) => {
             g.fillText(getMemberText(brain, i), 5, 25 + i * 10);
         });
-        if (this.speciation) {
+        if (Population.Speciation) {
             g.font = '20px arial';
             g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 240, 5);
             const getSpeciesText = (species) => {
@@ -259,6 +259,13 @@ class Population {
                 .slice(0, 50)
                 .forEach((s, i) => g.fillText(getSpeciesText(s), 240, 25 + i * 10));
         }
+    }
+    static GetPresets() {
+        return {
+            'Speciation': Population.Speciation,
+            'Elitism': Population.Elitism,
+            'ElitePercent': Population.ElitePercent
+        };
     }
 }
 //# sourceMappingURL=Population.js.map
