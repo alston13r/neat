@@ -352,5 +352,83 @@ class Brain {
         this.graphics = graphics;
         return this;
     }
+    /**
+     * Draws this brain to the local graphics.
+     * @param options the options to draw the brain with
+     */
+    draw(g, maxWidth = 800, maxHeight = 600, xOffset = 0, yOffset = 0) {
+        const nodePositions = new Map();
+        const maxLayer = this.outputNodes[0].layer;
+        const dx = maxWidth / (maxLayer + 1);
+        for (let i = 1; i <= maxLayer; i++) {
+            const currNodes = this.nodes.filter(n => n.layer == i);
+            const dy = maxHeight / (currNodes.length + 1);
+            for (let j = 1; j <= currNodes.length; j++) {
+                nodePositions.set(currNodes[j - 1], vec2.fromValues(i * dx + xOffset, j * dy + yOffset));
+            }
+        }
+        const whiteCircles = [];
+        const redCircles = [];
+        const blueCircles = [];
+        g.fillStyle = '#fff';
+        g.font = '10px arial';
+        g.textBaseline = 'middle';
+        g.textAlign = 'center';
+        for (let [node, pos] of nodePositions) {
+            const px = pos[0];
+            const py = pos[1];
+            whiteCircles.push(new Circle(px, py, 10)); // base
+            redCircles.push(new Circle(px + 7, py, 3)); // input
+            blueCircles.push(new Circle(px - 7, py, 3)); // output
+            g.fillText(node.layer.toString(), px, py + 17);
+            g.fillText(`${node.id} (${node.activationFunction.name})`, px, py - 15);
+        }
+        const enabledConnections = [];
+        const disabledConnections = [];
+        const recurrentConnections = [];
+        for (let connection of this.connections) {
+            const inputNodePos = nodePositions.get(connection.inNode);
+            const outputNodePos = nodePositions.get(connection.outNode);
+            const point1 = vec2.create();
+            const point2 = vec2.create();
+            vec2.add(point1, inputNodePos, vec2.fromValues(7, 0));
+            vec2.add(point2, outputNodePos, vec2.fromValues(-7, 0));
+            const line = new Line(point1[0], point1[1], point2[0], point2[1]);
+            if (connection.enabled) {
+                if (connection.recurrent)
+                    recurrentConnections.push(line);
+                else
+                    enabledConnections.push(line);
+            }
+            else
+                disabledConnections.push(line);
+        }
+        g.fillStyle = '#fff';
+        whiteCircles.forEach(circle => circle.fill(g));
+        g.fillStyle = '#f00';
+        redCircles.forEach(circle => circle.fill(g));
+        g.fillStyle = '#00f';
+        blueCircles.forEach(circle => circle.fill(g));
+        g.lineWidth = 1;
+        if (enabledConnections.length > 0) {
+            g.strokeStyle = '#0f0';
+            enabledConnections.forEach(line => line.stroke(g));
+        }
+        if (disabledConnections.length > 0) {
+            g.strokeStyle = '#f00';
+            disabledConnections.forEach(line => line.stroke(g));
+        }
+        if (recurrentConnections.length > 0) {
+            g.strokeStyle = '#22f';
+            recurrentConnections.forEach(line => line.stroke(g));
+        }
+        g.textAlign = 'left';
+        g.textBaseline = 'top';
+        g.fillStyle = '#fff';
+        g.fillText(this.fitness.toString(), xOffset + 10, yOffset + 10);
+        // if (outline) {
+        //   this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight).fill()
+        // }
+    }
 }
 //# sourceMappingURL=Brain.js.map
