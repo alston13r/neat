@@ -240,6 +240,7 @@ class Population {
     const round: (x: number, p: number) => number = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
     g.textBaseline = 'top'
+    g.textAlign = 'left'
     g.fillStyle = '#fff'
     g.font = '20px arial'
     g.fillText(`Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5)
@@ -247,18 +248,19 @@ class Population {
     const getMemberText = (brain: Brain, i: number) => {
       const a = round(brain.fitness, 5)
       const b = round(brain.fitness / brain.species.members.length, 5)
-      return `${i}: ${a} ${this.speciation ? ' -> ' + b : ''}`
+      return `${i + 1}: ${a} ${this.speciation ? ' -> ' + b : ''}`
     }
     g.font = '10px arial'
     this.members.slice()
       .sort((a, b) => b.fitness - a.fitness)
+      .slice(0, 50)
       .forEach((brain, i) => {
         g.fillText(getMemberText(brain, i), 5, 25 + i * 10)
       })
 
     if (this.speciation) {
       g.font = '20px arial'
-      g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 250, 5)
+      g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 240, 5)
 
       const getSpeciesText = (species: Species) => {
         const a = species.members.length
@@ -268,9 +270,10 @@ class Population {
         return `<${a}, ${d}> ${b} -> ${c}`
       }
       g.font = '10px arial'
-      this.speciesList.forEach((s, i) => {
-        g.fillText(getSpeciesText(s), 250, 25 + i * 10)
-      })
+      this.speciesList
+        .sort((a, b) => b.members.length - a.members.length)
+        .slice(0, 50)
+        .forEach((s, i) => g.fillText(getSpeciesText(s), 240, 25 + i * 10))
     }
   }
 }
