@@ -20,7 +20,7 @@ function getSliderValue(slider: HTMLInputElement): number {
 
 const bird: Bird = new Bird()
 flappyBirdGraphics.bg()
-bird.setGraphics(flappyBirdGraphics).draw()
+bird.draw(flappyBirdGraphics)
 
 let lastSpaceState: boolean = false
 let currSpaceState: boolean = false
@@ -44,7 +44,7 @@ function flappyBirdLoop() {
   bird.loadInputs(spacePressed ? 1 : 0)
 
   bird.update()
-  bird.draw()
+  bird.draw(flappyBirdGraphics)
 
   if (bird.alive) window.requestAnimationFrame(flappyBirdLoop)
   else console.log('dead')
