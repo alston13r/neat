@@ -7,13 +7,13 @@
  */
 class Species {
   /** The weight that excess connections have in the compatibility difference */
-  static ExcessFactor: number = 1
+  static ExcessFactor = 1
   /** The weight that disjoint connections have in the compatibility difference */
-  static DisjointFactor: number = 1
+  static DisjointFactor = 1
   /** The weight that the average of weight difference have in the compatibility difference  */
-  static WeightFactor: number = 0.4
+  static WeightFactor = 0.4
   /** The number of generations that a species can run for simultaneously without improvement without being penalized */
-  static GenerationPenalization: number = 15
+  static GenerationPenalization = 15
   /** The current target number of species */
   static TargetSpecies = 10
   /** The current compatibility threshold used for comparisons */
@@ -26,11 +26,11 @@ class Species {
   /** An array of this species' members */
   members: Brain[] = []
   /** The number of allowed offspring this species can produce */
-  allowedOffspring: number = 0
+  allowedOffspring = 0
   /** The number of generations since this species has improved */
-  gensSinceImproved: number = 0
+  gensSinceImproved = 0
   /** Record of this species' highest fitness value */
-  highestFitness: number = 0
+  highestFitness = 0
 
   /**
    * Constructs a species. This does not speciate any members of a population
@@ -64,10 +64,12 @@ class Species {
    * @param brainB the second brain to compare
    * @returns the compatibility of the two brains
    */
-  static Compare(brainA: Brain, brainB: Brain): number {
-    const enabledA: Connection[] = brainA.connections.filter(connection => connection.enabled)
+  static Compare(brainA: Brain, brainB: Brain) {
+    const enabledA = brainA.connections
+      .filter(connection => connection.enabled)
       .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID)
-    const enabledB: Connection[] = brainB.connections.filter(connection => connection.enabled)
+    const enabledB = brainB.connections
+      .filter(connection => connection.enabled)
       .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID)
 
     const N = Math.max(enabledA.length, enabledB.length)
@@ -121,7 +123,7 @@ class Species {
    * Returns the average fitness of all members in this species.
    * @returns the average fitness
    */
-  getAverageFitness(): number {
+  getAverageFitness() {
     const N = this.members.length
     return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0)
   }
@@ -132,7 +134,7 @@ class Species {
    * species, fitness / N, where N is the size of the species.
    * @returns the average adjusted fitness
    */
-  getAverageFitnessAdjusted(): number {
+  getAverageFitnessAdjusted() {
     const N = this.members.length
     return (N == 0 ? 0 : this.getAverageFitness() / N)
   }
@@ -142,8 +144,8 @@ class Species {
    * that have passed since this species has improved. This means that it has
    * produced a member with a fitness greater than the recorded highest.
    */
-  updateGensSinceImproved(): void {
-    const max: number = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0)
+  updateGensSinceImproved() {
+    const max = this.members.reduce((best, curr) => Math.max(best, curr.fitness), 0)
     if (max > this.highestFitness) {
       this.gensSinceImproved = 0
       this.highestFitness = max
@@ -158,13 +160,13 @@ class Species {
    * champions and placed into their corresponding species.
    * @param population the population to speciate
    */
-  static Speciate(population: Population): void {
+  static Speciate(population: Population) {
     // get any preexisting species
-    const speciesList: Species[] = population.speciesList
+    const speciesList = population.speciesList
     const champions: Brain[] = []
     // select champions from each one and store them in an array
     for (let species of speciesList) {
-      const champion: Brain = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0]
+      const champion = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0]
       champions.push(champion)
       // clear species field for all other species members
       species.members.forEach(member => member.species = null)
@@ -172,7 +174,7 @@ class Species {
     }
 
     // store all remaining and unspeciated members in an array
-    const toSpeciate: Brain[] = population.members.filter(member => member.species == null)
+    const toSpeciate = population.members.filter(member => member.species == null)
     // while loop to go over each unspeciated member
     while (toSpeciate.length > 0) {
       // there can either be an array of champions from the previous generation
@@ -193,7 +195,7 @@ class Species {
       // compatible or throw them back at the end of the array
       const count = toSpeciate.length
       for (let i = 0; i < count; i++) {
-        const brain: Brain = toSpeciate.shift()
+        const brain = toSpeciate.shift()
         if (Species.Compare(champion, brain) <= Species.DynamicThreshold) {
           brain.species = champion.species
           brain.species.members.push(brain)
@@ -213,8 +215,8 @@ class Species {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       return []
     } else {
-      const offspring: Brain[] = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
-      const remainingCount: number = this.allowedOffspring - offspring.length
+      const offspring = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
+      const remainingCount = this.allowedOffspring - offspring.length
       Population.GeneratePairings(this.members, remainingCount)
         .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
       return offspring
