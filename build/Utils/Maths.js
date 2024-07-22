@@ -94,6 +94,8 @@ function roundNicely(list, key, total) {
 class ActivationFunction {
     /** The sigmoid activation function */
     static Sigmoid = new ActivationFunction(x => 1 / (1 + Math.exp(-x)), 'Sigmoid');
+    /** A scaled version of the sigmoid activation function */
+    static ScaledSigmoid = new ActivationFunction(x => 2 / (1 + Math.exp(-x)) - 1, 'Sigmoid');
     /** The hyperbolic tangent activation function */
     static Tanh = new ActivationFunction(Math.tanh, 'Tanh');
     /** The relu activation function */
@@ -101,7 +103,7 @@ class ActivationFunction {
     /** The leaky relu activation function */
     static LeakyReLU = new ActivationFunction(x => Math.max(0.1 * x, x), 'Leaky ReLU');
     /** The soft plus activation function */
-    static Softplus = new ActivationFunction(x => Math.log(1 + Math.exp(x)), 'Softplus');
+    static Softplus = new ActivationFunction(x => (x >= 20 ? x : Math.log(1 + Math.exp(x))), 'Softplus');
     /** The soft sign activation function */
     static Softsign = new ActivationFunction(x => x / (1 + Math.abs(x)), 'Softsign');
     /** The identity activation function */
@@ -114,6 +116,7 @@ class ActivationFunction {
      */
     static Arr = [
         ActivationFunction.Sigmoid,
+        ActivationFunction.ScaledSigmoid,
         ActivationFunction.Tanh,
         ActivationFunction.ReLU,
         ActivationFunction.LeakyReLU,
@@ -150,6 +153,10 @@ class DActivationFunction {
         const value = ActivationFunction.Sigmoid.fn(x);
         return value * (1 - value);
     }, ActivationFunction.Sigmoid, 'D Sigmoid');
+    static DScaledSigmoid = new DActivationFunction(x => {
+        const value = ActivationFunction.Sigmoid.fn(x);
+        return 2 * value * (1 - value);
+    }, ActivationFunction.ScaledSigmoid, 'D Scaled Sigmoid');
     /** The derivative of the hyperbolic tangent activation function */
     static DTanh = new DActivationFunction(x => {
         return 1 - Math.tanh(x) ** 2;
@@ -185,6 +192,7 @@ class DActivationFunction {
      */
     static Arr = [
         DActivationFunction.DSigmoid,
+        DActivationFunction.DScaledSigmoid,
         DActivationFunction.DTanh,
         DActivationFunction.DReLU,
         DActivationFunction.DLeakyReLU,

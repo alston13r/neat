@@ -32,6 +32,14 @@ function xorLoop() {
             const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0));
             errors.forEach(error => member.fitness += error);
         }
+        if (Number.isNaN(member.fitness)) {
+            console.log('here');
+            xorTrainingValues.ordered.forEach(io => {
+                console.log('inputs: [' + io.inputs.join(', ') + ']');
+                console.log('outputs: [' + member.think(io.inputs).join(', ') + ']');
+            });
+            console.log(member);
+        }
     });
     xorPopulation.updateFittestEver();
     xorPopulation.speciate();
