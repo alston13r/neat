@@ -1,13 +1,16 @@
-const asteroidsCanvas = graphics.createCanvas()
-graphics.setSize(asteroidsCanvas, vec2.fromValues(800, 600))
-document.body.appendChild(asteroidsCanvas)
-
-const asteroidsGraphics: Graphics = new Graphics(asteroidsCanvas)
-const asteroidsPopulation: Population = new Population(500, 11, 0, 3, 0.5)
-
+const asteroidsGraphics = new Graphics()
+asteroidsGraphics.setSize(800, 600)
+asteroidsGraphics.appendToBody()
 asteroidsGraphics.canvas.style.display = 'block'
+asteroidsGraphics.textBaseline = 'bottom'
+asteroidsGraphics.textAlign = 'left'
+asteroidsGraphics.fillStyle = '#fff'
+asteroidsGraphics.context.font = 'arial 10px'
+const asteroidsDrawQueue = asteroidsGraphics.initDrawQueue('#fff', false, true, 1)
 
-const asteroidsSlider: HTMLInputElement = document.createElement('input')
+const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
+
+const asteroidsSlider = document.createElement('input')
 asteroidsSlider.type = 'range'
 asteroidsSlider.min = '1'
 asteroidsSlider.max = '20'
@@ -105,11 +108,12 @@ function loop(timestamp: number) {
 
       fittest.game.draw()
 
-      asteroidsGraphics.createText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5, { baseline: 'bottom' }).draw()
-      asteroidsGraphics.createText(`Alive: ${stillAlive.length} / ${asteroidsPopulation.popSize}`, 5, asteroidsGraphics.height - 15, { baseline: 'bottom' }).draw()
-      asteroidsGraphics.createText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, asteroidsGraphics.height - 25, { baseline: 'bottom' }).draw()
-      asteroidsGraphics.createText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, asteroidsGraphics.height - 35, { baseline: 'bottom' }).draw()
-      asteroidsGraphics.createText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45, { baseline: 'bottom' }).draw()
+      asteroidsGraphics.fillStyle = '#fff'
+      asteroidsGraphics.fillText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5)
+      asteroidsGraphics.fillText(`Alive: ${stillAlive.length} / ${asteroidsPopulation.popSize}`, 5, asteroidsGraphics.height - 15)
+      asteroidsGraphics.fillText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, asteroidsGraphics.height - 25)
+      asteroidsGraphics.fillText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, asteroidsGraphics.height - 35)
+      asteroidsGraphics.fillText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45)
     } else {
       currentGenerationTimeAlive = 0
       asteroidsPopulation.nextGeneration()
