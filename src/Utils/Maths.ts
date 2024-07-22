@@ -97,7 +97,7 @@ class ActivationFunction {
   /** The sigmoid activation function */
   static Sigmoid = new ActivationFunction(x => 1 / (1 + Math.exp(-x)), 'Sigmoid')
   /** A scaled version of the sigmoid activation function */
-  static ScaledSigmoid = new ActivationFunction(x => 2 / (1 + Math.exp(-x)) - 1, 'Sigmoid')
+  static ScaledSigmoid = new ActivationFunction(x => 2 / (1 + Math.exp(-x)) - 1, 'Scaled Sigmoid')
   /** The hyperbolic tangent activation function */
   static Tanh = new ActivationFunction(Math.tanh, 'Tanh')
   /** The relu activation function */
@@ -142,6 +142,12 @@ class ActivationFunction {
   constructor(fn: (x: number) => number, name: string) {
     this.fn = fn
     this.name = name
+  }
+
+  static FromName(name: string) {
+    for (const activationFunction of this.Arr) {
+      if (activationFunction.name == name) return activationFunction
+    }
   }
 }
 
