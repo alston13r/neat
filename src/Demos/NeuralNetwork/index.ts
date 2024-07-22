@@ -1,11 +1,13 @@
-const neuralNetGraphics: Graphics = new Graphics().setSize(800, 600).appendToBody()
+const neuralNetGraphics = new Graphics().setSize(800, 600).appendToBody()
+neuralNetGraphics.font = '20px arial'
+neuralNetGraphics.textBaseline = 'top'
 
 const desired = TrainingValues.XOR
 
-const neuralNet: NeuralNetwork = new NeuralNetwork(2, 2, 1)
+const neuralNet = new NeuralNetwork(2, 2, 1)
 
-function getError(): number {
-  let error: number = 0
+function getError() {
+  let error = 0
   for (let pair of desired.ordered) {
     const actual: number[] = neuralNet.feedForward(pair.inputs)
     actual.forEach((output, i) => {
@@ -15,22 +17,22 @@ function getError(): number {
   return error
 }
 
-const maxIterations: number = 200000
-const loopsPerAnimationFrame: number = 100
-const desiredError: number = 0.05
-let currentIteration: number = 0
+const maxIterations = 200000
+const loopsPerAnimationFrame = 100
+const desiredError = 0.05
+let currentIteration = 0
 
-function neuralNetLoop(): void {
+function neuralNetLoop() {
   neuralNetGraphics.bg()
 
-  let solutionFound: boolean = false
+  let solutionFound = false
 
   for (let i = 0; i < loopsPerAnimationFrame; i++) {
     if (solutionFound) break
 
     currentIteration++
 
-    const error: number = getError()
+    const error = getError()
     neuralNet.adjustAlpha(error)
 
     if (error <= desiredError) {
@@ -55,16 +57,17 @@ function neuralNetLoop(): void {
     neuralNet.mutateActivationFunctions()
   }
 
-  neuralNetGraphics.createText(`Current iteration: ${currentIteration}`, 5, 5, { size: 20 }).draw()
+  neuralNetGraphics.fillStyle = '#fff'
+  neuralNetGraphics.fillText(`Current iteration: ${currentIteration}`, 5, 5)
 
   for (let [i, pair] of desired.ordered.entries()) {
-    neuralNetGraphics.createText(
-      '[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']',
-      5, 25 + i * 20, { size: 20 }
-    ).draw()
+    neuralNetGraphics.fillText(
+      `[${pair.inputs.join(', ')}] -> [${neuralNet.feedForward(pair.inputs).join(', ')}]`,
+      5, 25 + i * 20
+    )
   }
 
-  if (solutionFound) neuralNetGraphics.createText('solution', 5, 105, { size: 20 }).draw()
+  if (solutionFound) neuralNetGraphics.fillText('solution', 5, 105)
   else if (currentIteration < maxIterations) window.requestAnimationFrame(neuralNetLoop)
 }
 
