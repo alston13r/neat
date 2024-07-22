@@ -213,11 +213,23 @@ class Species {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       return []
     } else {
-      const offspring: Brain[] = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
+      const offspring: Brain[] = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
       const remainingCount: number = this.allowedOffspring - offspring.length
       Population.GeneratePairings(this.members, remainingCount)
         .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
       return offspring
+    }
+  }
+
+  static GetPresets() {
+    return {
+      'ExcessFactor': Species.ExcessFactor,
+      'DisjointFactor': Species.DisjointFactor,
+      'WeightFactor': Species.WeightFactor,
+      'GenerationPenalization': Species.GenerationPenalization,
+      'TargetSpecies': Species.TargetSpecies,
+      'DynamicThreshold': Species.DynamicThreshold,
+      'DynamicThresholdStepSize': Species.DynamicThresholdStepSize
     }
   }
 }
