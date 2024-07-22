@@ -72,8 +72,8 @@ class TrainingValues {
   ])
 
   values: { inputs: number[], outputs: number[] }[]
-  inputSize: number = 0
-  outputSize: number = 0
+  inputSize = 0
+  outputSize = 0
 
   /**
    * Constructs a TrainingValues wrapper object. Values can be added using addValue(),
@@ -101,7 +101,7 @@ class TrainingValues {
    * @param outputs the outputs to add
    * @returns a reference to this TrainingValues object
    */
-  addValue(inputs: number[], outputs: number[]): TrainingValues {
+  addValue(inputs: number[], outputs: number[]) {
     if (this.inputSize == 0 || this.outputSize == 0) {
       this.inputSize = inputs.length
       this.outputSize = outputs.length
@@ -111,7 +111,7 @@ class TrainingValues {
   }
 
   /** The number of training values in this set */
-  get length(): number {
+  get length() {
     return this.values.length
   }
 
@@ -127,7 +127,7 @@ class TrainingValues {
    * Returns a generator for the local values in a random sequence.
    * @returns the array of values
    */
-  get random(): InputOutput[] {
+  get random() {
     const temp: InputOutput[] = [...this.values]
     const res: InputOutput[] = []
     while (temp.length > 0) {

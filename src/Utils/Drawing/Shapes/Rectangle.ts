@@ -1,50 +1,44 @@
-class Rectangle implements HasPoint, HasSize, Drawable {
-  point: Vec2
+class Rectangle implements HasPoint, HasSize, Drawable, HasPath {
+  pos: Vec2
   size: Vec2
-  graphics: Graphics
-  fill: boolean
-  color: string
-  stroke: boolean
-  lineWidth: number
 
-  constructor(graphics: Graphics, x: number, y: number, width: number, height: number,
-    options: RectangleGraphicsOptions = {}) {
-    this.graphics = graphics
-    this.point = vec2.fromValues(x, y)
+  constructor(x: number, y: number, width: number, height: number) {
+    this.pos = vec2.fromValues(x, y)
     this.size = vec2.fromValues(width, height)
-    this.fill = options.fill == undefined ? true : options.fill
-    this.color = options.color || '#fff'
-    this.stroke = options.stroke == undefined ? false : options.stroke
-    this.lineWidth = options.lineWidth || 1
   }
 
-  get x(): number {
-    return this.point[0]
+  get x() {
+    return this.pos[0]
   }
 
-  get y(): number {
-    return this.point[1]
+  get y() {
+    return this.pos[1]
   }
 
-  get width(): number {
+  get width() {
     return this.size[0]
   }
 
-  get height(): number {
+  get height() {
     return this.size[1]
   }
 
-  draw(): void {
-    if (!this.fill && !this.stroke) return
-    const ctx: CanvasRenderingContext2D = this.graphics.ctx
-    if (this.fill) {
-      ctx.fillStyle = this.color
-      ctx.fillRect(this.x, this.y, this.width, this.height)
-    }
-    if (this.stroke) {
-      ctx.lineWidth = this.lineWidth
-      ctx.strokeStyle = this.color
-      ctx.strokeRect(this.x, this.y, this.width, this.height)
-    }
+  fill(g: Graphics): void {
+    g.fillRect(this.x, this.y, this.width, this.height)
+  }
+
+  stroke(g: Graphics): void {
+    g.strokeRect(this.x, this.y, this.width, this.height)
+  }
+
+  createPath(): Path2D {
+    let path = new Path2D()
+    path.rect(this.x, this.y, this.width, this.height)
+    return path
+  }
+
+  appendToPath(path: Path2D): Path2D {
+    path.rect(this.x, this.y, this.width, this.height)
+    return path
   }
 }

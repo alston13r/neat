@@ -1,9 +1,10 @@
 class Graphics {
     canvas;
-    ctx;
+    context;
+    drawQueues = new Set();
     constructor(canvas) {
         this.canvas = canvas || document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.context = this.canvas.getContext('2d');
     }
     setSize(width, height) {
         this.canvas.width = width;
@@ -15,7 +16,8 @@ class Graphics {
         return this;
     }
     appendToBody() {
-        return this.appendTo(document.body);
+        document.body.appendChild(this.canvas);
+        return this;
     }
     get width() {
         return this.canvas.width;
@@ -26,30 +28,135 @@ class Graphics {
     get size() {
         return vec2.fromValues(this.width, this.height);
     }
-    createCircle(x, y, radius = 10, options) {
-        return new Circle(this, x, y, radius, options);
+    get fillStyle() {
+        return this.context.fillStyle;
     }
-    createLine(x1, y1, x2, y2, options) {
-        return new Line(this, x1, y1, x2, y2, options);
+    get strokeStyle() {
+        return this.context.strokeStyle;
     }
-    createRectangle(x, y, width, height, options) {
-        return new Rectangle(this, x, y, width, height, options);
+    set fillStyle(fillStyle) {
+        this.context.fillStyle = fillStyle;
     }
-    createTriangle(x1, y1, x2, y2, x3, y3, options) {
-        return new TriangleGraphics(this, x1, y1, x2, y2, x3, y3, options);
+    set strokeStyle(strokeStyle) {
+        this.context.strokeStyle = strokeStyle;
     }
-    createPolygon(points, options) {
-        return new Polygon(this, points, options);
+    get lineWidth() {
+        return this.context.lineWidth;
     }
-    createText(text, x, y, options) {
-        return new TextGraphics(this, text, x, y, options);
+    set lineWidth(lineWidth) {
+        this.context.lineWidth = lineWidth;
+    }
+    get textAlign() {
+        return this.context.textAlign;
+    }
+    get textBaseline() {
+        return this.context.textBaseline;
+    }
+    set textAlign(textAlign) {
+        this.context.textAlign = textAlign;
+    }
+    set textBaseline(textBaseline) {
+        this.context.textBaseline = textBaseline;
+    }
+    get font() {
+        return this.context.font;
+    }
+    set font(font) {
+        this.context.font = font;
+    }
+    fill(a, b) {
+        if (a instanceof Path2D)
+            this.context.fill(a, b);
+        else
+            this.context.fill(a);
+    }
+    stroke(path) {
+        this.context.stroke(path);
+    }
+    fillCircle(x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, TwoPi);
+        this.context.fill();
+    }
+    strokeCircle(x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, TwoPi);
+        this.context.stroke();
+    }
+    line(x1, y1, x2, y2) {
+        this.context.beginPath();
+        this.context.moveTo(x1, y1);
+        this.context.lineTo(x2, y2);
+        this.context.stroke();
+    }
+    fillRect(x, y, width, height) {
+        this.context.fillRect(x, y, width, height);
+    }
+    strokeRect(x, y, width, height) {
+        this.context.strokeRect(x, y, width, height);
+    }
+    fillTriangle(x1, y1, x2, y2, x3, y3) {
+        this.context.beginPath();
+        this.context.moveTo(x1, y1);
+        this.context.lineTo(x2, y2);
+        this.context.lineTo(x3, y3);
+        this.context.closePath();
+        this.context.fill();
+    }
+    strokeTriangle(x1, y1, x2, y2, x3, y3) {
+        this.context.beginPath();
+        this.context.moveTo(x1, y1);
+        this.context.lineTo(x2, y2);
+        this.context.lineTo(x3, y3);
+        this.context.closePath();
+        this.context.stroke();
+    }
+    fillPolygon(points) {
+        const nPoints = points.length;
+        if (nPoints <= 2)
+            return;
+        const p1 = points[0];
+        this.context.moveTo(p1[0], p1[1]);
+        for (let i = 1; i < length; i++) {
+            const p = points[i];
+            this.context.lineTo(p[0], p[1]);
+        }
+        this.context.closePath();
+        this.context.fill();
+    }
+    strokePolygon(points) {
+        const nPoints = points.length;
+        if (nPoints <= 2)
+            return;
+        const p1 = points[0];
+        this.context.moveTo(p1[0], p1[1]);
+        for (let i = 1; i < length; i++) {
+            const p = points[i];
+            this.context.lineTo(p[0], p[1]);
+        }
+        this.context.closePath();
+        this.context.stroke();
+    }
+    fillText(text, x, y) {
+        this.context.fillText(text, x, y);
+    }
+    strokeText(text, x, y) {
+        this.context.strokeText(text, x, y);
     }
     bg(color = '#000') {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = color;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    clearRect(x, y, width, height) {
+        this.context.clearRect(x, y, width, height);
     }
     clear() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.clearRect(0, 0, this.width, this.height);
+    }
+    initDrawQueue(color = '#fff', filling = false, stroking = true, lineWidth = 1) {
+        let queue = new DrawQueue(this, color, filling, stroking, lineWidth);
+        this.drawQueues.add(queue);
+        return queue;
     }
 }
 //# sourceMappingURL=Graphics.js.map

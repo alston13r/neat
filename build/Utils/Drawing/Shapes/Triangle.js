@@ -1,58 +1,51 @@
-class TriangleGraphics {
-    point1;
-    point2;
-    point3;
-    graphics;
-    fill;
-    color;
-    stroke;
-    lineWidth;
-    constructor(graphics, x1, y1, x2, y2, x3, y3, options = {}) {
-        this.graphics = graphics;
-        this.point1 = vec2.fromValues(x1, y1);
-        this.point2 = vec2.fromValues(x2, y2);
-        this.point3 = vec2.fromValues(x3, y3);
-        this.fill = options.fill == undefined ? true : options.fill;
-        this.color = options.color || '#fff';
-        this.stroke = options.stroke == undefined ? false : options.stroke;
-        this.lineWidth = options.lineWidth || 1;
+class Triangle {
+    pos1;
+    pos2;
+    pos3;
+    constructor(x1, y1, x2, y2, x3, y3) {
+        this.pos1 = vec2.fromValues(x1, y1);
+        this.pos2 = vec2.fromValues(x2, y2);
+        this.pos3 = vec2.fromValues(x3, y3);
     }
     get x1() {
-        return this.point1[0];
+        return this.pos1[0];
     }
     get y1() {
-        return this.point1[1];
+        return this.pos1[1];
     }
     get x2() {
-        return this.point2[0];
+        return this.pos2[0];
     }
     get y2() {
-        return this.point2[1];
+        return this.pos2[1];
     }
     get x3() {
-        return this.point3[0];
+        return this.pos3[0];
     }
     get y3() {
-        return this.point3[1];
+        return this.pos3[1];
     }
-    draw() {
-        if (!this.fill && !this.stroke)
-            return;
-        const ctx = this.graphics.ctx;
-        if (this.fill)
-            ctx.fillStyle = this.color;
-        if (this.stroke)
-            ctx.strokeStyle = this.color;
-        ctx.lineWidth = this.lineWidth;
-        ctx.beginPath();
-        ctx.moveTo(this.x1, this.y1);
-        ctx.lineTo(this.x2, this.y2);
-        ctx.lineTo(this.x3, this.y3);
-        ctx.closePath();
-        if (this.fill)
-            ctx.fill();
-        if (this.stroke)
-            ctx.stroke();
+    fill(g) {
+        g.fillTriangle(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
+    }
+    stroke(g) {
+        g.strokeTriangle(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
+    }
+    createPath() {
+        let path = new Path2D();
+        path.moveTo(this.x1, this.y1);
+        path.lineTo(this.x2, this.y2);
+        path.lineTo(this.x3, this.y3);
+        path.closePath();
+        return path;
+    }
+    appendToPath(path) {
+        let x1 = this.x1, y1 = this.y1;
+        path.moveTo(x1, y1);
+        path.lineTo(this.x2, this.y2);
+        path.lineTo(this.x3, this.y3);
+        path.lineTo(x1, y1);
+        return path;
     }
 }
 //# sourceMappingURL=Triangle.js.map

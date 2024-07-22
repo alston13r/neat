@@ -9,17 +9,13 @@ class Bird {
     fitness = 0;
     brain;
     alive = true;
-    graphics;
     constructor(brain) {
         this.brain = brain || new Brain().initialize(6, 0, 1);
+        this.pos = vec2.fromValues(64, flappyBirdGraphics.height / 2);
     }
-    setGraphics(graphics) {
-        this.graphics = graphics;
-        this.pos = vec2.fromValues(64, graphics.height / 2);
-        return this;
-    }
-    draw(many = false) {
-        this.graphics.createCircle(this.pos[0], this.pos[1], Bird.Size, { fill: false, stroke: true, color: `rgba(255, 255, 255, ${many ? 0.4 : 1})` }).draw();
+    draw(g, many = false) {
+        g.strokeStyle = `rgba(255, 255, 255, ${many ? 0.4 : 1})`;
+        g.strokeCircle(this.pos[0], this.pos[1], Bird.Size);
     }
     loadInputs(up = 0) {
         if (up > 0.9)
@@ -30,7 +26,7 @@ class Bird {
         this.velocity[1] += Bird.Gravity;
         vec2.scale(this.velocity, this.velocity, Bird.Friction);
         vec2.add(this.pos, this.pos, this.velocity);
-        if (this.pos[1] > this.graphics.height || this.pos[1] < 0)
+        if (this.pos[1] > flappyBirdGraphics.height || this.pos[1] < 0)
             this.alive = false;
     }
 }

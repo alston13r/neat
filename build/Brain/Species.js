@@ -50,9 +50,11 @@ class Species {
      * @returns the compatibility of the two brains
      */
     static Compare(brainA, brainB) {
-        const enabledA = brainA.connections.filter(connection => connection.enabled)
+        const enabledA = brainA.connections
+            .filter(connection => connection.enabled)
             .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID);
-        const enabledB = brainB.connections.filter(connection => connection.enabled)
+        const enabledB = brainB.connections
+            .filter(connection => connection.enabled)
             .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID);
         const N = Math.max(enabledA.length, enabledB.length);
         let disjoint = 0;
@@ -107,7 +109,8 @@ class Species {
      * @returns the average fitness
      */
     getAverageFitness() {
-        return this.members.reduce((sum, curr) => sum + curr.fitness / this.members.length, 0);
+        const N = this.members.length;
+        return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0);
     }
     /**
      * Returns the average adjusted fitness of all members in this species.
@@ -116,7 +119,8 @@ class Species {
      * @returns the average adjusted fitness
      */
     getAverageFitnessAdjusted() {
-        return this.getAverageFitness() / this.members.length;
+        const N = this.members.length;
+        return (N == 0 ? 0 : this.getAverageFitness() / N);
     }
     /**
      * Updates the gensSinceImproved counter to indicate the number of generations
@@ -195,12 +199,23 @@ class Species {
             return [];
         }
         else {
-            const offspring = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring, this.population.fitnessType) : [];
+            const offspring = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
             const remainingCount = this.allowedOffspring - offspring.length;
             Population.GeneratePairings(this.members, remainingCount)
                 .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)));
             return offspring;
         }
+    }
+    static GetPresets() {
+        return {
+            'ExcessFactor': Species.ExcessFactor,
+            'DisjointFactor': Species.DisjointFactor,
+            'WeightFactor': Species.WeightFactor,
+            'GenerationPenalization': Species.GenerationPenalization,
+            'TargetSpecies': Species.TargetSpecies,
+            'DynamicThreshold': Species.DynamicThreshold,
+            'DynamicThresholdStepSize': Species.DynamicThresholdStepSize
+        };
     }
 }
 //# sourceMappingURL=Species.js.map

@@ -1,39 +1,40 @@
 class Polygon {
-    graphics;
     points;
-    fill;
-    color;
-    stroke;
-    lineWidth;
-    constructor(graphics, points, options = {}) {
-        this.graphics = graphics;
+    constructor(points) {
         this.points = points;
-        this.fill = options.fill == undefined ? true : options.fill;
-        this.color = options.color || '#fff';
-        this.stroke = options.stroke == undefined ? false : options.stroke;
-        this.lineWidth = options.lineWidth || 1;
     }
-    draw() {
-        if (!this.fill && !this.stroke)
-            return;
-        const ctx = this.graphics.ctx;
-        ctx.beginPath();
-        for (let [i, p] of this.points.entries()) {
-            if (i == 0)
-                ctx.moveTo(p[0], p[1]);
-            else
-                ctx.lineTo(p[0], p[1]);
+    fill(g) {
+        g.fillPolygon(this.points);
+    }
+    stroke(g) {
+        g.strokePolygon(this.points);
+    }
+    createPath() {
+        let length = this.points.length;
+        if (this.points.length == 0 || this.points.length == 1)
+            return new Path2D();
+        const path = new Path2D();
+        const p1 = this.points[0];
+        path.moveTo(p1[0], p1[1]);
+        for (let i = 1; i < length; i++) {
+            const p = this.points[i];
+            path.lineTo(p[0], p[1]);
         }
-        this.graphics.ctx.closePath();
-        if (this.fill) {
-            ctx.fillStyle = this.color;
-            ctx.fill();
+        path.closePath();
+        return path;
+    }
+    appendToPath(path) {
+        const length = this.points.length;
+        if (this.points.length == 0 || this.points.length == 1)
+            return path;
+        const p1 = this.points[0];
+        path.moveTo(p1[0], p1[1]);
+        for (let i = 1; i < length; i++) {
+            const p = this.points[i];
+            path.lineTo(p[0], p[1]);
         }
-        if (this.stroke) {
-            ctx.lineWidth = this.lineWidth;
-            ctx.strokeStyle = this.color;
-            ctx.stroke();
-        }
+        path.lineTo(p1[0], p1[1]);
+        return path;
     }
 }
 //# sourceMappingURL=Polygon.js.map

@@ -2,19 +2,17 @@ class Particle {
     static NumLines = 360;
     pos;
     rays;
-    graphics;
-    constructor(graphics) {
-        this.graphics = graphics;
-        this.pos = vec2.fromValues(graphics.width / 2, graphics.height / 2);
+    constructor() {
+        this.pos = vec2.fromValues(raycastingGraphics.width / 2, raycastingGraphics.height / 2);
         this.rays = [];
         for (let i = 0; i < Particle.NumLines; i++) {
-            this.rays[i] = new Ray2(this.pos, lerp(i, 0, Particle.NumLines, 0, 2 * Math.PI)).setGraphics(graphics);
+            this.rays[i] = new Ray2(this.pos, lerp(i, 0, Particle.NumLines, 0, 2 * Math.PI));
         }
     }
     update(x, y) {
         vec2.set(this.pos, x, y);
     }
-    look(objects) {
+    look(g, objects) {
         for (const ray of this.rays) {
             let closest;
             let record = Infinity;
@@ -35,11 +33,11 @@ class Particle {
                 }
             }
             if (closest) {
-                this.graphics.createLine(this.pos[0], this.pos[1], closest[0], closest[1], { color: '#fff' }).draw();
+                g.line(this.pos[0], this.pos[1], closest[0], closest[1]);
             }
         }
     }
-    lookLines(walls) {
+    lookLines(g, walls) {
         for (const ray of this.rays) {
             let closest;
             let record = Infinity;
@@ -54,11 +52,11 @@ class Particle {
                 }
             }
             if (closest) {
-                this.graphics.createLine(this.pos[0], this.pos[1], closest[0], closest[1], { color: '#fff' }).draw();
+                g.line(this.pos[0], this.pos[1], closest[0], closest[1]);
             }
         }
     }
-    lookCircles(circles) {
+    lookCircles(g, circles) {
         for (const ray of this.rays) {
             let closest;
             let record = Infinity;
@@ -73,14 +71,15 @@ class Particle {
                 }
             }
             if (closest) {
-                this.graphics.createLine(this.pos[0], this.pos[1], closest[0], closest[1], { color: '#fff' }).draw();
+                g.line(this.pos[0], this.pos[1], closest[0], closest[1]);
             }
         }
     }
-    draw() {
-        this.graphics.createCircle(this.pos[0], this.pos[1], 8).draw();
+    draw(g) {
+        g.fillStyle = '#fff';
+        g.fillCircle(this.pos[0], this.pos[1], 8);
         for (let ray of this.rays) {
-            ray.draw();
+            ray.draw(g);
         }
     }
 }

@@ -1,7 +1,6 @@
-class Asteroid implements Drawable {
+class Asteroid implements Drawable, HasPath {
   static SizeCutoff = 10
 
-  graphics: Graphics
   game: Asteroids
   pos: Vec2
   radius: number
@@ -14,7 +13,6 @@ class Asteroid implements Drawable {
 
   constructor(game: Asteroids, pos: Vec2, radius?: number) {
     this.game = game
-    this.graphics = game.graphics
     this.pos = pos
     this.radius = radius || Math.random() * 25 + 25
     this.offsets = new Array(Math.floor(Math.random() * 5) + 10).fill(0).map(() => Math.random() * 20 - 8)
@@ -40,14 +38,23 @@ class Asteroid implements Drawable {
     const half = this.radius / 2
     if (half < Asteroid.SizeCutoff) return
     this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
-    this.game.asteroids.push(new Asteroid(this.game, this.pos, half))
-
+    this.game.asteroids.push(new Asteroid(this.game, vec2.copy(vec2.create(), this.pos), half))
     this.game.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroiddestroyed', { detail: this.getInfo() }))
   }
 
-  draw(): void {
+  draw(g: Graphics): void {
     const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    this.graphics.createPolygon(points, { fill: false, stroke: true }).draw()
+    g.strokePolygon(points)
+  }
+
+  createPath(): Path2D {
+    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
+    return new Polygon(points).createPath()
+  }
+
+  appendToPath(path: Path2D): Path2D {
+    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
+    return new Polygon(points).appendToPath(path)
   }
 
   wrap(): void {
@@ -74,8 +81,7 @@ class Asteroid implements Drawable {
   }
 
   getCollisionCircle(): Circle {
-    return this.graphics.createCircle(this.pos[0], this.pos[1], this.collisionRadius,
-      { fill: false, stroke: true, color: '#750101' })
+    return new Circle(this.pos[0], this.pos[1], this.collisionRadius)
   }
 
   getInfo(): AsteroidInfo {

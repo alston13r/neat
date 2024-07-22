@@ -1,4 +1,4 @@
-class Ship implements Drawable {
+class Ship implements Drawable, HasPath {
   static MaxSpeed: number = 3
   static ShootDelay: number = 33
 
@@ -13,7 +13,6 @@ class Ship implements Drawable {
 
   pos: Vec2
   game: Asteroids
-  graphics: Graphics
   heading: number
   velocity: Vec2
   lasers: Laser[]
@@ -27,7 +26,6 @@ class Ship implements Drawable {
 
   constructor(game: Asteroids, pos?: Vec2) {
     this.game = game
-    this.graphics = game.graphics
     this.pos = pos || vec2.create()
     this.heading = -Math.PI / 2
     this.velocity = vec2.create()
@@ -38,7 +36,6 @@ class Ship implements Drawable {
 
     this.rays = new Array(Ship.NumRays).fill(0).map(
       () => new Ray2(this.pos)
-        .setGraphics(this.graphics)
         .setLength(Ship.RayLength)
     )
     this.updateRays()
@@ -125,13 +122,40 @@ class Ship implements Drawable {
     }
   }
 
-  draw(): void {
-    this.graphics.createTriangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1],
-      { fill: false, stroke: true }).draw()
-    this.lasers.forEach(laser => laser.draw())
+  draw(g: Graphics): void {
+    g.strokeTriangle(
+      this.top[0], this.top[1],
+      this.left[0], this.left[1],
+      this.right[0], this.right[1]
+    )
+    this.lasers.forEach(laser => laser.draw(g))
   }
 
-  getRayInfo(debug: boolean = false): RayInfo[] {
+  createPath(): Path2D {
+    let path = new Triangle(
+      this.top[0], this.top[1],
+      this.left[0], this.left[1],
+      this.right[0], this.right[1]
+    ).createPath()
+
+    this.lasers.forEach(laser => laser.appendToPath(path))
+
+    return path
+  }
+
+  appendToPath(path: Path2D): Path2D {
+    new Triangle(
+      this.top[0], this.top[1],
+      this.left[0], this.left[1],
+      this.right[0], this.right[1]
+    ).appendToPath(path)
+
+    this.lasers.forEach(laser => laser.appendToPath(path))
+
+    return path
+  }
+
+  getRayInfo(): RayInfo[] {
     const info: RayInfo[] = []
 
     const asteroidCircles = this.game.asteroids.map(asteroid => asteroid.getCollisionCircle())
@@ -142,15 +166,8 @@ class Ship implements Drawable {
         const distance = vec2.distance(this.pos, point)
         const hitting = distance <= Ship.RayLength
         info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) })
-
-        if (debug) {
-          ray.draw(hitting ? '#0f0' : '#00f')
-          this.graphics.createCircle(point[0], point[1], 5, { color: '#f00' }).draw()
-        }
       } else {
         info.push({ ray, hitting: false, distance: -1 })
-
-        if (debug) ray.draw()
       }
     }
     return info

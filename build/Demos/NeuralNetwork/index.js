@@ -1,4 +1,6 @@
 const neuralNetGraphics = new Graphics().setSize(800, 600).appendToBody();
+neuralNetGraphics.font = '20px arial';
+neuralNetGraphics.textBaseline = 'top';
 const desired = TrainingValues.XOR;
 const neuralNet = new NeuralNetwork(2, 2, 1);
 function getError() {
@@ -43,12 +45,13 @@ function neuralNetLoop() {
         neuralNet.mutateBiases();
         neuralNet.mutateActivationFunctions();
     }
-    neuralNetGraphics.createText(`Current iteration: ${currentIteration}`, 5, 5, { size: 20 }).draw();
+    neuralNetGraphics.fillStyle = '#fff';
+    neuralNetGraphics.fillText(`Current iteration: ${currentIteration}`, 5, 5);
     for (let [i, pair] of desired.ordered.entries()) {
-        neuralNetGraphics.createText('[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']', 5, 25 + i * 20, { size: 20 }).draw();
+        neuralNetGraphics.fillText(`[${pair.inputs.join(', ')}] -> [${neuralNet.feedForward(pair.inputs).join(', ')}]`, 5, 25 + i * 20);
     }
     if (solutionFound)
-        neuralNetGraphics.createText('solution', 5, 105, { size: 20 }).draw();
+        neuralNetGraphics.fillText('solution', 5, 105);
     else if (currentIteration < maxIterations)
         window.requestAnimationFrame(neuralNetLoop);
 }

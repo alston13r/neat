@@ -73,14 +73,11 @@ class Asteroids extends EventTarget {
         }
         this.collisions();
     }
-    draw(debug = false) {
-        this.ship.draw();
-        this.asteroids.forEach(asteroid => asteroid.draw());
-        if (debug) {
-            for (const ray of this.ship.rays) {
-                ray.draw();
-            }
-        }
+    draw() {
+        const path = asteroidsDrawQueue.path;
+        this.ship.appendToPath(path);
+        this.asteroids.forEach(asteroid => asteroid.appendToPath(path));
+        asteroidsDrawQueue.dispatch();
     }
     getAsteroidsByDistance() {
         return [...this.asteroids].sort((a, b) => {

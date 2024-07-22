@@ -3,18 +3,12 @@ type CastableObject = Line | Circle
 class Ray2 implements Drawable {
   pos: Vec2
   dir: Vec2
-  graphics: Graphics
   length: number
 
   constructor(pos: Vec2, angle = 0, length = 1) {
     this.pos = pos
     this.dir = vec2.fromAngle(angle)
     this.length = length
-  }
-
-  setGraphics(graphics: Graphics): Ray2 {
-    this.graphics = graphics
-    return this
   }
 
   lookAt(x: number, y: number): void {
@@ -107,8 +101,8 @@ class Ray2 implements Drawable {
 
     const p1 = vec2.fromValues(P, Q)
     const p2 = vec2.fromValues(R, S)
-    vec2.add(p1, p1, circle.point)
-    vec2.add(p2, p2, circle.point)
+    vec2.add(p1, p1, circle.pos)
+    vec2.add(p2, p2, circle.pos)
 
     const posAddDir = vec2.add(vec2.create(), this.pos, this.dir)
 
@@ -126,11 +120,11 @@ class Ray2 implements Drawable {
     return d1 < d3 ? p1 : p2
   }
 
-  draw(color: string = '#fff'): void {
+  draw(g: Graphics): void {
     const d = vec2.copy(vec2.create(), this.dir)
     vec2.scale(d, d, this.length)
     vec2.add(d, d, this.pos)
 
-    this.graphics.createLine(this.pos[0], this.pos[1], d[0], d[1], { color }).draw()
+    g.line(this.pos[0], this.pos[1], d[0], d[1])
   }
 }

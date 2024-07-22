@@ -5,15 +5,15 @@
  * offspring for the next generation.
  */
 class Population {
-  /** The percent of members who get carried over as elites */
-  static ElitePercent: number = 0.3
-
   /** Toggle for speciation between generations */
-  speciation: boolean = true
+  static Speciation = true
   /** Toggle for elitism */
-  elitism: boolean = true
+  static Elitism = true
+  /** The percent of members who get carried over as elites */
+  static ElitePercent = 0.3
+
   /** A counter for the current generation */
-  generationCounter: number = 0
+  generationCounter = 0
   /** An array of the population's members */
   members: Brain[] = []
   /** The number of members the population will always have */
@@ -28,10 +28,6 @@ class Population {
   enabledChance: number
   /** A reference to the population's fittest member ever */
   fittestEver: Brain
-  /** A reference to the graphics object that the population can be drawn to */
-  graphics: Graphics
-  /** The type of fitness that this population favors */
-  fitnessType: OptimizationType = OptimizationType.Maximizing
 
   /**
    * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
@@ -42,7 +38,7 @@ class Population {
    * @param outputN the number of output nodes
    * @param enabledChance the chance for connections to start enabled
    */
-  constructor(popSize: number, inputN: number, hiddenN: number, outputN: number, enabledChance: number = 1) {
+  constructor(popSize: number, inputN: number, hiddenN: number, outputN: number, enabledChance = 1) {
     this.popSize = popSize
     this.inputN = inputN
     this.hiddenN = hiddenN
@@ -51,20 +47,9 @@ class Population {
   }
 
   /**
-   * Sets the fitness type that this population will favor. The possible
-   * values are maximizing and minimizing, where the fitness values can
-   * trend higher and higher or to 0, respectively.
-   * @param fitnessType the fitness type
-   */
-  setFitnessType(fitnessType: OptimizationType): Population {
-    this.fitnessType = fitnessType
-    return this
-  }
-
-  /**
    * The list of all current species that the members are registered to.
    */
-  get speciesList(): Species[] {
+  get speciesList() {
     const returnArr: Species[] = []
     this.members.forEach(member => {
       if (member.species != null && !returnArr.includes(member.species)) returnArr.push(member.species)
@@ -76,7 +61,7 @@ class Population {
    * Adjusts the dynamic compatibility threshold for the species class given the current
    * number of species and the desired amount. If speciation is disabled, this will not be called.
    */
-  adjustDynamicThreshold(): void {
+  adjustDynamicThreshold() {
     Species.DynamicThreshold += Math.sign(this.speciesList.length - Species.TargetSpecies) * Species.DynamicThresholdStepSize
   }
 
@@ -84,8 +69,8 @@ class Population {
    * Returns the fittest member in the current list of members.
    * @returns the fittest member
    */
-  getFittest(): Brain {
-    return this.members.reduce((best, curr) => Brain.GetFitter(best, curr, this.fitnessType))
+  getFittest() {
+    return this.members.reduce((best, curr) => Brain.GetFitter(best, curr))
   }
 
   /**
@@ -94,10 +79,10 @@ class Population {
    * will be updated with the population's current generation's fittest member
    * if their fitness exceeds the record.
    */
-  updateFittestEver(): Brain {
-    const genFittest: Brain = this.getFittest()
+  updateFittestEver() {
+    const genFittest = this.getFittest()
     if (this.fittestEver == null) this.fittestEver = genFittest
-    else this.fittestEver = Brain.GetFitter(this.fittestEver, genFittest, this.fitnessType)
+    else this.fittestEver = Brain.GetFitter(this.fittestEver, genFittest)
     return this.fittestEver
   }
 
@@ -106,7 +91,7 @@ class Population {
    * whether or not they have improved their fitness since the last generation.
    * If speciation is disabled, this will not be called.
    */
-  updateGensSinceImproved(): void {
+  updateGensSinceImproved() {
     this.speciesList.forEach(species => species.updateGensSinceImproved())
   }
 
@@ -114,9 +99,9 @@ class Population {
    * Returns the average fitness of all the members in the population.
    * @returns the average fitness of all members
    */
-  getAverageFitness(): number {
-    const N: number = this.members.length
-    return this.members.reduce((sum, curr) => sum + curr.fitness / N, 0)
+  getAverageFitness() {
+    const N = this.members.length
+    return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0)
   }
 
   /**
@@ -124,40 +109,23 @@ class Population {
    * If speciation is disabled, this calculation will not run and offspring are
    * produced solely by the fittest members of the population.
    */
-  calculateAllowedOffspring(): void {
-    const maxSize: number = this.popSize
-    const list: Species[] = [...this.speciesList]
-    const items = list.map(species => {
+  calculateAllowedOffspring() {
+    const maxSize = this.popSize
+    const speciesList = [...this.speciesList]
+    const items = speciesList.map(species => {
       return {
         fitness: species.getAverageFitnessAdjusted(),
         species,
         length: species.members.length
       }
     })
-    // if fitness should be increasing to as high as possible
-    if (this.fitnessType == OptimizationType.Maximizing) {
-      const avg: number = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize
-      items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length)
-    }
-    // if fitness should be decreasing to 0
-    else if (this.fitnessType == OptimizationType.Minimizing) {
-      let highest: number = -Infinity
-      let lowest: number = Infinity
-      for (let item of items) {
-        if (item.fitness > highest) highest = item.fitness
-        if (item.fitness < lowest) lowest = item.fitness
-      }
-      for (let item of items) {
-        item.fitness = highest - item.fitness + lowest
-      }
-      const total: number = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0)
-      for (let item of items) {
-        item.species.allowedOffspring = maxSize * item.fitness * item.length / total
-      }
-    }
+
+    const avg = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize
+    items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length)
+
     // ensure that the allowed offspring values are whole numbers and total
     // to the population size
-    roundNicely(list, 'allowedOffspring', maxSize)
+    roundNicely(speciesList, 'allowedOffspring', maxSize)
   }
 
   /**
@@ -168,25 +136,25 @@ class Population {
    * otherwise its the percentage of members that gets preserved.
    */
   produceOffspring(): void {
-    if (this.speciation) {
-      const speciesList: Species[] = this.speciesList
+    if (Population.Speciation) {
+      const speciesList = this.speciesList
       this.members = []
       speciesList.forEach(species => {
-        const speciesOffspring: Brain[] = species.produceOffspring()
+        const speciesOffspring = species.produceOffspring()
         this.members.push(...speciesOffspring)
         speciesOffspring.forEach(offspring => offspring.species = species)
         species.members = speciesOffspring
       })
 
       if (this.members.length < this.popSize) {
-        const difference: number = this.popSize - this.members.length
+        const difference = this.popSize - this.members.length
         for (let i = 0; i < difference; i++) {
           this.members.push(new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
         }
       }
     } else {
       const copyOfMembers = [...this.members]
-      this.members = this.elitism ? Population.GetElites(this.members, this.popSize, this.fitnessType) : []
+      this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : []
       const pairings = Population.GeneratePairings(copyOfMembers, this.popSize)
       pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)))
     }
@@ -195,7 +163,7 @@ class Population {
   /**
    * Goes through all the members in the population and calls their mutate() method.
    */
-  mutate(): void {
+  mutate() {
     this.members.forEach(member => member.mutate())
   }
 
@@ -204,7 +172,7 @@ class Population {
    * increments the generationCounter denoting which generation the current members are, and
    * mutates them.
    */
-  nextGeneration(): void {
+  nextGeneration() {
     if (this.members.length == 0) {
       this.members = new Array(this.popSize).fill(0)
         .map(() => new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
@@ -221,8 +189,8 @@ class Population {
    * each species gensSinceImproved counters, adjusts the dynamic compatibility threshold,
    * adjusts the fitness of all members, and calculates the allowed offspring for each species.
    */
-  speciate(): void {
-    if (this.speciation) {
+  speciate() {
+    if (Population.Speciation) {
       Species.Speciate(this)
       this.updateGensSinceImproved()
       this.adjustDynamicThreshold()
@@ -238,9 +206,9 @@ class Population {
    * @param offspringN the number of offspring desired
    * @returns an array of parent pairings where parents are p1 and p2
    */
-  static GeneratePairings(list: Brain[], offspringN: number): { p1: Brain, p2: Brain }[] {
+  static GeneratePairings(list: Brain[], offspringN: number) {
     if (offspringN == 0) return []
-    const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2, list[0].population.fitnessType == OptimizationType.Minimizing)
+    const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2)
     return new Array(offspringN).fill(0).map(() => {
       return { p1: parents.pop(), p2: parents.pop() }
     })
@@ -252,10 +220,10 @@ class Population {
    * @param softLimit the soft limit for the number of elites
    * @returns the elites
    */
-  static GetElites(list: Brain[], softLimit: number, fitnessType: OptimizationType): Brain[] {
+  static GetElites(list: Brain[], softLimit: number): Brain[] {
     if (softLimit == 0) return []
     const res: Brain[] = []
-    const sorted: Brain[] = [...list].sort((a, b) => (fitnessType == OptimizationType.Maximizing ? 1 : -1) * (b.fitness - a.fitness))
+    const sorted: Brain[] = [...list].sort((a, b) => a.fitness - b.fitness)
     const amount: number = Math.min(Math.round(Population.ElitePercent * list.length), softLimit)
     for (let i = 0; i < amount; i++) {
       const eliteMember: Brain = sorted[i]
@@ -266,48 +234,54 @@ class Population {
   }
 
   /**
-   * Sets the local reference for graphics to the specified object.
-   * @param graphics the graphics to set
-   * @returns a refrence to this population
-   */
-  setGraphics(graphics: Graphics): Population {
-    this.graphics = graphics
-    return this
-  }
-
-  /**
    * Draws this population to the local graphics.
    */
-  draw(): void {
+  draw(g: Graphics) {
     const round: (x: number, p: number) => number = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
-    new TextGraphics(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
-      5, 5, { size: 20 }).draw()
+    g.textBaseline = 'top'
+    g.textAlign = 'left'
+    g.fillStyle = '#fff'
+    g.font = '20px arial'
+    g.fillText(`Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5)
 
     const getMemberText = (brain: Brain, i: number) => {
-      const a: number = round(brain.fitness, 5)
-      const b: number = round(brain.fitness / brain.species.members.length, 5)
-      return `${i}: ${a} ${this.speciation ? ' -> ' + b : ''}`
+      const a = round(brain.fitness, 5)
+      const b = round(brain.fitness / brain.species.members.length, 5)
+      return `${i + 1}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`
     }
+    g.font = '10px arial'
     this.members.slice()
-      .sort((a, b) => (this.fitnessType == OptimizationType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
-      .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10))
-      .forEach(member => member.draw())
+      .sort((a, b) => b.fitness - a.fitness)
+      .slice(0, 50)
+      .forEach((brain, i) => {
+        g.fillText(getMemberText(brain, i), 5, 25 + i * 10)
+      })
 
-    if (this.speciation) {
-      new TextGraphics(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
-        250, 5, { size: 20 })
-        .draw()
+    if (Population.Speciation) {
+      g.font = '20px arial'
+      g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 240, 5)
 
       const getSpeciesText = (species: Species) => {
-        const a: number = species.members.length
-        const b: number = round(species.getAverageFitness(), 5)
-        const c: number = round(species.getAverageFitnessAdjusted(), 5)
-        const d: number = species.gensSinceImproved
+        const a = species.members.length
+        const b = round(species.getAverageFitness(), 5)
+        const c = round(species.getAverageFitnessAdjusted(), 5)
+        const d = species.gensSinceImproved
         return `<${a}, ${d}> ${b} -> ${c}`
       }
-      this.speciesList.map((s, i) => new TextGraphics(this.graphics, getSpeciesText(s), 250, 25 + i * 10))
-        .forEach(species => species.draw())
+      g.font = '10px arial'
+      this.speciesList
+        .sort((a, b) => b.members.length - a.members.length)
+        .slice(0, 50)
+        .forEach((s, i) => g.fillText(getSpeciesText(s), 240, 25 + i * 10))
+    }
+  }
+
+  static GetPresets() {
+    return {
+      'Speciation': Population.Speciation,
+      'Elitism': Population.Elitism,
+      'ElitePercent': Population.ElitePercent
     }
   }
 }

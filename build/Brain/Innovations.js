@@ -27,5 +27,10 @@ class Innovations {
         // return the innovation id
         return this.InnovationMap.get(innovationString);
     }
+    static Serialize() {
+        return {
+            'innovations': [...this.InnovationMap.entries()]
+        };
+    }
 }
 //# sourceMappingURL=Innovations.js.map

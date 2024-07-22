@@ -1,6 +1,12 @@
+interface HasPath {
+  createPath(): Path2D
+  appendToPath(path: Path2D): Path2D
+}
+
 interface Drawable {
-  graphics: Graphics
-  draw(): void
+  fill?(g: Graphics): void
+  stroke?(g: Graphics): void
+  draw?(g: Graphics): void
 }
 
 interface HasSize {
@@ -10,14 +16,14 @@ interface HasSize {
 }
 
 interface HasPoint {
-  point: Vec2
+  pos: Vec2
   x: number
   y: number
 }
 
 interface HasTwoPoints {
-  point1: Vec2
-  point2: Vec2
+  pos1: Vec2
+  pos2: Vec2
   x1: number
   y1: number
   x2: number
@@ -25,9 +31,9 @@ interface HasTwoPoints {
 }
 
 interface HasThreePoints {
-  point1: Vec2
-  point2: Vec2
-  point3: Vec2
+  pos1: Vec2
+  pos2: Vec2
+  pos3: Vec2
   x1: number
   y1: number
   x2: number

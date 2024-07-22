@@ -143,5 +143,30 @@ class NNode {
     clamp() {
         this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue);
     }
+    static GetPresets() {
+        return {
+            'DefaultInputActivationFunction': NNode.DefaultInputActivationFunction.name,
+            'DefaultHiddenActivationFunction': NNode.DefaultHiddenActivationFunction.name,
+            'DefaultOutputActivationFunction': NNode.DefaultOutputActivationFunction.name,
+            'AllowHiddenActivationMutations': NNode.AllowHiddenActivationMutations,
+            'AllowOutputActivationMutations': NNode.AllowOutputActivationMutations,
+            'MutateActivationFunctionChance': NNode.MutateActivationFunctionChance,
+            'MutateBiasChance': NNode.MutateBiasChance,
+            'NudgeBiasChance': NNode.NudgeBiasChance,
+            'MinimumBiasValue': NNode.MinimumBiasValue,
+            'MaximumBiasValue': NNode.MaximumBiasValue
+        };
+    }
+    serialize() {
+        return {
+            'id': this.id,
+            'type': this.type,
+            'layer': this.layer,
+            'bias': this.bias,
+            'connectionsIn': this.connectionsIn.map(c => c.innovationID),
+            'connectionsOut': this.connectionsOut.map(c => c.innovationID),
+            'activationFunction': this.activationFunction.name
+        };
+    }
 }
 //# sourceMappingURL=NeatNode.js.map
