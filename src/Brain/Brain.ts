@@ -37,8 +37,6 @@ class Brain {
   connections: Connection[]
   /** Boolean indicating if the brain is an elite from the prior generation */
   isElite: boolean = false
-  /** A reference to the graphics object that the brain can be drawn to */
-  graphics: Graphics
   /** A reference to this brain's population */
   population: Population
 
@@ -397,16 +395,6 @@ class Brain {
   }
 
   /**
-   * Sets the local reference for graphics to the specified object.
-   * @param graphics the graphics to set
-   * @returns a refrence to this population
-   */
-  setGraphics(graphics: Graphics): Brain {
-    this.graphics = graphics
-    return this
-  }
-
-  /**
    * Draws this brain to the local graphics.
    * @param options the options to draw the brain with
    */
@@ -488,9 +476,25 @@ class Brain {
     g.textBaseline = 'top'
     g.fillStyle = '#fff'
     g.fillText(this.fitness.toString(), xOffset + 10, yOffset + 10)
+  }
 
-    // if (outline) {
-    //   this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight).fill()
-    // }
+  static GetPresets() {
+    return {
+      'AllowNewConnections': Brain.AllowNewConnections,
+      'AllowDisablingConnections': Brain.AllowDisablingConnections,
+      'AllowRecurrent': Brain.AllowRecurrent,
+      'AddConnectionChance': Brain.AddConnectionChance,
+      'DisableConnectionChance': Brain.DisableConnectionChance,
+      'ReenableConnectionChance': Brain.ReenableConnectionChance,
+      'AllowNewNodes': Brain.AllowNewNodes,
+      'AddANodeChance': Brain.AddANodeChance
+    }
+  }
+
+  serialize() {
+    return {
+      'nodes': this.nodes.map(n => n.serialize()),
+      'connections': this.connections.map(c => c.serialize())
+    }
   }
 }
