@@ -6,14 +6,14 @@
  */
 class Population {
   /** Toggle for speciation between generations */
-  static Speciation: boolean = true
+  static Speciation = true
   /** Toggle for elitism */
-  static Elitism: boolean = true
+  static Elitism = true
   /** The percent of members who get carried over as elites */
-  static ElitePercent: number = 0.3
+  static ElitePercent = 0.3
 
   /** A counter for the current generation */
-  generationCounter: number = 0
+  generationCounter = 0
   /** An array of the population's members */
   members: Brain[] = []
   /** The number of members the population will always have */
@@ -49,7 +49,7 @@ class Population {
   /**
    * The list of all current species that the members are registered to.
    */
-  get speciesList(): Species[] {
+  get speciesList() {
     const returnArr: Species[] = []
     this.members.forEach(member => {
       if (member.species != null && !returnArr.includes(member.species)) returnArr.push(member.species)
@@ -79,8 +79,8 @@ class Population {
    * will be updated with the population's current generation's fittest member
    * if their fitness exceeds the record.
    */
-  updateFittestEver(): Brain {
-    const genFittest: Brain = this.getFittest()
+  updateFittestEver() {
+    const genFittest = this.getFittest()
     if (this.fittestEver == null) this.fittestEver = genFittest
     else this.fittestEver = Brain.GetFitter(this.fittestEver, genFittest)
     return this.fittestEver
@@ -91,7 +91,7 @@ class Population {
    * whether or not they have improved their fitness since the last generation.
    * If speciation is disabled, this will not be called.
    */
-  updateGensSinceImproved(): void {
+  updateGensSinceImproved() {
     this.speciesList.forEach(species => species.updateGensSinceImproved())
   }
 
@@ -99,8 +99,8 @@ class Population {
    * Returns the average fitness of all the members in the population.
    * @returns the average fitness of all members
    */
-  getAverageFitness(): number {
-    const N: number = this.members.length
+  getAverageFitness() {
+    const N = this.members.length
     return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0)
   }
 
@@ -109,10 +109,10 @@ class Population {
    * If speciation is disabled, this calculation will not run and offspring are
    * produced solely by the fittest members of the population.
    */
-  calculateAllowedOffspring(): void {
-    const maxSize: number = this.popSize
-    const list: Species[] = [...this.speciesList]
-    const items = list.map(species => {
+  calculateAllowedOffspring() {
+    const maxSize = this.popSize
+    const speciesList = [...this.speciesList]
+    const items = speciesList.map(species => {
       return {
         fitness: species.getAverageFitnessAdjusted(),
         species,
@@ -120,12 +120,12 @@ class Population {
       }
     })
 
-    const avg: number = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize
+    const avg = items.reduce((sum, curr) => sum + curr.fitness * curr.length, 0) / maxSize
     items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length)
 
     // ensure that the allowed offspring values are whole numbers and total
     // to the population size
-    roundNicely(list, 'allowedOffspring', maxSize)
+    roundNicely(speciesList, 'allowedOffspring', maxSize)
   }
 
   /**
@@ -137,17 +137,17 @@ class Population {
    */
   produceOffspring(): void {
     if (Population.Speciation) {
-      const speciesList: Species[] = this.speciesList
+      const speciesList = this.speciesList
       this.members = []
       speciesList.forEach(species => {
-        const speciesOffspring: Brain[] = species.produceOffspring()
+        const speciesOffspring = species.produceOffspring()
         this.members.push(...speciesOffspring)
         speciesOffspring.forEach(offspring => offspring.species = species)
         species.members = speciesOffspring
       })
 
       if (this.members.length < this.popSize) {
-        const difference: number = this.popSize - this.members.length
+        const difference = this.popSize - this.members.length
         for (let i = 0; i < difference; i++) {
           this.members.push(new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
         }
@@ -163,7 +163,7 @@ class Population {
   /**
    * Goes through all the members in the population and calls their mutate() method.
    */
-  mutate(): void {
+  mutate() {
     this.members.forEach(member => member.mutate())
   }
 
@@ -172,7 +172,7 @@ class Population {
    * increments the generationCounter denoting which generation the current members are, and
    * mutates them.
    */
-  nextGeneration(): void {
+  nextGeneration() {
     if (this.members.length == 0) {
       this.members = new Array(this.popSize).fill(0)
         .map(() => new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
@@ -189,7 +189,7 @@ class Population {
    * each species gensSinceImproved counters, adjusts the dynamic compatibility threshold,
    * adjusts the fitness of all members, and calculates the allowed offspring for each species.
    */
-  speciate(): void {
+  speciate() {
     if (Population.Speciation) {
       Species.Speciate(this)
       this.updateGensSinceImproved()
@@ -206,7 +206,7 @@ class Population {
    * @param offspringN the number of offspring desired
    * @returns an array of parent pairings where parents are p1 and p2
    */
-  static GeneratePairings(list: Brain[], offspringN: number): { p1: Brain, p2: Brain }[] {
+  static GeneratePairings(list: Brain[], offspringN: number) {
     if (offspringN == 0) return []
     const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2)
     return new Array(offspringN).fill(0).map(() => {
