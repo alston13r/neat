@@ -7,24 +7,24 @@
  */
 class Brain {
   /** Toggle for new connections */
-  static AllowNewConnections: boolean = true
+  static AllowNewConnections = true
   /** Toggle for connection disabling */
-  static AllowDisablingConnections: boolean = false
+  static AllowDisablingConnections = false
   /** Toggle for allowing recurrent connections */
-  static AllowRecurrent: boolean = true
+  static AllowRecurrent = true
   /** The chance for a new connection to be made */
-  static AddConnectionChance: number = 0.4
+  static AddConnectionChance = 0.4
   /** The chance for a connection to be disabled */
-  static DisableConnectionChance: number = 0.05
+  static DisableConnectionChance = 0.05
   /** The chance for a connection to be reenabled */
-  static ReenableConnectionChance: number = 0.25
+  static ReenableConnectionChance = 0.25
   /** Toggle for new nodes */
-  static AllowNewNodes: boolean = true
+  static AllowNewNodes = true
   /** The chance for a new node to be made */
-  static AddANodeChance: number = 0.03
+  static AddANodeChance = 0.03
 
   /** The current fitness of the brain */
-  fitness: number = 0
+  fitness = 0
   /** The current species this brain belongs to, null if none assigned */
   species: Species | null = null
   /** An array of the brain's nodes */
@@ -36,7 +36,7 @@ class Brain {
   /** An array of the brain's connections */
   connections: Connection[]
   /** Boolean indicating if the brain is an elite from the prior generation */
-  isElite: boolean = false
+  isElite = false
   /** A reference to this brain's population */
   population: Population
 
@@ -74,7 +74,7 @@ class Brain {
    * @returns a reference to this Brain
    */
   initialize(inputN: number, hiddenN: number, outputN: number, enabledChance: number): Brain
-  initialize(inputN: number, hiddenN: number, outputN: number, enabledChance: number = 1): Brain {
+  initialize(inputN: number, hiddenN: number, outputN: number, enabledChance = 1) {
     this.nodes = []
     this.inputNodes = []
     this.outputNodes = []
@@ -105,8 +105,8 @@ class Brain {
 
     this.connections = []
     for (let i = 1; i < toConnect.length; i++) {
-      const layerA: NNode[] = toConnect[i - 1]
-      const layerB: NNode[] = toConnect[i]
+      const layerA = toConnect[i - 1]
+      const layerB = toConnect[i]
       for (let inNode of layerA) {
         for (let outNode of layerB) {
           this.connections.push(new Connection(inNode, outNode,
@@ -131,8 +131,8 @@ class Brain {
    * recurrent connections where the incoming node's layer is less than the outgoing is no longer
    * a recurrent connection.
    */
-  fixLayers(): void {
-    const tNodeArr: { node: NNode, connectionsIn: Connection[], connectionsOut: Connection[] }[] = this.nodes.map(node => {
+  fixLayers() {
+    const tNodeArr = this.nodes.map(node => {
       return {
         node,
         connectionsIn: node.connectionsIn.filter(connection => !connection.recurrent),
@@ -181,7 +181,7 @@ class Brain {
    * The first connection inherits the weight of the original while the second is randomized.
    * A call to the brain's fixLayers() method is made to ensure proper topology is maintained.
    */
-  addANode(): void {
+  addANode() {
     let forward = this.connections.filter(x => x.enabled && !x.recurrent)
     if (forward.length == 0) return
     let chosen = forward[Math.floor(Math.random() * forward.length)]
@@ -204,7 +204,7 @@ class Brain {
    * to be enabled for the connection to be made. If the nodes are valid, the connection has a
    * random weight, is enabled, and recurrent when appropriate.
    */
-  addAConnection(): void {
+  addAConnection() {
     for (let i = 0; i < 20; i++) {
       let node1 = this.nodes[Math.floor(Math.random() * this.nodes.length)]
       let node2 = this.nodes[Math.floor(Math.random() * this.nodes.length)]
@@ -213,7 +213,7 @@ class Brain {
         || node1.layer > node2.layer && !Brain.AllowRecurrent
         || node1.layer == node2.layer
       ) continue
-      const innovationID: number = Innovations.GetInnovationID(node1, node2)
+      const innovationID = Innovations.GetInnovationID(node1, node2)
       let c = this.connections.filter(x => x.innovationID == innovationID)[0]
       if (c != undefined) {
         if (c.enabled) continue
@@ -233,7 +233,7 @@ class Brain {
    * This method selects a random enabled connection and disables it. A maximum of 20 iterations
    * are used to find a valid connection.
    */
-  disableAConnection(): void {
+  disableAConnection() {
     for (let i = 0; i < 20; i++) {
       const connection = this.connections[Math.floor(Math.random() * this.connections.length)]
       if (!connection.enabled) continue
@@ -249,7 +249,7 @@ class Brain {
    * well as disabled. Nodes can also be added and have their activation functions mutated
    * and bias weights nudged or randomized.
    */
-  mutate(): void {
+  mutate() {
     if (this.isElite) return
 
     // mutate weights
@@ -275,7 +275,7 @@ class Brain {
    * Loads the specified array of input values to the brain's input nodes.
    * @param inputs the array of inputs
    */
-  loadInputs(inputs: number[]): void {
+  loadInputs(inputs: number[]) {
     this.inputNodes.map((node, i) => node.sumOutput = inputs[i])
   }
 
@@ -287,7 +287,7 @@ class Brain {
    * adds the bias and sets the sum output value to whatever is returned by the
    * node's activation function.
    */
-  runTheNetwork(): void {
+  runTheNetwork() {
     for (let currLayerI = 2; currLayerI <= this.outputNodes[0].layer; currLayerI++) {
       const currLayer = this.nodes.filter(node => node.layer == currLayerI)
       for (let node of currLayer) {
@@ -305,7 +305,7 @@ class Brain {
    * be run after the brain's has propagated values through it.
    * @returns the output node layer's values
    */
-  getOutput(): number[] {
+  getOutput() {
     return this.outputNodes.map(node => node.sumOutput)
   }
 
@@ -334,7 +334,7 @@ class Brain {
    * Clones this brain's topology and returns the clone.
    * @returns the clone
    */
-  clone(): Brain {
+  clone() {
     const clone = new Brain(this.population)
 
     // nodes
@@ -366,7 +366,7 @@ class Brain {
    * @param brainB the second parent
    * @returns the offspring
    */
-  static Crossover(brainA: Brain, brainB: Brain): Brain {
+  static Crossover(brainA: Brain, brainB: Brain) {
     if (brainA == brainB) return brainA.clone()
     else {
       let offspring: Brain
