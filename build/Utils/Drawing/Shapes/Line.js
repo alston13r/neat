@@ -18,7 +18,7 @@ class Line {
         return this.pos2[1];
     }
     stroke(g) {
-        g.line(this.pos1[0], this.pos1[1], this.pos2[0], this.pos2[1]);
+        g.line(this.x1, this.y1, this.x2, this.y2);
     }
     createPath() {
         let path = new Path2D();

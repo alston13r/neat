@@ -18,10 +18,10 @@ class Rectangle {
         return this.size[1];
     }
     fill(g) {
-        g.fillRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+        g.fillRect(this.x, this.y, this.width, this.height);
     }
     stroke(g) {
-        g.strokeRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+        g.strokeRect(this.x, this.y, this.width, this.height);
     }
     createPath() {
         let path = new Path2D();

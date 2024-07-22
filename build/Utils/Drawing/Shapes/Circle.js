@@ -12,10 +12,10 @@ class Circle {
         return this.pos[1];
     }
     fill(g) {
-        g.fillCircle(this.pos[0], this.pos[1], this.radius);
+        g.fillCircle(this.x, this.y, this.radius);
     }
     stroke(g) {
-        g.strokeCircle(this.pos[0], this.pos[1], this.radius);
+        g.strokeCircle(this.x, this.y, this.radius);
     }
     createPath() {
         let path = new Path2D();

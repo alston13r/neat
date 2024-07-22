@@ -26,10 +26,10 @@ class Triangle {
         return this.pos3[1];
     }
     fill(g) {
-        g.fillTriangle(this.pos1[0], this.pos1[1], this.pos2[0], this.pos2[1], this.pos3[0], this.pos3[1]);
+        g.fillTriangle(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
     }
     stroke(g) {
-        g.strokeTriangle(this.pos1[0], this.pos1[1], this.pos2[0], this.pos2[1], this.pos3[0], this.pos3[1]);
+        g.strokeTriangle(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
     }
     createPath() {
         let path = new Path2D();
