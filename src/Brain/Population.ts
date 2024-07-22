@@ -28,8 +28,6 @@ class Population {
   enabledChance: number
   /** A reference to the population's fittest member ever */
   fittestEver: Brain
-  /** A reference to the graphics object that the population can be drawn to */
-  graphics: Graphics
   /** The type of fitness that this population favors */
   fitnessType: OptimizationType = OptimizationType.Maximizing
 
@@ -116,7 +114,7 @@ class Population {
    */
   getAverageFitness(): number {
     const N: number = this.members.length
-    return this.members.reduce((sum, curr) => sum + curr.fitness / N, 0)
+    return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0)
   }
 
   /**
@@ -266,48 +264,43 @@ class Population {
   }
 
   /**
-   * Sets the local reference for graphics to the specified object.
-   * @param graphics the graphics to set
-   * @returns a refrence to this population
-   */
-  setGraphics(graphics: Graphics): Population {
-    this.graphics = graphics
-    return this
-  }
-
-  /**
    * Draws this population to the local graphics.
    */
-  draw(): void {
+  draw(g: Graphics) {
     const round: (x: number, p: number) => number = (x, p) => Math.round(x * 10 ** p) / 10 ** p
 
-    new TextGraphics(this.graphics, `Generation: ${this.generationCounter} <${this.members.length}>`,
-      5, 5, { size: 20 }).draw()
+    g.textBaseline = 'top'
+    g.fillStyle = '#fff'
+    g.font = '20px arial'
+    g.fillText(`Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5)
 
     const getMemberText = (brain: Brain, i: number) => {
-      const a: number = round(brain.fitness, 5)
-      const b: number = round(brain.fitness / brain.species.members.length, 5)
+      const a = round(brain.fitness, 5)
+      const b = round(brain.fitness / brain.species.members.length, 5)
       return `${i}: ${a} ${this.speciation ? ' -> ' + b : ''}`
     }
+    g.font = '10px arial'
     this.members.slice()
       .sort((a, b) => (this.fitnessType == OptimizationType.Maximizing ? b.fitness - a.fitness : a.fitness - b.fitness))
-      .map((b, i) => new TextGraphics(this.graphics, getMemberText(b, i), 5, 25 + i * 10))
-      .forEach(member => member.draw())
+      .forEach((brain, i) => {
+        g.fillText(getMemberText(brain, i), 5, 25 + i * 10)
+      })
 
     if (this.speciation) {
-      new TextGraphics(this.graphics, `Species (Threshold: ${Species.DynamicThreshold})`,
-        250, 5, { size: 20 })
-        .draw()
+      g.font = '20px arial'
+      g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 250, 5)
 
       const getSpeciesText = (species: Species) => {
-        const a: number = species.members.length
-        const b: number = round(species.getAverageFitness(), 5)
-        const c: number = round(species.getAverageFitnessAdjusted(), 5)
-        const d: number = species.gensSinceImproved
+        const a = species.members.length
+        const b = round(species.getAverageFitness(), 5)
+        const c = round(species.getAverageFitnessAdjusted(), 5)
+        const d = species.gensSinceImproved
         return `<${a}, ${d}> ${b} -> ${c}`
       }
-      this.speciesList.map((s, i) => new TextGraphics(this.graphics, getSpeciesText(s), 250, 25 + i * 10))
-        .forEach(species => species.draw())
+      g.font = '10px arial'
+      this.speciesList.forEach((s, i) => {
+        g.fillText(getSpeciesText(s), 250, 25 + i * 10)
+      })
     }
   }
 }
