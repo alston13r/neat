@@ -1,3 +1,4 @@
+/** Constant for 2 PI */
 const TwoPi = Math.PI * 2;
 /**
  * Returns a random normally distributed gaussian number.
