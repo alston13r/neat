@@ -213,7 +213,7 @@ class Species {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       return []
     } else {
-      const offspring: Brain[] = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring, this.population.fitnessType) : []
+      const offspring: Brain[] = this.population.elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
       const remainingCount: number = this.allowedOffspring - offspring.length
       Population.GeneratePairings(this.members, remainingCount)
         .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
