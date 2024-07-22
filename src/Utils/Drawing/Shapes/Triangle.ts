@@ -1,60 +1,69 @@
-class TriangleGraphics implements HasThreePoints, Drawable {
-  point1: Vec2
-  point2: Vec2
-  point3: Vec2
-  graphics: Graphics
-  fill: boolean
-  color: string
-  stroke: boolean
-  lineWidth: number
+class Triangle implements HasThreePoints, Drawable, HasPath {
+  pos1: Vec2
+  pos2: Vec2
+  pos3: Vec2
 
-  constructor(graphics: Graphics, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number,
-    options: TriangleGraphicsOptions = {}) {
-    this.graphics = graphics
-    this.point1 = vec2.fromValues(x1, y1)
-    this.point2 = vec2.fromValues(x2, y2)
-    this.point3 = vec2.fromValues(x3, y3)
-    this.fill = options.fill == undefined ? true : options.fill
-    this.color = options.color || '#fff'
-    this.stroke = options.stroke == undefined ? false : options.stroke
-    this.lineWidth = options.lineWidth || 1
+  constructor(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) {
+    this.pos1 = vec2.fromValues(x1, y1)
+    this.pos2 = vec2.fromValues(x2, y2)
+    this.pos3 = vec2.fromValues(x3, y3)
   }
 
-  get x1(): number {
-    return this.point1[0]
+  get x1() {
+    return this.pos1[0]
   }
 
-  get y1(): number {
-    return this.point1[1]
+  get y1() {
+    return this.pos1[1]
   }
 
-  get x2(): number {
-    return this.point2[0]
+  get x2() {
+    return this.pos2[0]
   }
 
-  get y2(): number {
-    return this.point2[1]
+  get y2() {
+    return this.pos2[1]
   }
 
-  get x3(): number {
-    return this.point3[0]
+  get x3() {
+    return this.pos3[0]
   }
 
-  get y3(): number {
-    return this.point3[1]
+  get y3() {
+    return this.pos3[1]
   }
 
-  draw(): void {
-    if (!this.fill && !this.stroke) return
-    const ctx: CanvasRenderingContext2D = this.graphics.ctx
-    if (this.fill) {
-      ctx.fillStyle = this.color
-      graphics.fillTriangle(ctx, this.point1, this.point2, this.point3)
-    }
-    if (this.stroke) {
-      ctx.lineWidth = this.lineWidth
-      ctx.strokeStyle = this.color
-      graphics.strokeTriangle(ctx, this.point1, this.point2, this.point3)
-    }
+  fill(g: Graphics): void {
+    g.fillTriangle(
+      this.x1, this.y1,
+      this.x2, this.y2,
+      this.x3, this.y3
+    )
+  }
+
+  stroke(g: Graphics): void {
+    g.strokeTriangle(
+      this.x1, this.y1,
+      this.x2, this.y2,
+      this.x3, this.y3
+    )
+  }
+
+  createPath(): Path2D {
+    let path = new Path2D()
+    path.moveTo(this.x1, this.y1)
+    path.lineTo(this.x2, this.y2)
+    path.lineTo(this.x3, this.y3)
+    path.closePath()
+    return path
+  }
+
+  appendToPath(path: Path2D): Path2D {
+    let x1 = this.x1, y1 = this.y1
+    path.moveTo(x1, y1)
+    path.lineTo(this.x2, this.y2)
+    path.lineTo(this.x3, this.y3)
+    path.lineTo(x1, y1)
+    return path
   }
 }
