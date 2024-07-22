@@ -18,7 +18,7 @@ function getSliderValue(slider) {
 }
 const bird = new Bird();
 flappyBirdGraphics.bg();
-bird.setGraphics(flappyBirdGraphics).draw();
+bird.draw(flappyBirdGraphics);
 let lastSpaceState = false;
 let currSpaceState = false;
 let spacePressed = false;
@@ -37,7 +37,7 @@ function flappyBirdLoop() {
     flappyBirdGraphics.bg();
     bird.loadInputs(spacePressed ? 1 : 0);
     bird.update();
-    bird.draw();
+    bird.draw(flappyBirdGraphics);
     if (bird.alive)
         window.requestAnimationFrame(flappyBirdLoop);
     else
