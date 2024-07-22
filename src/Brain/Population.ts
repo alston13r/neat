@@ -251,7 +251,7 @@ class Population {
     }
     g.font = '10px arial'
     this.members.slice()
-      .sort((a, b) => a.fitness - b.fitness)
+      .sort((a, b) => b.fitness - a.fitness)
       .forEach((brain, i) => {
         g.fillText(getMemberText(brain, i), 5, 25 + i * 10)
       })
