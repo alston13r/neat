@@ -43,14 +43,15 @@ function neuralNetLoop() {
         neuralNet.mutateBiases();
         neuralNet.mutateActivationFunctions();
     }
-    neuralNetGraphics.createText(`Current iteration: ${currentIteration}`, 5, 5, { size: 20 }).draw();
+    // neuralNetGraphics.createText(`Current iteration: ${currentIteration}`, 5, 5, { size: 20 }).fill()
     for (let [i, pair] of desired.ordered.entries()) {
-        neuralNetGraphics.createText('[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']', 5, 25 + i * 20, { size: 20 }).draw();
+        // neuralNetGraphics.createText(
+        //   '[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']',
+        //   5, 25 + i * 20, { size: 20 }
+        // ).fill()
     }
-    if (solutionFound)
-        neuralNetGraphics.createText('solution', 5, 105, { size: 20 }).draw();
-    else if (currentIteration < maxIterations)
-        window.requestAnimationFrame(neuralNetLoop);
+    // if (solutionFound) neuralNetGraphics.createText('solution', 5, 105, { size: 20 }).fill()
+    // else if (currentIteration < maxIterations) window.requestAnimationFrame(neuralNetLoop)
 }
 window.requestAnimationFrame(neuralNetLoop);
 //# sourceMappingURL=index.js.map

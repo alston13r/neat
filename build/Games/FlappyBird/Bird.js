@@ -19,7 +19,9 @@ class Bird {
         return this;
     }
     draw(many = false) {
-        this.graphics.createCircle(this.pos[0], this.pos[1], Bird.Size, { fill: false, stroke: true, color: `rgba(255, 255, 255, ${many ? 0.4 : 1})` }).draw();
+        // this.graphics.createCircle(this.pos[0], this.pos[1], Bird.Size,
+        //   { fill: false, stroke: true, color: `rgba(255, 255, 255, ${many ? 0.4 : 1})` },
+        // ).fill()
     }
     loadInputs(up = 0) {
         if (up > 0.9)

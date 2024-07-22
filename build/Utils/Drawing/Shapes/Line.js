@@ -1,15 +1,9 @@
 class Line {
     pos1;
     pos2;
-    graphics;
-    color;
-    lineWidth;
-    constructor(graphics, x1, y1, x2, y2, options = {}) {
-        this.graphics = graphics;
+    constructor(x1, y1, x2, y2) {
         this.pos1 = vec2.fromValues(x1, y1);
         this.pos2 = vec2.fromValues(x2, y2);
-        this.color = options.color || '#0f0';
-        this.lineWidth = options.lineWidth || 1;
     }
     get x1() {
         return this.pos1[0];
@@ -23,11 +17,19 @@ class Line {
     get y2() {
         return this.pos2[1];
     }
-    draw() {
-        const ctx = this.graphics.ctx;
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = this.lineWidth;
-        graphics.line(ctx, this.pos1, this.pos2);
+    stroke(g) {
+        g.line(this.pos1[0], this.pos1[1], this.pos2[0], this.pos2[1]);
+    }
+    createPath() {
+        let path = new Path2D();
+        path.moveTo(this.x1, this.y1);
+        path.lineTo(this.x2, this.y2);
+        return path;
+    }
+    appendToPath(path) {
+        path.moveTo(this.x1, this.y1);
+        path.lineTo(this.x2, this.y2);
+        return path;
     }
 }
 //# sourceMappingURL=Line.js.map

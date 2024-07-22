@@ -1,19 +1,9 @@
 class Circle {
     pos;
-    graphics;
     radius;
-    fill;
-    color;
-    stroke;
-    lineWidth;
-    constructor(graphics, x, y, radius = 10, options = {}) {
-        this.graphics = graphics;
+    constructor(x, y, radius) {
         this.pos = vec2.fromValues(x, y);
         this.radius = radius;
-        this.fill = options.fill == undefined ? true : options.fill;
-        this.color = options.color || '#fff';
-        this.stroke = options.stroke == undefined ? false : options.stroke;
-        this.lineWidth = options.lineWidth || 1;
     }
     get x() {
         return this.pos[0];
@@ -21,19 +11,21 @@ class Circle {
     get y() {
         return this.pos[1];
     }
-    draw() {
-        if (!this.fill && !this.stroke)
-            return;
-        const ctx = this.graphics.ctx;
-        if (this.fill) {
-            ctx.fillStyle = this.color;
-            graphics.fillCircle(ctx, this.pos, this.radius);
-        }
-        if (this.stroke) {
-            ctx.lineWidth = this.lineWidth;
-            ctx.strokeStyle = this.color;
-            graphics.strokeCircle(ctx, this.pos, this.radius);
-        }
+    fill(g) {
+        g.fillCircle(this.pos[0], this.pos[1], this.radius);
+    }
+    stroke(g) {
+        g.strokeCircle(this.pos[0], this.pos[1], this.radius);
+    }
+    createPath() {
+        let path = new Path2D();
+        path.arc(this.x, this.y, this.radius, 0, TwoPi);
+        return path;
+    }
+    appendToPath(path) {
+        path.moveTo(this.x, this.y);
+        path.arc(this.x, this.y, this.radius, 0, TwoPi);
+        return path;
     }
 }
 //# sourceMappingURL=Circle.js.map

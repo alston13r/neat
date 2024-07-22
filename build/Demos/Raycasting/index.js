@@ -1,5 +1,6 @@
 const raycastingGraphics = new Graphics().setSize(800, 600).appendToBody();
-const particle = new Particle(raycastingGraphics);
+const raycastingDrawQueue = raycastingGraphics.initDrawQueue('#fff', false, true, 1);
+const particle = new Particle();
 const walls = [];
 const circles = [];
 for (let i = 0; i < 5; i++) {
@@ -7,13 +8,13 @@ for (let i = 0; i < 5; i++) {
     const y1 = Math.random() * raycastingGraphics.height;
     const x2 = Math.random() * raycastingGraphics.width;
     const y2 = Math.random() * raycastingGraphics.height;
-    walls[i] = raycastingGraphics.createLine(x1, y1, x2, y2, { color: '#fff' });
+    walls[i] = new Line(x1, y1, x2, y2);
 }
 for (let i = 0; i < 5; i++) {
     const x = Math.random() * raycastingGraphics.width;
     const y = Math.random() * raycastingGraphics.height;
     const r = Math.random() * 20 + 5;
-    circles[i] = raycastingGraphics.createCircle(x, y, r, { stroke: true, fill: false });
+    circles[i] = new Circle(x, y, r);
 }
 const objects = walls.concat(circles);
 let mouseX = 400;
@@ -22,18 +23,19 @@ window.addEventListener('mousemove', e => {
     mouseX = e.clientX;
     mouseY = e.clientY;
 });
+raycastingGraphics.strokeStyle = '#fff';
 function raycastLoop() {
     raycastingGraphics.bg();
     for (const wall of walls) {
-        wall.draw();
+        wall.stroke(raycastingGraphics);
     }
     for (const circle of circles) {
-        circle.draw();
+        circle.stroke(raycastingGraphics);
     }
     particle.update(mouseX, mouseY);
-    particle.draw();
-    particle.look(objects);
+    particle.draw(raycastingGraphics);
+    particle.look(raycastingGraphics, objects);
     window.requestAnimationFrame(raycastLoop);
 }
-raycastLoop();
+window.requestAnimationFrame(raycastLoop);
 //# sourceMappingURL=index.js.map

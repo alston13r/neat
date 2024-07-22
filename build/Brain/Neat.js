@@ -43,7 +43,6 @@ class Neat {
      */
     findSolution(trainingValues, desiredError, populationSize = 1000, maxGenerations = 1000, updateInterval = 10) {
         const population = new Population(populationSize, trainingValues.inputSize, 0, trainingValues.outputSize, 1)
-            .setGraphics(this.graphics)
             .setFitnessType(OptimizationType.Minimizing);
         return new Promise(resolve => {
             function iterate() {
@@ -81,8 +80,8 @@ class Neat {
                     });
                     population.updateFittestEver();
                     population.speciate();
-                    population.graphics.bg();
-                    population.draw();
+                    xorGraphics.bg();
+                    population.draw(xorGraphics);
                     setTimeout(iterate, updateInterval);
                 }
             }

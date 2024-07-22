@@ -1,16 +1,11 @@
 class Ray2 {
     pos;
     dir;
-    graphics;
     length;
     constructor(pos, angle = 0, length = 1) {
         this.pos = pos;
         this.dir = vec2.fromAngle(angle);
         this.length = length;
-    }
-    setGraphics(graphics) {
-        this.graphics = graphics;
-        return this;
     }
     lookAt(x, y) {
         vec2.subtract(this.dir, vec2.fromValues(x, y), this.pos);
@@ -105,11 +100,11 @@ class Ray2 {
             return p2;
         return d1 < d3 ? p1 : p2;
     }
-    draw(color = '#fff') {
+    draw(g) {
         const d = vec2.copy(vec2.create(), this.dir);
         vec2.scale(d, d, this.length);
         vec2.add(d, d, this.pos);
-        this.graphics.createLine(this.pos[0], this.pos[1], d[0], d[1], { color }).draw();
+        g.line(this.pos[0], this.pos[1], d[0], d[1]);
     }
 }
 //# sourceMappingURL=Ray.js.map

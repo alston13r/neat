@@ -1,19 +1,9 @@
 class Rectangle {
     pos;
     size;
-    graphics;
-    fill;
-    color;
-    stroke;
-    lineWidth;
-    constructor(graphics, x, y, width, height, options = {}) {
-        this.graphics = graphics;
+    constructor(x, y, width, height) {
         this.pos = vec2.fromValues(x, y);
         this.size = vec2.fromValues(width, height);
-        this.fill = options.fill == undefined ? true : options.fill;
-        this.color = options.color || '#fff';
-        this.stroke = options.stroke == undefined ? false : options.stroke;
-        this.lineWidth = options.lineWidth || 1;
     }
     get x() {
         return this.pos[0];
@@ -27,19 +17,20 @@ class Rectangle {
     get height() {
         return this.size[1];
     }
-    draw() {
-        if (!this.fill && !this.stroke)
-            return;
-        const ctx = this.graphics.ctx;
-        if (this.fill) {
-            ctx.fillStyle = this.color;
-            graphics.fillRect(ctx, this.pos, this.size);
-        }
-        if (this.stroke) {
-            ctx.lineWidth = this.lineWidth;
-            ctx.strokeStyle = this.color;
-            graphics.strokeRect(ctx, this.pos, this.size);
-        }
+    fill(g) {
+        g.fillRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+    }
+    stroke(g) {
+        g.strokeRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+    }
+    createPath() {
+        let path = new Path2D();
+        path.rect(this.x, this.y, this.width, this.height);
+        return path;
+    }
+    appendToPath(path) {
+        path.rect(this.x, this.y, this.width, this.height);
+        return path;
     }
 }
 //# sourceMappingURL=Rectangle.js.map

@@ -350,59 +350,5 @@ class Brain {
         this.graphics = graphics;
         return this;
     }
-    /**
-     * Draws this brain to the local graphics.
-     * @param options the options to draw the brain with
-     */
-    draw(options = {}) {
-        options.xOffset ||= 0;
-        options.yOffset ||= 0;
-        options.maxWidth ||= this.graphics.width;
-        options.maxHeight ||= this.graphics.height;
-        options.outline ||= false;
-        const nodePositions = new Map();
-        const maxLayer = this.outputNodes[0].layer;
-        const dx = options.maxWidth / (maxLayer + 1);
-        for (let i = 1; i <= maxLayer; i++) {
-            const currNodes = this.nodes.filter(n => n.layer == i);
-            const dy = options.maxHeight / (currNodes.length + 1);
-            for (let j = 1; j <= currNodes.length; j++) {
-                nodePositions.set(currNodes[j - 1], vec2.fromValues(i * dx + options.xOffset, j * dy + options.yOffset));
-            }
-        }
-        const circleArray = [];
-        const textArray = [];
-        for (let [node, pos] of nodePositions) {
-            const px = pos[0];
-            const py = pos[1];
-            circleArray.push(this.graphics.createCircle(px, py, 10, { color: '#fff' })); // base
-            circleArray.push(this.graphics.createCircle(px + 7, py, 3, { color: '#f00' })); // input
-            circleArray.push(this.graphics.createCircle(px - 7, py, 3, { color: '#00f' })); // output
-            textArray.push(this.graphics.createText(node.layer.toString(), px, py + 17));
-            textArray.push(this.graphics.createText(`${node.id} (${node.activationFunction.name})`, px, py - 15));
-        }
-        const connectionArray = [];
-        for (let connection of this.connections) {
-            const inputNodePos = nodePositions.get(connection.inNode);
-            const outputNodePos = nodePositions.get(connection.outNode);
-            let color = '#0f0';
-            if (!connection.enabled)
-                color = '#f00';
-            else if (connection.recurrent)
-                color = '#22f';
-            const point1 = vec2.create();
-            const point2 = vec2.create();
-            vec2.add(point1, inputNodePos, vec2.fromValues(7, 0));
-            vec2.add(point2, outputNodePos, vec2.fromValues(-7, 0));
-            connectionArray.push(this.graphics.createLine(point1[0], point1[1], point2[0], point2[1], { color }));
-        }
-        circleArray.forEach(circle => circle.draw());
-        connectionArray.forEach(line => line.draw());
-        textArray.forEach(text => text.draw());
-        this.graphics.createText(this.fitness.toString(), 10, 10).draw();
-        if (options.outline) {
-            this.graphics.createRectangle(options.xOffset, options.yOffset, options.maxWidth, options.maxHeight).draw();
-        }
-    }
 }
 //# sourceMappingURL=Brain.js.map

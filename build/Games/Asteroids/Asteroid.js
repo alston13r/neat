@@ -1,6 +1,5 @@
 class Asteroid {
     static SizeCutoff = 10;
-    graphics;
     game;
     pos;
     radius;
@@ -12,7 +11,6 @@ class Asteroid {
     points;
     constructor(game, pos, radius) {
         this.game = game;
-        this.graphics = game.graphics;
         this.pos = pos;
         this.radius = radius || Math.random() * 25 + 25;
         this.offsets = new Array(Math.floor(Math.random() * 5) + 10).fill(0).map(() => Math.random() * 20 - 8);
@@ -40,9 +38,17 @@ class Asteroid {
         this.game.asteroids.push(new Asteroid(this.game, vec2.copy(vec2.create(), this.pos), half));
         this.game.dispatchEvent(new CustomEvent('asteroiddestroyed', { detail: this.getInfo() }));
     }
-    draw() {
+    draw(g) {
         const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos));
-        this.graphics.createPolygon(points, { fill: false, stroke: true }).draw();
+        g.strokePolygon(points);
+    }
+    createPath() {
+        const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos));
+        return new Polygon(points).createPath();
+    }
+    appendToPath(path) {
+        const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos));
+        return new Polygon(points).appendToPath(path);
     }
     wrap() {
         const x = this.pos[0];
@@ -67,7 +73,7 @@ class Asteroid {
         return vec2.distance(this.pos, laser.pos) <= this.collisionRadius;
     }
     getCollisionCircle() {
-        return this.graphics.createCircle(this.pos[0], this.pos[1], this.collisionRadius, { fill: false, stroke: true, color: '#750101' });
+        return new Circle(this.pos[0], this.pos[1], this.collisionRadius);
     }
     getInfo() {
         return {

@@ -10,7 +10,6 @@ class Ship {
     static RayLength = 300;
     pos;
     game;
-    graphics;
     heading;
     velocity;
     lasers;
@@ -22,7 +21,6 @@ class Ship {
     shootTimer = 0;
     constructor(game, pos) {
         this.game = game;
-        this.graphics = game.graphics;
         this.pos = pos || vec2.create();
         this.heading = -Math.PI / 2;
         this.velocity = vec2.create();
@@ -30,7 +28,6 @@ class Ship {
         this.alive = true;
         this.updateTopLeftRight();
         this.rays = new Array(Ship.NumRays).fill(0).map(() => new Ray2(this.pos)
-            .setGraphics(this.graphics)
             .setLength(Ship.RayLength));
         this.updateRays();
     }
@@ -108,11 +105,21 @@ class Ship {
             this.shootTimer = Ship.ShootDelay;
         }
     }
-    draw() {
-        this.graphics.createTriangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1], { fill: false, stroke: true }).draw();
-        this.lasers.forEach(laser => laser.draw());
+    draw(g) {
+        g.strokeTriangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1]);
+        this.lasers.forEach(laser => laser.draw(g));
     }
-    getRayInfo(debug = false) {
+    createPath() {
+        let path = new Triangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1]).createPath();
+        this.lasers.forEach(laser => laser.appendToPath(path));
+        return path;
+    }
+    appendToPath(path) {
+        new Triangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1]).appendToPath(path);
+        this.lasers.forEach(laser => laser.appendToPath(path));
+        return path;
+    }
+    getRayInfo() {
         const info = [];
         const asteroidCircles = this.game.asteroids.map(asteroid => asteroid.getCollisionCircle());
         for (const ray of this.rays) {
@@ -121,15 +128,9 @@ class Ship {
                 const distance = vec2.distance(this.pos, point);
                 const hitting = distance <= Ship.RayLength;
                 info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) });
-                if (debug) {
-                    ray.draw(hitting ? '#0f0' : '#00f');
-                    this.graphics.createCircle(point[0], point[1], 5, { color: '#f00' }).draw();
-                }
             }
             else {
                 info.push({ ray, hitting: false, distance: -1 });
-                if (debug)
-                    ray.draw();
             }
         }
         return info;
