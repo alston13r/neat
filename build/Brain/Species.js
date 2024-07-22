@@ -108,16 +108,7 @@ class Species {
      */
     getAverageFitness() {
         const N = this.members.length;
-        let res = this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0);
-        if (Number.isNaN(res)) {
-            console.log(N, this.members.length);
-            for (const member of this.members) {
-                if (member.fitness < 0 || Number.isNaN(member.fitness) || !Number.isFinite(member.fitness)) {
-                    console.log('inner ' + member.fitness);
-                }
-            }
-        }
-        return res;
+        return this.members.reduce((sum, curr) => sum + (N == 0 ? 0 : curr.fitness / N), 0);
     }
     /**
      * Returns the average adjusted fitness of all members in this species.
