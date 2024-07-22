@@ -105,8 +105,8 @@ class Population {
      */
     calculateAllowedOffspring() {
         const maxSize = this.popSize;
-        const list = [...this.speciesList];
-        const items = list.map(species => {
+        const speciesList = [...this.speciesList];
+        const items = speciesList.map(species => {
             return {
                 fitness: species.getAverageFitnessAdjusted(),
                 species,
@@ -117,7 +117,7 @@ class Population {
         items.forEach(item => item.species.allowedOffspring = item.fitness / (avg == 0 ? 1 : avg) * item.length);
         // ensure that the allowed offspring values are whole numbers and total
         // to the population size
-        roundNicely(list, 'allowedOffspring', maxSize);
+        roundNicely(speciesList, 'allowedOffspring', maxSize);
     }
     /**
      * Produces the next generation of members. If speciation is enabled, it produces them
