@@ -17,38 +17,27 @@ function gauss(): number {
  * A roulette wheel will assign a portion of a "roll" to each item in the list, where
  * items with bigger portions will come up more often when rolled. If smallValues is
  * set to true, then the wheel will revert the values and favor smaller values instead.
- * @param items the list of items to select from
+ * @param list the list of items to select from
  * @param param the value to assign portions from
  * @param count the number of items to select
  * @param smallValues boolean specifying if smaller values are favored, false by default
  * @returns the selected items
  */
-function rouletteWheel<k>(items: k[], param: string, count: number, smallValues: boolean = false): k[] {
+function rouletteWheel<k>(list: k[], param: string, count: number): k[] {
   if (count == 0) return []
-  const list = items.map(item => { return { item, value: item[param], sum: 0 } })
-  let highest: number = -Infinity
-  let lowest: number = Infinity
-  for (let item of list) {
-    if (item.value > highest) highest = item.value
-    if (item.value < lowest) lowest = item.value
-  }
-  if (smallValues) {
-    for (let item of list) {
-      item.value = highest - item.value + lowest
-    }
-  }
-  let max: number = list.reduce((sum, curr) => {
+  if (list.length == 0) return []
+  if (list.length == 1) return new Array(count).fill(list[0])
+  const entry = list.map(item => ({ item, value: item[param] as number, sum: 0 }))
+  const max = entry.reduce((sum, curr) => {
     curr.sum = sum + curr.value
     return curr.sum
   }, 0)
-
-  const res = new Array(count).fill(0).map(() => {
+  return new Array(count).fill(0).map(() => {
     const value = Math.random() * max
-    for (let x of list) {
-      if (value < x.sum) return x.item
+    for (const pair of entry) {
+      if (value < pair.sum) return pair.item
     }
   })
-  return res
 }
 
 /**
