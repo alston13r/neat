@@ -1,17 +1,14 @@
-class Laser implements Drawable {
+class Laser implements Drawable, HasPath {
   static Speed = 5
+  static Radius = 5
 
-  graphics: Graphics
   ship: Ship
   pos: Vec2
   velocity: Vec2
-  radius: number = 5
 
   constructor(ship: Ship) {
     this.ship = ship
     ship.lasers.push(this)
-    this.graphics = ship.graphics
-    this.graphics = ship.graphics
     this.pos = ship.top
     this.velocity = vec2.fromAngle(ship.heading, Laser.Speed)
   }
@@ -21,8 +18,16 @@ class Laser implements Drawable {
     this.wrap()
   }
 
-  draw(): void {
-    this.graphics.createCircle(this.pos[0], this.pos[1], this.radius, { fill: false, stroke: true }).draw()
+  draw(g: Graphics): void {
+    g.strokeCircle(this.pos[0], this.pos[1], Laser.Radius)
+  }
+
+  createPath(): Path2D {
+    return new Circle(this.pos[0], this.pos[1], Laser.Radius).createPath()
+  }
+
+  appendToPath(path: Path2D): Path2D {
+    return new Circle(this.pos[0], this.pos[1], Laser.Radius).appendToPath(path)
   }
 
   terminate(): void {

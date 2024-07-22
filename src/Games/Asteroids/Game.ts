@@ -83,15 +83,11 @@ class Asteroids extends EventTarget implements Drawable {
     this.collisions()
   }
 
-  draw(debug = false): void {
-    this.ship.draw()
-    this.asteroids.forEach(asteroid => asteroid.draw())
-
-    if (debug) {
-      for (const ray of this.ship.rays) {
-        ray.draw()
-      }
-    }
+  draw(): void {
+    const path = asteroidsDrawQueue.path
+    this.ship.appendToPath(path)
+    this.asteroids.forEach(asteroid => asteroid.appendToPath(path))
+    asteroidsDrawQueue.dispatch()
   }
 
   getAsteroidsByDistance(): Asteroid[] {
