@@ -276,11 +276,13 @@ class Brain {
         this.runTheNetwork();
         return this.getOutput();
     }
-    static GetFitter(brainA, brainB, fitnessType = OptimizationType.Maximizing) {
-        if (fitnessType == OptimizationType.Maximizing)
-            return (brainA.fitness > brainB.fitness ? brainA : brainB);
-        if (fitnessType == OptimizationType.Minimizing)
-            return (brainA.fitness < brainB.fitness ? brainA : brainB);
+    /**
+     * Returns the fitter of the two brains.
+     * @param brainA the first brain
+     * @param brainB the second brain
+     */
+    static GetFitter(brainA, brainB) {
+        return (brainA.fitness > brainB.fitness ? brainA : brainB);
     }
     /**
      * Clones this brain's topology and returns the clone.
