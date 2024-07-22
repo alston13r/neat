@@ -14,25 +14,25 @@ enum NNodeType { Input, Hidden, Output }
  */
 class NNode {
   /** The default activation function for input nodes */
-  static DefaultInputActivationFunction: ActivationFunction = ActivationFunction.Identity
+  static DefaultInputActivationFunction = ActivationFunction.Identity
   /** The default activation function for hidden nodes */
-  static DefaultHiddenActivationFunction: ActivationFunction = ActivationFunction.Sigmoid
+  static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid
   /** The default activation function for output nodes */
-  static DefaultOutputActivationFunction: ActivationFunction = ActivationFunction.Tanh
+  static DefaultOutputActivationFunction = ActivationFunction.Tanh
   /** Toggle for hidden node activation function mutations */
-  static AllowHiddenActivationMutations: boolean = true
+  static AllowHiddenActivationMutations = true
   /** Toggle for output node activation function mutations */
-  static AllowOutputActivationMutations: boolean = false
+  static AllowOutputActivationMutations = false
   /** The chance for an activation function to get mutated */
-  static MutateActivationFunctionChance: number = 0.03
+  static MutateActivationFunctionChance = 0.03
   /** The chance for the bias weight to get mutated */
-  static MutateBiasChance: number = 0.03
+  static MutateBiasChance = 0.03
   /** The chance for the bias to be nudged rather than randomized when mutated */
-  static NudgeBiasChance: number = 0.9
+  static NudgeBiasChance = 0.9
   /** The minimum value that a bias can be */
-  static MinimumBiasValue: number = -10
+  static MinimumBiasValue = -10
   /** The maximum value that a bias can be */
-  static MaximumBiasValue: number = 10
+  static MaximumBiasValue = 10
 
   /** The node's unique numerical identifier within the Brain */
   id: number
@@ -41,11 +41,11 @@ class NNode {
   /** The node's layer within the Brain's topology */
   layer: number
   /** The weighted sum of the node's incoming connection values */
-  sumInput: number = 0
+  sumInput = 0
   /** The activated sum input */
-  sumOutput: number = 0
+  sumOutput = 0
   /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
-  bias: number = NNode.GenerateRandomBias()
+  bias = NNode.GenerateRandomBias()
   /** An array of incoming connections */
   connectionsIn: Connection[] = []
   /** An array of outgoing connections */
@@ -83,7 +83,7 @@ class NNode {
   /**
    * Helper method to generate a random bias value between the minimum and maximum values.
    */
-  static GenerateRandomBias(): number {
+  static GenerateRandomBias() {
     return lerp(Math.random(), 0, 1, this.MinimumBiasValue, this.MaximumBiasValue)
   }
 
@@ -91,7 +91,7 @@ class NNode {
    * Activates the weighted sum of input values for this node. This adds the bias node before activation and
    * sets the sum output value to whatever the activation function returns.
    */
-  activate(): void {
+  activate() {
     this.sumOutput = this.activationFunction.fn(this.sumInput + this.bias)
   }
 
@@ -99,7 +99,7 @@ class NNode {
    * Clones this node and returns said clone with the same id, type, layer, bias weight, and activation function.
    * @returns the clone
    */
-  clone(): NNode {
+  clone() {
     const copy = new NNode(this.id, this.type, this.layer)
     copy.bias = this.bias
     copy.activationFunction = this.activationFunction
@@ -112,7 +112,7 @@ class NNode {
    * the predefined static values. A node's bias, when mutated, can either be nudged or
    * completely randomized.
    */
-  mutate(): void {
+  mutate() {
     // bias mutation
     if (Math.random() < NNode.MutateBiasChance) {
       // bias weight will be mutated
@@ -140,7 +140,34 @@ class NNode {
   /**
    * Clamps the bias weight to be within predefined bounds.
    */
-  clamp(): void {
+  clamp() {
     this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue)
+  }
+
+  static GetPresets() {
+    return {
+      'DefaultInputActivationFunction': NNode.DefaultInputActivationFunction.name,
+      'DefaultHiddenActivationFunction': NNode.DefaultHiddenActivationFunction.name,
+      'DefaultOutputActivationFunction': NNode.DefaultOutputActivationFunction.name,
+      'AllowHiddenActivationMutations': NNode.AllowHiddenActivationMutations,
+      'AllowOutputActivationMutations': NNode.AllowOutputActivationMutations,
+      'MutateActivationFunctionChance': NNode.MutateActivationFunctionChance,
+      'MutateBiasChance': NNode.MutateBiasChance,
+      'NudgeBiasChance': NNode.NudgeBiasChance,
+      'MinimumBiasValue': NNode.MinimumBiasValue,
+      'MaximumBiasValue': NNode.MaximumBiasValue
+    }
+  }
+
+  serialize() {
+    return {
+      'id': this.id,
+      'type': this.type,
+      'layer': this.layer,
+      'bias': this.bias,
+      'connectionsIn': this.connectionsIn.map(c => c.innovationID),
+      'connectionsOut': this.connectionsOut.map(c => c.innovationID),
+      'activationFunction': this.activationFunction.name
+    }
   }
 }
