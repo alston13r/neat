@@ -10,18 +10,18 @@
  */
 class Connection {
   /** The minimum value that a weight can be */
-  static MinimumWeightValue: number = -10
+  static MinimumWeightValue = -10
   /** The maximum value that a weight can be */
-  static MaximumWeightValue: number = 10
+  static MaximumWeightValue = 10
   /** The chance for the weight to get mutated */
-  static MutateWeightChance: number = 0.8
+  static MutateWeightChance = 0.8
   /** The chance for the weight to be nudged rather than randomized when mutated */
-  static NudgeWeightChance: number = 0.9
+  static NudgeWeightChance = 0.9
 
   /**
    * Helper method to generate a random weight value between the minimum and maximum values.
    */
-  static GenerateRandomWeight(): number {
+  static GenerateRandomWeight() {
     return lerp(Math.random(), 0, 1, this.MinimumWeightValue, this.MaximumWeightValue)
   }
 
@@ -65,7 +65,7 @@ class Connection {
    * yields a value less than the predefined static values. A connection's weight, when mutated,
    * can either be nudged or completely randomized.
    */
-  mutate(): void {
+  mutate() {
     if (Math.random() < Connection.MutateWeightChance) {
       // connection weight will be mutated
       if (Math.random() < Connection.NudgeWeightChance) {
@@ -82,7 +82,27 @@ class Connection {
   /**
    * Clamps this connection's weight to be within predefined bounds.
    */
-  clamp(): void {
+  clamp() {
     this.weight = clamp(this.weight, Connection.MinimumWeightValue, Connection.MaximumWeightValue)
+  }
+
+  static GetPresets() {
+    return {
+      'MinimumWeightValue': Connection.MinimumWeightValue,
+      'MaximumWeightValue': Connection.MaximumWeightValue,
+      'MutateWeightChance': Connection.MutateWeightChance,
+      'NudgeWeightChance': Connection.NudgeWeightChance
+    }
+  }
+
+  serialize() {
+    return {
+      'inNode': this.inNode.id,
+      'outNode': this.outNode.id,
+      'weight': this.weight,
+      'enabled': this.enabled,
+      'recurrent': this.recurrent,
+      'innovationID': this.innovationID
+    }
   }
 }
