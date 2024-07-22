@@ -8,6 +8,8 @@ const xorMaxGenerations = 1000
 
 Brain.AllowRecurrent = false
 
+let xorSolution: Brain
+
 function xorLoop() {
   xorPopulation.nextGeneration()
   xorPopulation.members.forEach(member => {
@@ -27,21 +29,21 @@ function xorLoop() {
   xorPopulation.fittestEver.draw(xorGraphics, 320, 550, 480)
 
   if (xorPopulation.fittestEver && xorPopulation.fittestEver.fitness >= xorDesiredFitness) {
-    let solution = xorPopulation.fittestEver
-    console.log('Solution found', solution.fitness)
+    xorSolution = xorPopulation.fittestEver
+    console.log('Solution found, storing to var<xorSolution>', xorSolution.fitness)
     xorTrainingValues.ordered.forEach(io => {
-      console.log('inputs: [' + io.inputs.join(', ') + ']')
-      console.log('outputs: [' + solution.think(io.inputs).join(', ') + ']')
+      console.log('[' + io.inputs.join(', ') + '] -> ['
+        + xorSolution.think(io.inputs).join(', ') + ']')
     })
     return
   }
 
   if (xorPopulation.generationCounter >= xorMaxGenerations) {
-    let solution = xorPopulation.fittestEver
-    console.log('Solution not found, defaulting', solution.fitness)
+    xorSolution = xorPopulation.fittestEver
+    console.log('Solution not found, storing best ever to var<xorSolution>', xorSolution.fitness)
     xorTrainingValues.ordered.forEach(io => {
-      console.log('inputs: [' + io.inputs.join(', ') + ']')
-      console.log('outputs: [' + solution.think(io.inputs).join(', ') + ']')
+      console.log('[' + io.inputs.join(', ') + '] -> ['
+        + xorSolution.think(io.inputs).join(', ') + ']')
     })
     return
   }
