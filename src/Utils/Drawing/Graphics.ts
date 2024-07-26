@@ -193,4 +193,26 @@ class Graphics {
     this.drawQueues.add(queue)
     return queue
   }
+
+  record(time: number, name = 'video', framerate = 0) {
+    const chunks: Blob[] = []
+    const stream = this.canvas.captureStream(framerate)
+    const rec = new MediaRecorder(stream)
+    rec.ondataavailable = e => void chunks.push(e.data)
+    rec.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' })
+      const vid = document.createElement('video')
+      vid.src = URL.createObjectURL(blob)
+      vid.style.display = 'none'
+      document.body.appendChild(vid)
+      const a = document.createElement('a')
+      a.download = name + '.webm'
+      a.href = vid.src
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    }
+    rec.start()
+    setTimeout(() => rec.stop(), time)
+  }
 }
