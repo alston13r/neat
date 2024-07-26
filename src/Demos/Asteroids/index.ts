@@ -19,7 +19,7 @@ asteroidsSlider.style.display = 'block'
 
 document.body.appendChild(asteroidsSlider)
 
-let gameScale: number = 1
+let gameScale = 1
 asteroidsSlider.oninput = () => gameScale = parseInt(asteroidsSlider.value)
 
 // code for individual play
@@ -42,8 +42,8 @@ asteroidsSlider.oninput = () => gameScale = parseInt(asteroidsSlider.value)
 // }
 // window.requestAnimationFrame(asteroidsLoop)
 
-const maxTimeAlive: number = 30
-let currentGenerationTimeAlive: number = 0
+const maxTimeAlive = 30
+let currentGenerationTimeAlive = 0
 
 type GameBrainPair = {
   game: Asteroids
@@ -52,7 +52,7 @@ type GameBrainPair = {
 
 function thinkBrain(brain: Brain, game: Asteroids): number[] {
   const inputs: number[] = []
-  const shipInfo: ShipInfo = game.ship.getInfo()
+  const shipInfo = game.ship.getInfo()
   inputs[0] = shipInfo.posX
   inputs[1] = shipInfo.posY
   inputs[2] = shipInfo.heading
@@ -82,31 +82,31 @@ const fittestRecords: Brain[] = []
 
 let pairings: GameBrainPair[] = []
 
-let lastTimestamp: number = 0
+let lastTimestamp = 0
 function loop(timestamp: number) {
-  const delta: number = clamp(timestamp - lastTimestamp, 0, 1000)
+  const delta = clamp(timestamp - lastTimestamp, 0, 1000)
   lastTimestamp = timestamp
 
   for (let i = 0; i < gameScale; i++) {
     currentGenerationTimeAlive += delta / 1000
 
-    const stillAlive: GameBrainPair[] = pairings.filter(pair => pair.game.ship.alive)
+    const stillAlive = pairings.filter(pair => pair.game.ship.alive)
 
     if (currentGenerationTimeAlive > maxTimeAlive) {
       stillAlive.forEach(pair => pair.game.ship.kill())
     }
 
     if (stillAlive.length > 0) {
-      const fittest: GameBrainPair = stillAlive.reduce((best, curr) => curr.brain.fitness > best.brain.fitness ? curr : best)
+      const fittest = stillAlive.reduce((best, curr) => curr.brain.fitness > best.brain.fitness ? curr : best)
       asteroidsGraphics.bg()
 
       stillAlive.forEach(pair => {
-        const brainThoughts: number[] = thinkBrain(pair.brain, pair.game)
+        const brainThoughts = thinkBrain(pair.brain, pair.game)
         pair.game.ship.loadInputs(...brainThoughts)
         pair.game.update()
       })
 
-      fittest.game.draw()
+      fittest.game.draw(asteroidsGraphics)
 
       asteroidsGraphics.fillStyle = '#fff'
       asteroidsGraphics.fillText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5)
@@ -124,7 +124,7 @@ function loop(timestamp: number) {
       pairings = asteroidsPopulation.members.map(member => {
         return {
           brain: member,
-          game: new Asteroids(asteroidsGraphics)
+          game: new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
         }
       })
       addListeners(pairings)

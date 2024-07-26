@@ -1,7 +1,7 @@
 class Graphics {
     canvas;
     context;
-    drawQueues = new Set();
+    drawQueues = [];
     constructor(canvas) {
         this.canvas = canvas || document.createElement('canvas');
         this.context = this.canvas.getContext('2d');
@@ -155,7 +155,7 @@ class Graphics {
     }
     initDrawQueue(color = '#fff', filling = false, stroking = true, lineWidth = 1) {
         let queue = new DrawQueue(this, color, filling, stroking, lineWidth);
-        this.drawQueues.add(queue);
+        this.drawQueues.push(queue);
         return queue;
     }
     record(time, name = 'video', framerate = 0) {

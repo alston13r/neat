@@ -1,15 +1,44 @@
+type AsteroidsShipControls = {
+  'ArrowUp'?: boolean,
+  'ArrowDown'?: boolean,
+  'ArrowLeft'?: boolean,
+  'ArrowRight'?: boolean,
+  ' '?: boolean
+}
+
+interface RayInfo {
+  ray: Ray2
+  hitting: boolean
+  distance: number
+}
+
+interface ShipInfo {
+  game: Asteroids
+  ship: Ship
+  alive: boolean
+  posX: number
+  posY: number
+  velX: number
+  velY: number
+  heading: number
+  canShoot: boolean
+  rays: RayInfo[]
+}
+
 class Ship implements Drawable, HasPath {
-  static MaxSpeed: number = 3
-  static ShootDelay: number = 33
+  static MaxSpeed = 3
+  static ShootDelay = 33
 
-  static TopAngle: number = 0
-  static SideAngle: number = 2.4
-  static TopDistance: number = 20
-  static SideDistance: number = 20
+  static TopAngle = 0
+  static SideAngle = 2.4
+  static TopDistance = 20
+  static SideDistance = 20
 
-  static NumRays: number = 5
-  static RayDeltaTheta: number = 0.3
-  static RayLength: number = 300
+  static NumRays = 5
+  static RayDeltaTheta = 0.3
+  static RayLength = 300
+
+  static ConstantA = 1800 / Math.PI
 
   pos: Vec2
   game: Asteroids
@@ -17,16 +46,16 @@ class Ship implements Drawable, HasPath {
   velocity: Vec2
   lasers: Laser[]
   alive: boolean
-  top: Vec2
-  left: Vec2
-  right: Vec2
+  top = vec2.create()
+  left = vec2.create()
+  right = vec2.create()
   rays: Ray2[]
 
-  shootTimer: number = 0
+  shootTimer = 0
 
-  constructor(game: Asteroids, pos?: Vec2) {
+  constructor(game: Asteroids, x: number, y: number) {
     this.game = game
-    this.pos = pos || vec2.create()
+    this.pos = vec2.fromValues(x, y)
     this.heading = -Math.PI / 2
     this.velocity = vec2.create()
     this.lasers = []
@@ -47,8 +76,7 @@ class Ship implements Drawable, HasPath {
 
   kill(): void {
     this.alive = false
-    this.game.dispatchEvent(new CustomEvent<ShipInfo>('shipdestroyed', { detail: this.getInfo() }))
-    this.game.dispatchEvent(new CustomEvent<GameInfo>('end', { detail: this.game.getInfo() }))
+    this.game.dispatchEvent(new CustomEvent('end'))
   }
 
   loadInputs(straight = 0, turn = 0, shoot = 0): void {
@@ -71,9 +99,9 @@ class Ship implements Drawable, HasPath {
   }
 
   updateTopLeftRight(): void {
-    this.top = vec2.fromAngle(Ship.TopAngle + this.heading, Ship.TopDistance)
-    this.left = vec2.fromAngle(Ship.SideAngle + this.heading, Ship.SideDistance)
-    this.right = vec2.fromAngle(-Ship.SideAngle + this.heading, Ship.SideDistance)
+    vec2.scale(this.top, FastVec2FromRadian(this.heading + Ship.TopAngle), Ship.TopDistance)
+    vec2.scale(this.left, FastVec2FromRadian(this.heading + Ship.SideAngle), Ship.SideDistance)
+    vec2.scale(this.right, FastVec2FromRadian(this.heading - Ship.SideAngle), Ship.SideDistance)
 
     vec2.add(this.top, this.top, this.pos)
     vec2.add(this.left, this.left, this.pos)

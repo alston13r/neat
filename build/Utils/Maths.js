@@ -1,5 +1,32 @@
 /** Constant for 2 PI */
 const TwoPi = Math.PI * 2;
+/** Lookup table for sine and cosine within a tenth of a degree */
+const TrigLookup = new Array(3600).fill(0)
+    .map((_, i) => {
+    const radian = i * Math.PI / 1800;
+    return vec2.fromValues(Math.cos(radian), Math.sin(radian));
+});
+/**
+ * Uses the TrigLookup table for a precomputed sine value for the specified degree.
+ * @param angle the degree to lookup, scaled by 10
+ * @returns sine of the angle
+ */
+function FastSin(angle) {
+    return TrigLookup[angle][0];
+}
+/**
+ * Uses the TrigLookup table for a precomputed cosine value for the specified degree.
+ * @param angle the degree to lookup, scaled by 10
+ * @returns cosine of the angle
+ */
+function FastCos(angle) {
+    return TrigLookup[angle][1];
+}
+function FastVec2FromRadian(angle) {
+    angle = Math.floor(matrix.toDegree(angle) * 10);
+    angle = ((angle % 3600) + 3600) % 3600;
+    return TrigLookup[angle];
+}
 /**
  * Returns a random normally distributed gaussian number.
  * @returns the number

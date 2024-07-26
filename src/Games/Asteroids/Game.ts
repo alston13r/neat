@@ -1,42 +1,30 @@
 class Asteroids extends EventTarget implements Drawable {
   static MinAsteroids = 5
 
-  asteroids: Asteroid[] = []
+  asteroids: Asteroid[]
   spawningAsteroids = true
   asteroidCounter = 0
   frameCounter = 0
-  graphics: Graphics
   width: number
   height: number
   ship: Ship
 
-  constructor(graphics?: Graphics) {
+  constructor(width: number, height: number) {
     super()
 
-    this.graphics = graphics
-    this.width = graphics.width
-    this.height = graphics.height
-    this.ship = this.createShip()
-    for (let i = 0; i < Asteroids.MinAsteroids; i++) {
-      this.createAsteroid()
-    }
+    this.width = width
+    this.height = height
+    this.createShip()
+    this.asteroids = new Array(Asteroids.MinAsteroids).fill(0).map(() => new Asteroid(this))
 
-    this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++)
-    this.addEventListener('update', (ev) => ev.detail.game.frameCounter++)
+    this.addEventListener('asteroiddestroyed', () => this.asteroidCounter++)
   }
 
-  createShip(): Ship {
-    const ship = new Ship(this, vec2.fromValues(this.width / 2, this.height / 2))
-    this.dispatchEvent(new CustomEvent<ShipInfo>('shipcreated', { detail: ship.getInfo() }))
-    return ship
+  createShip() {
+    this.ship = new Ship(this, this.width / 2, this.height / 2)
   }
 
-  createAsteroid(): void {
-    const asteroid = new Asteroid(this, vec2.create())
-    this.asteroids.push(asteroid)
-  }
-
-  loadInputs(keys: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }) {
+  loadInputs(keys: AsteroidsShipControls) {
     const straight = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0)
     const turn = (keys['ArrowLeft'] ? -1 : 0) + (keys['ArrowRight'] ? 1 : 0)
     const shoot = (keys[' '] ? 1 : 0)
@@ -60,6 +48,7 @@ class Asteroids extends EventTarget implements Drawable {
     for (let asteroid of this.asteroids) {
       if (asteroid.collisionWithShip()) {
         this.ship.kill()
+        break
       }
     }
   }
@@ -67,13 +56,13 @@ class Asteroids extends EventTarget implements Drawable {
   checkAsteroidCount(): void {
     if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
       for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
-        this.createAsteroid()
+        this.asteroids.push(new Asteroid(this))
       }
     }
   }
 
-  update(keysPressed?: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }): void {
-    this.dispatchEvent(new CustomEvent<GameInfo>('update', { detail: this.getInfo() }))
+  update(keysPressed?: AsteroidsShipControls) {
+    this.frameCounter++
     if (keysPressed) this.loadInputs(keysPressed)
     this.ship.update()
     for (let asteroid of this.asteroids) {
@@ -82,32 +71,11 @@ class Asteroids extends EventTarget implements Drawable {
     this.collisions()
   }
 
-  draw(): void {
-    const path = asteroidsDrawQueue.path
+  draw(g: Graphics) {
+    const drawQueue = g.drawQueues[0]
+    const path = drawQueue.path
     this.ship.appendToPath(path)
     this.asteroids.forEach(asteroid => asteroid.appendToPath(path))
-    asteroidsDrawQueue.dispatch()
-  }
-
-  getAsteroidsByDistance(): Asteroid[] {
-    return [...this.asteroids].sort((a, b) => {
-      const da = vec2.distance(this.ship.pos, a.pos)
-      const db = vec2.distance(this.ship.pos, b.pos)
-      return da - db
-    })
-  }
-
-  asteroidsInfo(): AsteroidInfo[] {
-    return this.getAsteroidsByDistance().map(asteroid => asteroid.getInfo())
-  }
-
-  getInfo(): GameInfo {
-    return {
-      game: this,
-      graphics: this.graphics,
-      frameCounter: this.frameCounter,
-      width: this.width,
-      height: this.height
-    }
+    drawQueue.dispatch()
   }
 }

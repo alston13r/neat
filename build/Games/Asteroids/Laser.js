@@ -2,13 +2,13 @@ class Laser {
     static Speed = 5;
     static Radius = 5;
     ship;
-    pos;
-    velocity;
+    pos = vec2.create();
+    velocity = vec2.create();
     constructor(ship) {
         this.ship = ship;
         ship.lasers.push(this);
-        this.pos = ship.top;
-        this.velocity = vec2.fromAngle(ship.heading, Laser.Speed);
+        vec2.copy(this.pos, ship.top);
+        vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed);
     }
     update() {
         vec2.add(this.pos, this.pos, this.velocity);
