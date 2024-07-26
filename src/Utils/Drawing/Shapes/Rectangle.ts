@@ -38,7 +38,7 @@ class Rectangle implements HasPoint, HasSize, Drawable, HasPath {
   }
 
   appendToPath(path: Path2D): Path2D {
-    path.rect(this.x, this.y, this.width, this.height)
+    path.addPath(this.createPath())
     return path
   }
 }

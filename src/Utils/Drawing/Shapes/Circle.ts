@@ -30,8 +30,7 @@ class Circle implements Drawable, HasPath {
   }
 
   appendToPath(path: Path2D): Path2D {
-    path.moveTo(this.x, this.y)
-    path.arc(this.x, this.y, this.radius, 0, TwoPi)
+    path.addPath(this.createPath())
     return path
   }
 }

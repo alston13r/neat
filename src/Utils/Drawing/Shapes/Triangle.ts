@@ -59,11 +59,7 @@ class Triangle implements HasThreePoints, Drawable, HasPath {
   }
 
   appendToPath(path: Path2D): Path2D {
-    let x1 = this.x1, y1 = this.y1
-    path.moveTo(x1, y1)
-    path.lineTo(this.x2, this.y2)
-    path.lineTo(this.x3, this.y3)
-    path.lineTo(x1, y1)
+    path.addPath(this.createPath())
     return path
   }
 }
