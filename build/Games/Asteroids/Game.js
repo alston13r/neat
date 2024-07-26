@@ -1,35 +1,22 @@
 class Asteroids extends EventTarget {
     static MinAsteroids = 5;
-    asteroids = [];
+    asteroids;
     spawningAsteroids = true;
     asteroidCounter = 0;
     frameCounter = 0;
-    graphics;
     width;
     height;
     ship;
-    constructor(graphics) {
+    constructor(width, height) {
         super();
-        this.graphics = graphics;
-        this.width = graphics.width;
-        this.height = graphics.height;
-        this.ship = this.createShip();
-        for (let i = 0; i < Asteroids.MinAsteroids; i++) {
-            this.createAsteroid();
-        }
-        this.addEventListener('asteroiddestroyed', (ev) => ev.detail.game.asteroidCounter++);
-        this.addEventListener('update', (ev) => ev.detail.game.frameCounter++);
+        this.width = width;
+        this.height = height;
+        this.createShip();
+        this.asteroids = new Array(Asteroids.MinAsteroids).fill(0).map(() => new Asteroid(this));
+        this.addEventListener('asteroiddestroyed', () => this.asteroidCounter++);
     }
     createShip() {
-        const ship = new Ship(this, vec2.fromValues(this.width / 2, this.height / 2));
-        this.dispatchEvent(new CustomEvent('shipcreated', { detail: ship.getInfo() }));
-        return ship;
-    }
-    createAsteroid(emit) {
-        const asteroid = new Asteroid(this, vec2.create());
-        this.asteroids.push(asteroid);
-        if (emit)
-            this.dispatchEvent(new CustomEvent('asteroidcreated', { detail: asteroid.getInfo() }));
+        this.ship = new Ship(this, this.width / 2, this.height / 2);
     }
     loadInputs(keys) {
         const straight = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0);
@@ -53,18 +40,19 @@ class Asteroids extends EventTarget {
         for (let asteroid of this.asteroids) {
             if (asteroid.collisionWithShip()) {
                 this.ship.kill();
+                break;
             }
         }
     }
     checkAsteroidCount() {
         if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
             for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
-                this.createAsteroid(true);
+                this.asteroids.push(new Asteroid(this));
             }
         }
     }
     update(keysPressed) {
-        this.dispatchEvent(new CustomEvent('update', { detail: this.getInfo() }));
+        this.frameCounter++;
         if (keysPressed)
             this.loadInputs(keysPressed);
         this.ship.update();
@@ -73,30 +61,12 @@ class Asteroids extends EventTarget {
         }
         this.collisions();
     }
-    draw() {
-        const path = asteroidsDrawQueue.path;
+    draw(g) {
+        const drawQueue = g.drawQueues[0];
+        const path = drawQueue.path;
         this.ship.appendToPath(path);
         this.asteroids.forEach(asteroid => asteroid.appendToPath(path));
-        asteroidsDrawQueue.dispatch();
-    }
-    getAsteroidsByDistance() {
-        return [...this.asteroids].sort((a, b) => {
-            const da = vec2.distance(this.ship.pos, a.pos);
-            const db = vec2.distance(this.ship.pos, b.pos);
-            return da - db;
-        });
-    }
-    asteroidsInfo() {
-        return this.getAsteroidsByDistance().map(asteroid => asteroid.getInfo());
-    }
-    getInfo() {
-        return {
-            game: this,
-            graphics: this.graphics,
-            frameCounter: this.frameCounter,
-            width: this.width,
-            height: this.height
-        };
+        drawQueue.dispatch();
     }
 }
 //# sourceMappingURL=Game.js.map

@@ -8,20 +8,21 @@ class Ship {
     static NumRays = 5;
     static RayDeltaTheta = 0.3;
     static RayLength = 300;
+    static ConstantA = 1800 / Math.PI;
     pos;
     game;
     heading;
     velocity;
     lasers;
     alive;
-    top;
-    left;
-    right;
+    top = vec2.create();
+    left = vec2.create();
+    right = vec2.create();
     rays;
     shootTimer = 0;
-    constructor(game, pos) {
+    constructor(game, x, y) {
         this.game = game;
-        this.pos = pos || vec2.create();
+        this.pos = vec2.fromValues(x, y);
         this.heading = -Math.PI / 2;
         this.velocity = vec2.create();
         this.lasers = [];
@@ -36,8 +37,7 @@ class Ship {
     }
     kill() {
         this.alive = false;
-        this.game.dispatchEvent(new CustomEvent('shipdestroyed', { detail: this.getInfo() }));
-        this.game.dispatchEvent(new CustomEvent('end', { detail: this.game.getInfo() }));
+        this.game.dispatchEvent(new CustomEvent('end'));
     }
     loadInputs(straight = 0, turn = 0, shoot = 0) {
         this.push(straight);
@@ -58,9 +58,9 @@ class Ship {
         this.updateRays();
     }
     updateTopLeftRight() {
-        this.top = vec2.fromAngle(Ship.TopAngle + this.heading, Ship.TopDistance);
-        this.left = vec2.fromAngle(Ship.SideAngle + this.heading, Ship.SideDistance);
-        this.right = vec2.fromAngle(-Ship.SideAngle + this.heading, Ship.SideDistance);
+        vec2.scale(this.top, FastVec2FromRadian(this.heading + Ship.TopAngle), Ship.TopDistance);
+        vec2.scale(this.left, FastVec2FromRadian(this.heading + Ship.SideAngle), Ship.SideDistance);
+        vec2.scale(this.right, FastVec2FromRadian(this.heading - Ship.SideAngle), Ship.SideDistance);
         vec2.add(this.top, this.top, this.pos);
         vec2.add(this.left, this.left, this.pos);
         vec2.add(this.right, this.right, this.pos);

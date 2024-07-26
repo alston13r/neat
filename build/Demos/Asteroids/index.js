@@ -80,7 +80,7 @@ function loop(timestamp) {
                 pair.game.ship.loadInputs(...brainThoughts);
                 pair.game.update();
             });
-            fittest.game.draw();
+            fittest.game.draw(asteroidsGraphics);
             asteroidsGraphics.fillStyle = '#fff';
             asteroidsGraphics.fillText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5);
             asteroidsGraphics.fillText(`Alive: ${stillAlive.length} / ${asteroidsPopulation.popSize}`, 5, asteroidsGraphics.height - 15);
@@ -98,7 +98,7 @@ function loop(timestamp) {
             pairings = asteroidsPopulation.members.map(member => {
                 return {
                     brain: member,
-                    game: new Asteroids(asteroidsGraphics)
+                    game: new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
                 };
             });
             addListeners(pairings);
