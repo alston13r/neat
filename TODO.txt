@@ -1,3 +1,4 @@
+Preserve best ever brain
 Optimize nextGeneration pls
 Improve creation of population with an options object
 Improve raycasting
