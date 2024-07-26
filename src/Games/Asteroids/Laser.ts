@@ -13,12 +13,12 @@ class Laser implements Drawable, HasPath {
     vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
   }
 
-  update(): void {
+  update() {
     vec2.add(this.pos, this.pos, this.velocity)
     this.wrap()
   }
 
-  draw(g: Graphics): void {
+  draw(g: Graphics) {
     g.strokeCircle(this.pos[0], this.pos[1], Laser.Radius)
   }
 
@@ -30,11 +30,11 @@ class Laser implements Drawable, HasPath {
     return new Circle(this.pos[0], this.pos[1], Laser.Radius).appendToPath(path)
   }
 
-  terminate(): void {
+  terminate() {
     this.ship.lasers.splice(this.ship.lasers.indexOf(this), 1)
   }
 
-  wrap(): void {
+  wrap() {
     const x = this.pos[0]
     const y = this.pos[1]
     const w = this.ship.game.width
