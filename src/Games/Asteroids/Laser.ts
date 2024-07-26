@@ -3,14 +3,14 @@ class Laser implements Drawable, HasPath {
   static Radius = 5
 
   ship: Ship
-  pos: Vec2
-  velocity: Vec2
+  pos = vec2.create()
+  velocity = vec2.create()
 
   constructor(ship: Ship) {
     this.ship = ship
     ship.lasers.push(this)
-    this.pos = ship.top
-    this.velocity = vec2.fromAngle(ship.heading, Laser.Speed)
+    vec2.copy(this.pos, ship.top)
+    vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
   }
 
   update(): void {
