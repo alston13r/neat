@@ -5,17 +5,16 @@ const desired = TrainingValues.XOR;
 const neuralNet = new NeuralNetwork(2, 2, 1);
 function getError() {
     let error = 0;
-    for (let pair of desired.ordered) {
-        const actual = neuralNet.feedForward(pair.inputs);
-        actual.forEach((output, i) => {
-            error += Math.abs(pair.outputs[i] - output);
-        });
+    for (let value of desired.ordered) {
+        const actual = neuralNet.feedForward(value.inputs);
+        const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0));
+        errors.forEach(e => error += e);
     }
     return error;
 }
 const maxIterations = 200000;
 const loopsPerAnimationFrame = 100;
-const desiredError = 0.05;
+const desiredError = 3.95;
 let currentIteration = 0;
 function neuralNetLoop() {
     neuralNetGraphics.bg();
@@ -26,10 +25,7 @@ function neuralNetLoop() {
         currentIteration++;
         const error = getError();
         neuralNet.adjustAlpha(error);
-        if (error <= desiredError) {
-            solutionFound = true;
-        }
-        if (error <= desiredError) {
+        if (error >= desiredError) {
             solutionFound = true;
             console.log(`Solution found in ${currentIteration} iterations`);
             for (let pair of desired.ordered) {
