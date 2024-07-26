@@ -158,5 +158,48 @@ class Graphics {
         this.drawQueues.add(queue);
         return queue;
     }
+    record(time, name = 'video', framerate = 0) {
+        const chunks = [];
+        const stream = this.canvas.captureStream(framerate);
+        const rec = new MediaRecorder(stream);
+        rec.ondataavailable = e => void chunks.push(e.data);
+        rec.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const vid = document.createElement('video');
+            vid.src = URL.createObjectURL(blob);
+            vid.style.display = 'none';
+            document.body.appendChild(vid);
+            const a = document.createElement('a');
+            a.download = name + '.webm';
+            a.href = vid.src;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        };
+        rec.start();
+        setTimeout(() => rec.stop(), time);
+    }
 }
+// startRecording(canvas: HTMLCanvasElement, time: number) {
+//   const chunks: Blob[] = [] // here we will store our recorded media chunks (Blobs)
+//   const stream = canvas.captureStream() // grab our canvas MediaStream
+//   const rec = new MediaRecorder(stream) // init the recorder
+//   // every time the recorder has new data, we will store it in our array
+//   rec.ondataavailable = e => chunks.push(e.data)
+//   // only when the recorder stops, we construct a complete Blob from all the chunks
+//   rec.onstop = () => this.exportVid(new Blob(chunks, { type: 'video/webm' }))
+//   rec.start()
+//   setTimeout(() => rec.stop(), time) // stop recording in 3s
+// },
+// exportVid(blob: Blob) {
+//   const vid = document.createElement('video');
+//   vid.src = URL.createObjectURL(blob);
+//   vid.controls = true;
+//   document.body.appendChild(vid);
+//   const a = document.createElement('a');
+//   a.download = 'myvid.webm';
+//   a.href = vid.src;
+//   a.textContent = 'download the video';
+//   document.body.appendChild(a);
+// }
 //# sourceMappingURL=Graphics.js.map

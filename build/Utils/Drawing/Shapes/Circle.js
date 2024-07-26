@@ -23,8 +23,7 @@ class Circle {
         return path;
     }
     appendToPath(path) {
-        path.moveTo(this.x, this.y);
-        path.arc(this.x, this.y, this.radius, 0, TwoPi);
+        path.addPath(this.createPath());
         return path;
     }
 }

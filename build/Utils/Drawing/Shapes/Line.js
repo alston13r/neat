@@ -27,8 +27,7 @@ class Line {
         return path;
     }
     appendToPath(path) {
-        path.moveTo(this.x1, this.y1);
-        path.lineTo(this.x2, this.y2);
+        path.addPath(this.createPath());
         return path;
     }
 }

@@ -29,7 +29,7 @@ class Rectangle {
         return path;
     }
     appendToPath(path) {
-        path.rect(this.x, this.y, this.width, this.height);
+        path.addPath(this.createPath());
         return path;
     }
 }
