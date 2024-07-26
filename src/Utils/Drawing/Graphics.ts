@@ -1,7 +1,7 @@
 class Graphics {
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
-  drawQueues = new Set<DrawQueue>()
+  drawQueues: DrawQueue[] = []
 
   constructor(canvas?: HTMLCanvasElement) {
     this.canvas = canvas || document.createElement('canvas')
@@ -190,7 +190,7 @@ class Graphics {
   initDrawQueue(color: string | CanvasGradient | CanvasPattern = '#fff',
     filling = false, stroking = true, lineWidth = 1) {
     let queue = new DrawQueue(this, color, filling, stroking, lineWidth)
-    this.drawQueues.add(queue)
+    this.drawQueues.push(queue)
     return queue
   }
 
