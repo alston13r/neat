@@ -2,9 +2,9 @@ class Asteroids extends EventTarget implements Drawable {
   static MinAsteroids = 5
 
   asteroids: Asteroid[] = []
-  spawningAsteroids: boolean = true
-  asteroidCounter: number = 0
-  frameCounter: number = 0
+  spawningAsteroids = true
+  asteroidCounter = 0
+  frameCounter = 0
   graphics: Graphics
   width: number
   height: number
@@ -31,10 +31,9 @@ class Asteroids extends EventTarget implements Drawable {
     return ship
   }
 
-  createAsteroid(emit?: boolean): void {
+  createAsteroid(): void {
     const asteroid = new Asteroid(this, vec2.create())
     this.asteroids.push(asteroid)
-    if (emit) this.dispatchEvent(new CustomEvent<AsteroidInfo>('asteroidcreated', { detail: asteroid.getInfo() }))
   }
 
   loadInputs(keys: { 'ArrowUp'?: boolean, 'ArrowDown'?: boolean, 'ArrowLeft'?: boolean, 'ArrowRight'?: boolean, ' '?: boolean }) {
@@ -68,7 +67,7 @@ class Asteroids extends EventTarget implements Drawable {
   checkAsteroidCount(): void {
     if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
       for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
-        this.createAsteroid(true)
+        this.createAsteroid()
       }
     }
   }
