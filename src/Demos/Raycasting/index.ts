@@ -26,9 +26,9 @@ const objects: (Line | Circle)[] = (walls as any[]).concat(circles)
 let mouseX: number = 400
 let mouseY: number = 300
 
-window.addEventListener('mousemove', e => {
-  mouseX = e.clientX
-  mouseY = e.clientY
+raycastingGraphics.canvas.addEventListener('mousemove', e => {
+  mouseX = e.offsetX
+  mouseY = e.offsetY
 })
 
 raycastingGraphics.strokeStyle = '#fff'
