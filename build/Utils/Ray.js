@@ -4,7 +4,7 @@ class Ray2 {
     length;
     constructor(pos, angle = 0, length = 1) {
         this.pos = pos;
-        this.dir = vec2.fromAngle(angle);
+        this.dir = vec2.fromValues(Math.cos(angle), Math.sin(angle));
         this.length = length;
     }
     lookAt(x, y) {

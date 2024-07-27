@@ -19,9 +19,9 @@ for (let i = 0; i < 5; i++) {
 const objects = walls.concat(circles);
 let mouseX = 400;
 let mouseY = 300;
-window.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+raycastingGraphics.canvas.addEventListener('mousemove', e => {
+    mouseX = e.offsetX;
+    mouseY = e.offsetY;
 });
 raycastingGraphics.strokeStyle = '#fff';
 function raycastLoop() {
