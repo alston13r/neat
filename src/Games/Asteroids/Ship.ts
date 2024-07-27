@@ -38,8 +38,6 @@ class Ship implements Drawable, HasPath {
   static RayDeltaTheta = 0.3
   static RayLength = 300
 
-  static ConstantA = 1800 / Math.PI
-
   pos: Vec2
   game: Asteroids
   heading: number
@@ -117,7 +115,9 @@ class Ship implements Drawable, HasPath {
 
   push(direction: number): void {
     if (direction == 0) return
-    const dir = vec2.fromAngle(this.heading, direction * 0.1)
+    const c = Math.cos(this.heading) * direction * 0.1
+    const s = Math.sin(this.heading) * direction * 0.1
+    const dir = vec2.fromValues(c, s)
     vec2.add(this.velocity, this.velocity, dir)
 
     if (vec2.length(this.velocity) > Ship.MaxSpeed) {
