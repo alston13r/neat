@@ -7,7 +7,7 @@ class Ray2 implements Drawable {
 
   constructor(pos: Vec2, angle = 0, length = 1) {
     this.pos = pos
-    this.dir = vec2.fromAngle(angle)
+    this.dir = vec2.fromValues(Math.cos(angle), Math.sin(angle))
     this.length = length
   }
 
@@ -49,24 +49,24 @@ class Ray2 implements Drawable {
   }
 
   castOntoLine(line: Line): Vec2 {
-    const x1: number = line.x1
-    const y1: number = line.y1
-    const x2: number = line.x2
-    const y2: number = line.y2
+    const x1 = line.x1
+    const y1 = line.y1
+    const x2 = line.x2
+    const y2 = line.y2
 
-    const x3: number = this.pos[0]
-    const y3: number = this.pos[1]
-    const x4: number = x3 + this.dir[0]
-    const y4: number = y3 + this.dir[1]
+    const x3 = this.pos[0]
+    const y3 = this.pos[1]
+    const x4 = x3 + this.dir[0]
+    const y4 = y3 + this.dir[1]
 
-    const den: number = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
     if (den == 0) return
 
-    const t: number = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den
-    const u: number = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den
+    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den
 
     if (t > 0 && t < 1 && u > 0) {
-      const point: Vec2 = vec2.create()
+      const point = vec2.create()
       point[0] = x1 + t * (x2 - x1)
       point[1] = y1 + t * (y2 - y1)
       return point
