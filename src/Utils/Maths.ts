@@ -1,5 +1,18 @@
+const mat2 = glMatrix.mat2
+const mat2d = glMatrix.mat2d
+const mat3 = glMatrix.mat3
+// const mat4 = glMatrix.mat4
+// const quat = glMatrix.quat
+// const quat2 = glMatrix.quat2
+const vec2 = glMatrix.vec2
+const vec3 = glMatrix.vec3
+const vec4 = glMatrix.vec4
+
+glMatrix.ARRAY_TYPE = Array
+
 /** Constant for 2 PI */
 const TwoPi = Math.PI * 2
+const RadToLookupDegConstant = 1800 / Math.PI
 
 /** Lookup table for sine and cosine within a tenth of a degree */
 const TrigLookup: ReadonlyVec2[] = new Array(3600).fill(0)
@@ -27,7 +40,7 @@ function FastCos(angle: number) {
 }
 
 function FastVec2FromRadian(angle: number) {
-  angle = Math.floor(matrix.toDegree(angle) * 10)
+  angle = Math.floor(angle * RadToLookupDegConstant)
   angle = ((angle % 3600) + 3600) % 3600
   return TrigLookup[angle]
 }
