@@ -56,7 +56,7 @@ class NNode {
     /** The activated sum input */
     sumOutput = 0;
     /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
-    bias = NNode.GenerateRandomBias();
+    bias = 0;
     /** An array of incoming connections */
     connectionsIn = [];
     /** An array of outgoing connections */
@@ -73,14 +73,14 @@ class NNode {
      * @param type the node's type
      * @param layer the node's layer
      */
-    constructor(id, type, layer) {
+    constructor(id, type, layer, bias = NNode.GenerateRandomBias()) {
         this.id = id;
         this.type = type;
         this.layer = layer;
+        // switch to a default activation functions array where node type is the index
         switch (type) {
             case NNodeType.Input:
                 this.activationFunction = NNode.DefaultInputActivationFunction;
-                this.bias = 0;
                 break;
             case NNodeType.Hidden:
                 this.activationFunction = NNode.DefaultHiddenActivationFunction;
@@ -89,12 +89,14 @@ class NNode {
                 this.activationFunction = NNode.DefaultOutputActivationFunction;
                 break;
         }
+        if (type != NNodeType.Input)
+            this.bias = bias;
     }
     /**
      * Helper method to generate a random bias value between the minimum and maximum values.
      */
     static GenerateRandomBias() {
-        return lerp(Math.random(), 0, 1, this.MinimumBiasValue, this.MaximumBiasValue);
+        return Math.random() * (this.MaximumBiasValue - this.MinimumBiasValue) + this.MinimumBiasValue;
     }
     /**
      * Activates the weighted sum of input values for this node. This adds the bias node before activation and
