@@ -149,7 +149,7 @@ class Population {
       if (this.members.length < this.popSize) {
         const difference = this.popSize - this.members.length
         for (let i = 0; i < difference; i++) {
-          this.members.push(new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
+          this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
         }
       }
     } else {
@@ -175,7 +175,7 @@ class Population {
   nextGeneration() {
     if (this.members.length == 0) {
       this.members = new Array(this.popSize).fill(0)
-        .map(() => new Brain(this).initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
+        .map(() => new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
     } else {
       this.produceOffspring()
       this.generationCounter++
