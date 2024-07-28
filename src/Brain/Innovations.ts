@@ -8,8 +8,8 @@ class Innovations {
       const val = Innovations.#InnovationArray[i]
       if (identifier === val) return i
     }
-    Innovations.#InnovationArray[N + 1] = identifier
-    return N + 1
+    Innovations.#InnovationArray[N] = identifier
+    return N
   }
 
   static Serialize() {
