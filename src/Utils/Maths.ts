@@ -1,9 +1,9 @@
 const mat2 = glMatrix.mat2
 const mat2d = glMatrix.mat2d
 const mat3 = glMatrix.mat3
-// const mat4 = glMatrix.mat4
-// const quat = glMatrix.quat
-// const quat2 = glMatrix.quat2
+const mat4 = glMatrix.mat4
+const quat = glMatrix.quat
+const quat2 = glMatrix.quat2
 const vec2 = glMatrix.vec2
 const vec3 = glMatrix.vec3
 const vec4 = glMatrix.vec4
@@ -12,6 +12,7 @@ glMatrix.ARRAY_TYPE = Array
 
 /** Constant for 2 PI */
 const TwoPi = Math.PI * 2
+/** Constant for converting a radian value to the degree lookup value for the fast trig table */
 const RadToLookupDegConstant = 1800 / Math.PI
 
 /** Lookup table for sine and cosine within a tenth of a degree */

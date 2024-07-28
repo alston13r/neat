@@ -1,8 +1,4 @@
-/*!
-@author Brandon Jones
-@author Colin MacKenzie IV
-@version 3.4.0
-
+/*
 Copyright (c) 2015-2021, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -180,14 +176,8 @@ declare namespace glMatrix {
     function fromMat4(out: Mat3, a: ReadonlyMat4): Mat3
     function clone(a: ReadonlyMat3): Mat3
     function copy(out: Mat3, a: ReadonlyMat3): Mat3
-    function fromValues(
-      m00: number, m01: number, m02: number,
-      m10: number, m11: number, m12: number,
-      m20: number, m21: number, m22: number): Mat3
-    function set(out: Mat3,
-      m00: number, m01: number, m02: number,
-      m10: number, m11: number, m12: number,
-      m20: number, m21: number, m22: number): Mat3
+    function fromValues(m00: number, m01: number, m02: number, m10: number, m11: number, m12: number, m20: number, m21: number, m22: number): Mat3
+    function set(out: Mat3, m00: number, m01: number, m02: number, m10: number, m11: number, m12: number, m20: number, m21: number, m22: number): Mat3
     function identity(out: Mat3): Mat3
     function transpose(out: Mat3, a: ReadonlyMat3): Mat3
     function invert(out: Mat3, a: ReadonlyMat3): Mat3
@@ -217,15 +207,142 @@ declare namespace glMatrix {
   }
 
   namespace mat4 {
-
+    function create(): Mat4
+    function clone(a: ReadonlyMat4): Mat4
+    function copy(out: Mat4, a: ReadonlyMat4): Mat4
+    function fromValues(m00: number, m01: number, m02: number, m03: number, m10: number, m11: number, m12: number, m13: number, m20: number, m21: number, m22: number, m23: number, m30: number, m31: number, m32: number, m33: number): Mat4
+    function set(out: Mat4, m00: number, m01: number, m02: number, m03: number, m10: number, m11: number, m12: number, m13: number, m20: number, m21: number, m22: number, m23: number, m30: number, m31: number, m32: number, m33: number): Mat4
+    function identity(out: Mat4): Mat4
+    function transpose(out: Mat4, a: ReadonlyMat4): Mat4
+    function invert(out: Mat4, a: ReadonlyMat4): Mat4
+    function adjoint(out: Mat4, a: ReadonlyMat4): Mat4
+    function determinant(a: ReadonlyMat4): number
+    function multiply(out: Mat4, a: ReadonlyMat4, b: ReadonlyMat4): Mat4
+    function translate(out: Mat4, a: ReadonlyMat4, v: ReadonlyVec3): Mat4
+    function scale(out: Mat4, a: ReadonlyMat4, v: ReadonlyVec3): Mat4
+    function rotate(out: Mat4, a: ReadonlyMat4, rad: number, axis: ReadonlyVec3): Mat4
+    function rotateX(out: Mat4, a: ReadonlyMat4, rad: number): Mat4
+    function rotateY(out: Mat4, a: ReadonlyMat4, rad: number): Mat4
+    function rotateZ(out: Mat4, a: ReadonlyMat4, rad: number): Mat4
+    function fromTranslation(out: Mat4, v: ReadonlyVec3): Mat4
+    function fromScaling(out: Mat4, v: ReadonlyVec3): Mat4
+    function fromRotation(out: Mat4, rad: number, axis: ReadonlyVec3): Mat4
+    function fromXRotation(out: Mat4, rad: number): Mat4
+    function fromYRotation(out: Mat4, rad: number): Mat4
+    function fromZRotation(out: Mat4, rad: number): Mat4
+    function fromRotationTranslation(out: Mat4, q: ReadonlyQuat, v: ReadonlyVec3): Mat4
+    function fromQuat2(out: Mat4, a: ReadonlyQuat2): Mat4
+    function getTranslation(out: Vec3, mat: ReadonlyMat4): Vec3
+    function getScaling(out: Vec3, mat: ReadonlyMat4): Vec3
+    function getRotation(out: Quat, mat: ReadonlyMat4): Quat
+    function decompose(out_r: Quat, out_t: Vec3, out_s: Vec3, mat: ReadonlyMat4): Quat
+    function fromRotationTranslationScale(out: Mat4, q: Quat, v: ReadonlyVec3, s: ReadonlyVec3): Mat4
+    function fromRotationTranslationScaleOrigin(out: Mat4, q: Quat, v: ReadonlyVec3, s: ReadonlyVec3, o: ReadonlyVec3): Mat4
+    function fromQuat(out: Mat4, q: ReadonlyQuat): Mat4
+    function frustum(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4
+    function perspectiveNO(out: Mat4, fovy: number, aspect: number, near: number, far: number): Mat4
+    function perspective(out: Mat4, fovy: number, aspect: number, near: number, far: number): Mat4
+    function perspectiveZO(out: Mat4, fovy: number, aspect: number, near: number, far: number): Mat4
+    function perspectiveFromFieldOfView(out: Mat4, fov: { upDegrees: number, downDegrees: number, leftDegrees: number, rightDegrees: number }, near: number, far: number): Mat4
+    function orthoNO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4
+    function ortho(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4
+    function orthoZO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4
+    function lookAt(out: Mat4, eye: ReadonlyVec3, center: ReadonlyVec3, up: ReadonlyVec3): Mat4
+    function targetTo(out: Mat4, eye: ReadonlyVec3, target: ReadonlyVec3, up: ReadonlyVec3): Mat4
+    function str(a: ReadonlyMat4): string
+    function frob(a: ReadonlyMat4): number
+    function add(out: Mat4, a: ReadonlyMat4, b: ReadonlyMat4): Mat4
+    function subtract(out: Mat4, a: ReadonlyMat4, b: ReadonlyMat4): Mat4
+    function multiplyScalar(out: Mat4, a: ReadonlyMat4, b: number): Mat4
+    function multiplyScalarAndAdd(out: Mat4, a: ReadonlyMat4, b: ReadonlyMat4, scale: number): Mat4
+    function exactEquals(a: ReadonlyMat4, b: ReadonlyMat4): boolean
+    function equals(a: ReadonlyMat4, b: ReadonlyMat4): boolean
+    function mul(out: Mat4, a: ReadonlyMat4, b: ReadonlyMat4): Mat4
+    function sub(out: Mat4, a: ReadonlyMat4, b: ReadonlyMat4): Mat4
   }
 
   namespace quat {
-
+    function create(): Quat
+    function identity(out: Quat): Quat
+    function setAxisAngle(out: Quat, axis: ReadonlyVec3, rad: number): Quat
+    function getAxisAngle(out_axis: Vec3, q: ReadonlyQuat): number
+    function getAngle(a: ReadonlyQuat, b: ReadonlyQuat): number
+    function multiply(out: Quat, a: ReadonlyQuat, b: ReadonlyQuat): Quat
+    function rotateX(out: Quat, a: ReadonlyQuat, rad: number): Quat
+    function rotateY(out: Quat, a: ReadonlyQuat, rad: number): Quat
+    function rotateZ(out: Quat, a: ReadonlyQuat, rad: number): Quat
+    function calculateW(out: Quat, a: ReadonlyQuat): Quat
+    function exp(out: Quat, a: ReadonlyQuat): Quat
+    function ln(out: Quat, a: ReadonlyQuat): Quat
+    function pow(out: Quat, a: ReadonlyQuat, b: number): Quat
+    function slerp(out: Quat, a: ReadonlyQuat, b: ReadonlyQuat, t: number): Quat
+    function random(out: Quat): Quat
+    function invert(out: Quat, a: ReadonlyQuat): Quat
+    function conjugate(out: Quat, a: ReadonlyQuat): Quat
+    function fromMat3(out: Quat, m: ReadonlyMat3): Quat
+    function fromEuler(out: Quat, x: number, y: number, z: number, order: 'xyz' | 'xzy' | 'yxz' | 'yzx' | 'zxy' | 'zyx'): Quat
+    function str(a: ReadonlyQuat): string
+    function clone(a: ReadonlyQuat): Quat
+    function fromValues(x: number, y: number, z: number, w: number): Quat
+    function copy(out: Quat, a: ReadonlyQuat): Quat
+    function set(out: Quat, x: number, y: number, z: number, w: number): Quat
+    function add(out: Quat, a: ReadonlyQuat, b: ReadonlyQuat): Quat
+    function mul(out: Quat, a: ReadonlyQuat, b: ReadonlyQuat): Quat
+    function scale(out: Quat, a: ReadonlyQuat, b: number): Quat
+    function dot(a: ReadonlyQuat, b: ReadonlyQuat): number
+    function lerp(out: Quat, a: ReadonlyQuat, b: ReadonlyQuat, t: number): Quat
+    function length(a: ReadonlyQuat): number
+    function len(a: ReadonlyQuat): number
+    function squaredLength(a: ReadonlyQuat): number
+    function sqrLen(a: ReadonlyQuat): number
+    function normalize(out: Quat, a: ReadonlyQuat): Quat
+    function exactEquals(a: ReadonlyQuat, b: ReadonlyQuat): boolean
+    function equals(a: ReadonlyQuat, b: ReadonlyQuat): boolean
+    function rotationTo(out: Quat, a: ReadonlyVec3, b: ReadonlyVec3): Quat
+    function sqlerp(out: Quat, a: ReadonlyQuat, b: ReadonlyQuat, c: ReadonlyQuat, d: ReadonlyQuat, t: number): Quat
+    function setAxes(out: Quat, view: ReadonlyVec3, right: ReadonlyVec3, up: ReadonlyVec3): Quat
   }
 
   namespace quat2 {
-
+    function create(): Quat2
+    function clone(a: ReadonlyQuat2): Quat2
+    function fromValues(x1: number, y1: number, z1: number, w1: number, x2: number, y2: number, z2: number, w2: number): Quat2
+    function fromRotationTranslationValues(x1: number, y1: number, z1: number, w1: number, x2: number, y2: number, z2: number): Quat2
+    function fromRotationTranslation(out: ReadonlyQuat2, q: ReadonlyQuat, t: ReadonlyVec3): Quat2
+    function fromTranslation(out: ReadonlyQuat2, t: ReadonlyVec3): Quat2
+    function fromRotation(out: ReadonlyQuat2, q: ReadonlyQuat): Quat2
+    function fromMat4(out: Quat2, a: ReadonlyMat4): Quat2
+    function copy(out: Quat2, a: ReadonlyQuat2): Quat2
+    function identity(out: Quat2): Quat2
+    function set(out: Quat2, x1: number, y1: number, z1: number, w1: number, x2: number, y2: number, z2: number, w2: number): Quat2
+    function getReal(out: Quat, a: ReadonlyQuat2): Quat
+    function getDual(out: Quat, a: ReadonlyQuat2): Quat
+    function setReal(out: Quat2, a: ReadonlyQuat): Quat2
+    function setDual(out: Quat2, q: ReadonlyQuat): Quat2
+    function getTranslation(out: Vec3, a: ReadonlyQuat2): Vec3
+    function translate(out: Quat2, a: ReadonlyQuat2, v: ReadonlyVec3): Quat2
+    function rotateX(out: Quat2, a: ReadonlyQuat2, rad: number): Quat2
+    function rotateY(out: Quat2, a: ReadonlyQuat2, rad: number): Quat2
+    function rotateZ(out: Quat2, a: ReadonlyQuat2, rad: number): Quat2
+    function rotateByQuatAppend(out: Quat2, a: ReadonlyQuat2, q: ReadonlyQuat): Quat2
+    function rotateByQuatPrepend(out: Quat2, q: ReadonlyQuat, a: ReadonlyQuat2): Quat2
+    function rotateAroundAxis(out: Quat2, a: ReadonlyQuat2, axis: ReadonlyVec3, rad: number): Quat2
+    function add(out: Quat2, a: ReadonlyQuat2, b: ReadonlyQuat2): Quat2
+    function multiply(out: Quat2, a: ReadonlyQuat2, b: ReadonlyQuat2): Quat2
+    function mul(out: Quat2, a: ReadonlyQuat2, b: ReadonlyQuat2): Quat2
+    function scale(out: Quat2, a: ReadonlyQuat2, b: number): Quat2
+    function dot(a: ReadonlyQuat2, b: ReadonlyQuat2): number
+    function lerp(out: Quat2, a: ReadonlyQuat2, b: ReadonlyQuat2, t: number): Quat2
+    function invert(out: Quat2, a: ReadonlyQuat2): Quat2
+    function conjugate(out: Quat2, a: ReadonlyQuat2): Quat2
+    function length(a: ReadonlyQuat2): number
+    function len(a: ReadonlyQuat2): number
+    function squaredLength(a: ReadonlyQuat2): number
+    function sqrLen(a: ReadonlyQuat2): number
+    function normalize(out: Quat2, a: ReadonlyQuat2): Quat2
+    function str(a: ReadonlyQuat2): string
+    function exactEquals(a: ReadonlyQuat2, b: ReadonlyQuat2): boolean
+    function equals(a: ReadonlyQuat2, b: ReadonlyQuat2): boolean
   }
 
   namespace vec2 {
