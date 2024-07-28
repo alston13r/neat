@@ -19,10 +19,18 @@ class NNode {
   static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid
   /** The default activation function for output nodes */
   static DefaultOutputActivationFunction = ActivationFunction.Tanh
+  /** Toggle for input node activation function mutations */
+  static AllowInputActivationMutations = false
   /** Toggle for hidden node activation function mutations */
   static AllowHiddenActivationMutations = true
   /** Toggle for output node activation function mutations */
   static AllowOutputActivationMutations = false
+  /** Toggle for input node bias mutations */
+  static AllowInputBiasMutations = false
+  /** Toggle for hidden node bias mutations */
+  static AllowHiddenBiasMutations = true
+  /** Toggle for output node bias mutations */
+  static AllowOutputBiasMutations = true
   /** The chance for an activation function to get mutated */
   static MutateActivationFunctionChance = 0.03
   /** The chance for the bias weight to get mutated */
@@ -47,9 +55,9 @@ class NNode {
   /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
   bias = NNode.GenerateRandomBias()
   /** An array of incoming connections */
-  connectionsIn: Connection[] = []
+  connectionsIn: number[] = []
   /** An array of outgoing connections */
-  connectionsOut: Connection[] = []
+  connectionsOut: number[] = []
   /** The activation function for this node */
   activationFunction: ActivationFunction
 
@@ -70,6 +78,7 @@ class NNode {
     switch (type) {
       case NNodeType.Input:
         this.activationFunction = NNode.DefaultInputActivationFunction
+        this.bias = 0
         break
       case NNodeType.Hidden:
         this.activationFunction = NNode.DefaultHiddenActivationFunction
@@ -90,9 +99,12 @@ class NNode {
   /**
    * Activates the weighted sum of input values for this node. This adds the bias node before activation and
    * sets the sum output value to whatever the activation function returns.
+   * 
+   * @returns the sum output
    */
   activate() {
     this.sumOutput = this.activationFunction.fn(this.sumInput + this.bias)
+    return this.sumOutput
   }
 
   /**
@@ -113,27 +125,30 @@ class NNode {
    * completely randomized.
    */
   mutate() {
-    // bias mutation
-    if (Math.random() < NNode.MutateBiasChance) {
-      // bias weight will be mutated
-      if (Math.random() < NNode.NudgeBiasChance) {
-        // bias weight will only be nudged by 20%
-        this.bias += 0.2 * this.bias * (Math.random() > 0.5 ? 1 : -1)
-      } else {
-        // bias weight will be randomized
-        this.bias = NNode.GenerateRandomBias()
+    if (this.type == NNodeType.Input && NNode.AllowInputBiasMutations
+      || this.type == NNodeType.Hidden && NNode.AllowHiddenBiasMutations
+      || this.type == NNodeType.Output && NNode.AllowOutputBiasMutations) {
+      // bias mutation
+      if (Math.random() < NNode.MutateBiasChance) {
+        // bias weight will be mutated
+        if (Math.random() < NNode.NudgeBiasChance) {
+          // bias weight will only be nudged by 20%
+          this.bias += 0.2 * this.bias * (Math.random() > 0.5 ? 1 : -1)
+        } else {
+          // bias weight will be randomized
+          this.bias = NNode.GenerateRandomBias()
+        }
+        this.clamp()
       }
-      this.clamp()
     }
 
     // activation function mutation
-    // checks for if this node type can even mutate its activation function
-    if (this.type == NNodeType.Input) return
-    if (this.type == NNodeType.Output && !NNode.AllowOutputActivationMutations) return
-    if (this.type == NNodeType.Hidden && !NNode.AllowHiddenActivationMutations) return
-    if (Math.random() < NNode.MutateActivationFunctionChance) {
-      // the activation function will be randomized
-      this.activationFunction = ActivationFunction.Arr[Math.floor(Math.random() * ActivationFunction.Arr.length)]
+    if (this.type == NNodeType.Input && NNode.AllowInputActivationMutations
+      || this.type == NNodeType.Hidden && NNode.AllowHiddenActivationMutations
+      || this.type == NNodeType.Output && NNode.AllowOutputActivationMutations) {
+      if (Math.random() < NNode.MutateActivationFunctionChance) {
+        this.activationFunction = ActivationFunction.Arr[Math.floor(Math.random() * ActivationFunction.Arr.length)]
+      }
     }
   }
 
@@ -149,8 +164,12 @@ class NNode {
       'DefaultInputActivationFunction': NNode.DefaultInputActivationFunction.name,
       'DefaultHiddenActivationFunction': NNode.DefaultHiddenActivationFunction.name,
       'DefaultOutputActivationFunction': NNode.DefaultOutputActivationFunction.name,
+      'AllowInputActivationMutations': NNode.AllowInputActivationMutations,
       'AllowHiddenActivationMutations': NNode.AllowHiddenActivationMutations,
       'AllowOutputActivationMutations': NNode.AllowOutputActivationMutations,
+      'AllowInputBiasMutations': NNode.AllowInputBiasMutations,
+      'AllowHiddenBiasMutations': NNode.AllowHiddenBiasMutations,
+      'AllowOutputBiasMutations': NNode.AllowOutputBiasMutations,
       'MutateActivationFunctionChance': NNode.MutateActivationFunctionChance,
       'MutateBiasChance': NNode.MutateBiasChance,
       'NudgeBiasChance': NNode.NudgeBiasChance,
@@ -159,15 +178,24 @@ class NNode {
     }
   }
 
-  serialize() {
+  serialize(): NeatNodeSerial {
     return {
       'id': this.id,
       'type': this.type,
       'layer': this.layer,
       'bias': this.bias,
-      'connectionsIn': this.connectionsIn.map(c => c.innovationID),
-      'connectionsOut': this.connectionsOut.map(c => c.innovationID),
+      'connectionsIn': this.connectionsIn,
+      'connectionsOut': this.connectionsOut,
       'activationFunction': this.activationFunction.name
     }
+  }
+
+  static FromSerial(serial: NeatNodeSerial): NNode {
+    const node = new NNode(serial.id, serial.type, serial.layer)
+    node.bias = serial.bias
+    node.connectionsIn = serial.connectionsIn
+    node.connectionsOut = serial.connectionsOut
+    node.activationFunction = ActivationFunction.FromSerial(serial.activationFunction)
+    return node
   }
 }
