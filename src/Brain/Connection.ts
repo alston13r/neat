@@ -37,6 +37,8 @@ class Connection {
   recurrent: boolean
   /** This Connection's innovation id */
   innovationID: number
+  /** This Connection's index in the Brain's connections array */
+  id: number
 
   /**
    * Constructs a connection with the specified incoming node, outgoing node, weight, enabled value,
@@ -49,15 +51,16 @@ class Connection {
    * @param enabled whether or not the connection is enabled
    * @param recurrent whether or not the connection is recurrent
    */
-  constructor(inNode: NNode, outNode: NNode, weight: number, enabled: boolean, recurrent: boolean) {
+  constructor(id: number, inNode: NNode, outNode: NNode, weight: number, enabled: boolean, recurrent: boolean) {
+    this.id = id
     this.inNode = inNode
     this.outNode = outNode
     this.weight = weight
     this.enabled = enabled
     this.recurrent = recurrent
     this.innovationID = Innovations.GetInnovationID(inNode, outNode)
-    this.inNode.connectionsOut.push(this)
-    this.outNode.connectionsIn.push(this)
+    this.inNode.connectionsOut.push(id)
+    this.outNode.connectionsIn.push(id)
   }
 
   /**
@@ -95,8 +98,9 @@ class Connection {
     }
   }
 
-  serialize() {
+  serialize(): ConnectionSerial {
     return {
+      'id': this.id,
       'inNode': this.inNode.id,
       'outNode': this.outNode.id,
       'weight': this.weight,
