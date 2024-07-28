@@ -14,17 +14,6 @@ function calculateFitness(brain) {
         errors.forEach(error => brain.fitness += error);
     }
 }
-function loggedCalculateFitness(brain) {
-    brain.fitness = 0;
-    for (const value of xorTrainingValues.random) {
-        const actual = brain.think(value.inputs);
-        console.log(value.inputs + ' -> ' + value.outputs + ' : ' + actual);
-        const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0));
-        console.log(errors);
-        errors.forEach(error => brain.fitness += error);
-    }
-    console.log('fitness: ' + brain.fitness);
-}
 function xorLoop() {
     xorPopulation.nextGeneration();
     xorPopulation.members.forEach(calculateFitness);
