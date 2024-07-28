@@ -8,7 +8,6 @@ Make navigator site a little more cool looking
   Add some gifs of them working and individual
   tiles for each demo page
 Allow saving of neural networks
-Allow loading of neat brains
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
 Debug NeuralNetwork
