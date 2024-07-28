@@ -21,8 +21,6 @@ class Species {
   /** The compatibility threshold step size */
   static DynamicThresholdStepSize = 0.5
 
-  /** A reference to this species' containing population */
-  population: Population
   /** An array of this species' members */
   members: Brain[] = []
   /** The number of allowed offspring this species can produce */
@@ -31,22 +29,6 @@ class Species {
   gensSinceImproved = 0
   /** Record of this species' highest fitness value */
   highestFitness = 0
-
-  /**
-   * Constructs a species. This does not speciate any members of a population
-   * on its own, that is done through the static Speciate method.
-   */
-  constructor()
-  /**
-   * Constructs a species with the specified population reference. This does
-   * not speciate any members of a population on its own, that is done through
-   * the static Speciate method.
-   * @param population the population
-   */
-  constructor(population: Population)
-  constructor(population?: Population) {
-    this.population = population
-  }
 
   /**
    * Compares two brains based on their topologies. Topologies are compared by
@@ -184,7 +166,7 @@ class Species {
       if (champions.length == 0) {
         champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
         // create a species for the champion
-        champion.species = new Species(champion.population)
+        champion.species = new Species()
         champion.species.members.push(champion)
       }
       // this takes a champion from the front of the champions array
