@@ -35,6 +35,8 @@ class Connection {
     recurrent;
     /** This Connection's innovation id */
     innovationID;
+    /** This Connection's index in the Brain's connections array */
+    id;
     /**
      * Constructs a connection with the specified incoming node, outgoing node, weight, enabled value,
      * and recurrent value. A connection will take the incoming node's sum output value, multiply it
@@ -46,15 +48,16 @@ class Connection {
      * @param enabled whether or not the connection is enabled
      * @param recurrent whether or not the connection is recurrent
      */
-    constructor(inNode, outNode, weight, enabled, recurrent) {
+    constructor(id, inNode, outNode, weight, enabled, recurrent) {
+        this.id = id;
         this.inNode = inNode;
         this.outNode = outNode;
         this.weight = weight;
         this.enabled = enabled;
         this.recurrent = recurrent;
         this.innovationID = Innovations.GetInnovationID(inNode, outNode);
-        this.inNode.connectionsOut.push(this);
-        this.outNode.connectionsIn.push(this);
+        this.inNode.connectionsOut.push(id);
+        this.outNode.connectionsIn.push(id);
     }
     /**
      * Mutates this connection's weight. Mutations occur by chance, only if a call to Math.random()
@@ -91,6 +94,7 @@ class Connection {
     }
     serialize() {
         return {
+            'id': this.id,
             'inNode': this.inNode.id,
             'outNode': this.outNode.id,
             'weight': this.weight,

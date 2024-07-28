@@ -20,8 +20,6 @@ class Species {
     static DynamicThreshold = 100;
     /** The compatibility threshold step size */
     static DynamicThresholdStepSize = 0.5;
-    /** A reference to this species' containing population */
-    population;
     /** An array of this species' members */
     members = [];
     /** The number of allowed offspring this species can produce */
@@ -30,9 +28,6 @@ class Species {
     gensSinceImproved = 0;
     /** Record of this species' highest fitness value */
     highestFitness = 0;
-    constructor(population) {
-        this.population = population;
-    }
     /**
      * Compares two brains based on their topologies. Topologies are compared by
      * only their enabled connections' innovation IDs and weights. For every connection
@@ -166,7 +161,7 @@ class Species {
             if (champions.length == 0) {
                 champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
                 // create a species for the champion
-                champion.species = new Species(champion.population);
+                champion.species = new Species();
                 champion.species.members.push(champion);
             }
             // this takes a champion from the front of the champions array
