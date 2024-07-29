@@ -4,7 +4,7 @@
     "target": "ES2022",
     "module": "CommonJS",
     "sourceMap": true,
-    "outDir": "build",
+    "outDir": "build a",
     "rootDir": "src"
   }
 }
