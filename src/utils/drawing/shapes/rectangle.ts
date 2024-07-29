@@ -1,4 +1,4 @@
-class Rectangle implements HasPoint, HasSize, Drawable, HasPath {
+class Rectangle implements Drawable, HasPath {
   pos: Vec2
   size: Vec2
 

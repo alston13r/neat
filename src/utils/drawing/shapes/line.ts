@@ -1,4 +1,4 @@
-class Line implements HasTwoPoints, Drawable, HasPath {
+class Line implements Drawable, HasPath {
   pos1: Vec2
   pos2: Vec2
 
