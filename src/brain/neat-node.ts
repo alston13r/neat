@@ -13,12 +13,6 @@ enum NNodeType { Input, Hidden, Output }
  * was already taken.
  */
 class NNode {
-  /** The default activation function for input nodes */
-  static DefaultInputActivationFunction: ActivationFunction
-  /** The default activation function for hidden nodes */
-  static DefaultHiddenActivationFunction: ActivationFunction
-  /** The default activation function for output nodes */
-  static DefaultOutputActivationFunction: ActivationFunction
   /** Array containing default activation functions indexed by node type */
   static DefaultActivationFunctions = [
     ActivationFunction.Identity,
@@ -67,29 +61,15 @@ class NNode {
   /** The activation function for this node */
   activationFunction: ActivationFunction
 
-  get DefaultInputActivationFunction() {
-    return this.DefaultInputActivationFunction[NNodeType.Input]
-  }
-
-  get DefaultHiddenActivationFunction() {
-    return this.DefaultInputActivationFunction[NNodeType.Hidden]
-  }
-
-  get DefaultOutputActivationFunction() {
-    return this.DefaultInputActivationFunction[NNodeType.Output]
-  }
-
-  set DefaultInputActivationFunction(fn: ActivationFunction) {
-    this.DefaultInputActivationFunction[NNodeType.Input] = fn
-  }
-
-  set DefaultHiddenActivationFunction(fn: ActivationFunction) {
-    this.DefaultInputActivationFunction[NNodeType.Hidden] = fn
-  }
-
-  set DefaultOutputActivationFunction(fn: ActivationFunction) {
-    this.DefaultInputActivationFunction[NNodeType.Output] = fn
-  }
+  /** The default activation function for input nodes */
+  static get DefaultInputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Input] }
+  static set DefaultInputActivationFunction(fn: ActivationFunction) { this.DefaultActivationFunctions[NNodeType.Input] = fn }
+  /** The default activation function for hidden nodes */
+  static get DefaultHiddenActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Hidden] }
+  static set DefaultHiddenActivationFunction(fn: ActivationFunction) { this.DefaultActivationFunctions[NNodeType.Hidden] = fn }
+  /** The default activation function for output nodes */
+  static get DefaultOutputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Output] }
+  static set DefaultOutputActivationFunction(fn: ActivationFunction) { this.DefaultActivationFunctions[NNodeType.Output] = fn }
 
   /**
    * Constructs a brain node with the specified id, node type, and layer. The id
@@ -106,7 +86,7 @@ class NNode {
     this.type = type
     this.layer = layer
     this.activationFunction = NNode.DefaultActivationFunctions[type]
-    if (type != NNodeType.Input) this.bias = bias
+    if (type > 0) this.bias = bias
   }
 
   /**
@@ -147,26 +127,20 @@ class NNode {
   mutate() {
     if (this.type == NNodeType.Input && NNode.AllowInputBiasMutations
       || this.type == NNodeType.Hidden && NNode.AllowHiddenBiasMutations
-      || this.type == NNodeType.Output && NNode.AllowOutputBiasMutations) {
-      // bias mutation
-      if (Math.random() < NNode.MutateBiasChance) {
-        // bias weight will be mutated
-        if (Math.random() < NNode.NudgeBiasChance) {
-          // bias weight will only be nudged by 20%
+      || this.type == NNodeType.Output && NNode.AllowOutputBiasMutations) { // bias mutation
+      if (Math.random() < NNode.MutateBiasChance) { // bias weight will be mutated
+        if (Math.random() < NNode.NudgeBiasChance) { // bias weight will only be nudged by 20%
           this.bias += 0.2 * this.bias * (Math.random() > 0.5 ? 1 : -1)
-        } else {
-          // bias weight will be randomized
+        } else { // bias weight will be randomized
           this.bias = NNode.GenerateRandomBias()
         }
-        this.clamp()
+        this.clamp() // ensure weight is within acceptable bounds
       }
     }
-
-    // activation function mutation
     if (this.type == NNodeType.Input && NNode.AllowInputActivationMutations
       || this.type == NNodeType.Hidden && NNode.AllowHiddenActivationMutations
       || this.type == NNodeType.Output && NNode.AllowOutputActivationMutations) {
-      if (Math.random() < NNode.MutateActivationFunctionChance) {
+      if (Math.random() < NNode.MutateActivationFunctionChance) { // activation function mutation
         this.activationFunction = ActivationFunction.Arr[Math.floor(Math.random() * ActivationFunction.Arr.length)]
       }
     }
