@@ -21,7 +21,7 @@ class Brain {
   /** Toggle for new nodes */
   static AllowNewNodes = true
   /** The chance for a new node to be made */
-  static AddANodeChance = 0.03
+  static AddANodeChance = 0.01
 
   /** The current fitness of the brain */
   fitness = 0
