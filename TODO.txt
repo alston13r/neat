@@ -2,8 +2,6 @@ Preserve best ever brain
 Optimize nextGeneration
   Brain
     initialize()
-    fixLayers() - done
-  Innovations - done
   NNode
     constructor?
 Improve creation of population with an options object
