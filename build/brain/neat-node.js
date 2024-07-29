@@ -18,11 +18,17 @@ var NNodeType;
  */
 class NNode {
     /** The default activation function for input nodes */
-    static DefaultInputActivationFunction = ActivationFunction.Identity;
+    static DefaultInputActivationFunction;
     /** The default activation function for hidden nodes */
-    static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
+    static DefaultHiddenActivationFunction;
     /** The default activation function for output nodes */
-    static DefaultOutputActivationFunction = ActivationFunction.Tanh;
+    static DefaultOutputActivationFunction;
+    /** Array containing default activation functions indexed by node type */
+    static DefaultActivationFunctions = [
+        ActivationFunction.Identity,
+        ActivationFunction.Sigmoid,
+        ActivationFunction.Tanh
+    ];
     /** Toggle for input node activation function mutations */
     static AllowInputActivationMutations = false;
     /** Toggle for hidden node activation function mutations */
@@ -63,6 +69,24 @@ class NNode {
     connectionsOut = [];
     /** The activation function for this node */
     activationFunction;
+    get DefaultInputActivationFunction() {
+        return this.DefaultInputActivationFunction[NNodeType.Input];
+    }
+    get DefaultHiddenActivationFunction() {
+        return this.DefaultInputActivationFunction[NNodeType.Hidden];
+    }
+    get DefaultOutputActivationFunction() {
+        return this.DefaultInputActivationFunction[NNodeType.Output];
+    }
+    set DefaultInputActivationFunction(fn) {
+        this.DefaultInputActivationFunction[NNodeType.Input] = fn;
+    }
+    set DefaultHiddenActivationFunction(fn) {
+        this.DefaultInputActivationFunction[NNodeType.Hidden] = fn;
+    }
+    set DefaultOutputActivationFunction(fn) {
+        this.DefaultInputActivationFunction[NNodeType.Output] = fn;
+    }
     /**
      * Constructs a brain node with the specified id, node type, and layer. The id
      * is used as an identifier for connection innovation ids. Node ids are generated
@@ -77,18 +101,7 @@ class NNode {
         this.id = id;
         this.type = type;
         this.layer = layer;
-        // switch to a default activation functions array where node type is the index
-        switch (type) {
-            case NNodeType.Input:
-                this.activationFunction = NNode.DefaultInputActivationFunction;
-                break;
-            case NNodeType.Hidden:
-                this.activationFunction = NNode.DefaultHiddenActivationFunction;
-                break;
-            case NNodeType.Output:
-                this.activationFunction = NNode.DefaultOutputActivationFunction;
-                break;
-        }
+        this.activationFunction = NNode.DefaultActivationFunctions[type];
         if (type != NNodeType.Input)
             this.bias = bias;
     }
