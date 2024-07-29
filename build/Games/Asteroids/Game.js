@@ -69,4 +69,4 @@ class Asteroids extends EventTarget {
         drawQueue.dispatch();
     }
 }
-//# sourceMappingURL=Game.js.map
+//# sourceMappingURL=game.js.map

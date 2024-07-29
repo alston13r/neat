@@ -208,4 +208,4 @@ class NeuralNetwork {
 //     return n
 //   }
 // }
-//# sourceMappingURL=NeuralNetwork.js.map
+//# sourceMappingURL=neural-network.js.map

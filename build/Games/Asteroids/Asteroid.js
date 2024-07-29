@@ -113,4 +113,4 @@ class Asteroid {
         return new Circle(this.pos[0], this.pos[1], this.collisionRadius);
     }
 }
-//# sourceMappingURL=Asteroid.js.map
+//# sourceMappingURL=asteroid.js.map

@@ -83,4 +83,4 @@ class Particle {
         }
     }
 }
-//# sourceMappingURL=Particle.js.map
+//# sourceMappingURL=particle.js.map

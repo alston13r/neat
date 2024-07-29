@@ -41,4 +41,4 @@ class Laser {
             this.terminate();
     }
 }
-//# sourceMappingURL=Laser.js.map
+//# sourceMappingURL=laser.js.map

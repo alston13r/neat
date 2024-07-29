@@ -151,4 +151,4 @@ class Ship {
         };
     }
 }
-//# sourceMappingURL=Ship.js.map
+//# sourceMappingURL=ship.js.map

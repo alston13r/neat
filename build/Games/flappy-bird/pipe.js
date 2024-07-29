@@ -36,4 +36,4 @@
 //     return this.x < -this.width
 //   }
 // }
-//# sourceMappingURL=Pipe.js.map
+//# sourceMappingURL=pipe.js.map
