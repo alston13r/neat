@@ -20,6 +20,7 @@ stressTest('random types', () => {
         resultArray.push(node);
     }
 });
+resultArray.length = 0;
 // construct 100000 input NNodes
 stressTest('input type', () => {
     for (let i = 0; i < stressAmount; i++) {
@@ -27,6 +28,7 @@ stressTest('input type', () => {
         resultArray.push(node);
     }
 });
+resultArray.length = 0;
 // construct 100000 hidden NNodes
 stressTest('hidden type', () => {
     for (let i = 0; i < stressAmount; i++) {
@@ -34,6 +36,7 @@ stressTest('hidden type', () => {
         resultArray.push(node);
     }
 });
+resultArray.length = 0;
 // construct 100000 output NNodes
 stressTest('output type', () => {
     for (let i = 0; i < stressAmount; i++) {
