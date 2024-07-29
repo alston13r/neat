@@ -17,12 +17,12 @@ var NNodeType;
  * was already taken.
  */
 class NNode {
-    /** The default activation function for input nodes */
-    static DefaultInputActivationFunction = ActivationFunction.Identity;
-    /** The default activation function for hidden nodes */
-    static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
-    /** The default activation function for output nodes */
-    static DefaultOutputActivationFunction = ActivationFunction.Tanh;
+    /** Array containing default activation functions indexed by node type */
+    static DefaultActivationFunctions = [
+        ActivationFunction.Identity,
+        ActivationFunction.Sigmoid,
+        ActivationFunction.Tanh
+    ];
     /** Toggle for input node activation function mutations */
     static AllowInputActivationMutations = false;
     /** Toggle for hidden node activation function mutations */
@@ -63,6 +63,15 @@ class NNode {
     connectionsOut = [];
     /** The activation function for this node */
     activationFunction;
+    /** The default activation function for input nodes */
+    static get DefaultInputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Input]; }
+    static set DefaultInputActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Input] = fn; }
+    /** The default activation function for hidden nodes */
+    static get DefaultHiddenActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Hidden]; }
+    static set DefaultHiddenActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Hidden] = fn; }
+    /** The default activation function for output nodes */
+    static get DefaultOutputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Output]; }
+    static set DefaultOutputActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Output] = fn; }
     /**
      * Constructs a brain node with the specified id, node type, and layer. The id
      * is used as an identifier for connection innovation ids. Node ids are generated
@@ -77,19 +86,8 @@ class NNode {
         this.id = id;
         this.type = type;
         this.layer = layer;
-        // switch to a default activation functions array where node type is the index
-        switch (type) {
-            case NNodeType.Input:
-                this.activationFunction = NNode.DefaultInputActivationFunction;
-                break;
-            case NNodeType.Hidden:
-                this.activationFunction = NNode.DefaultHiddenActivationFunction;
-                break;
-            case NNodeType.Output:
-                this.activationFunction = NNode.DefaultOutputActivationFunction;
-                break;
-        }
-        if (type != NNodeType.Input)
+        this.activationFunction = NNode.DefaultActivationFunctions[type];
+        if (type != 0)
             this.bias = bias;
     }
     /**
@@ -127,26 +125,21 @@ class NNode {
     mutate() {
         if (this.type == NNodeType.Input && NNode.AllowInputBiasMutations
             || this.type == NNodeType.Hidden && NNode.AllowHiddenBiasMutations
-            || this.type == NNodeType.Output && NNode.AllowOutputBiasMutations) {
-            // bias mutation
-            if (Math.random() < NNode.MutateBiasChance) {
-                // bias weight will be mutated
-                if (Math.random() < NNode.NudgeBiasChance) {
-                    // bias weight will only be nudged by 20%
+            || this.type == NNodeType.Output && NNode.AllowOutputBiasMutations) { // bias mutation
+            if (Math.random() < NNode.MutateBiasChance) { // bias weight will be mutated
+                if (Math.random() < NNode.NudgeBiasChance) { // bias weight will only be nudged by 20%
                     this.bias += 0.2 * this.bias * (Math.random() > 0.5 ? 1 : -1);
                 }
-                else {
-                    // bias weight will be randomized
+                else { // bias weight will be randomized
                     this.bias = NNode.GenerateRandomBias();
                 }
-                this.clamp();
+                this.clamp(); // ensure weight is within acceptable bounds
             }
         }
-        // activation function mutation
         if (this.type == NNodeType.Input && NNode.AllowInputActivationMutations
             || this.type == NNodeType.Hidden && NNode.AllowHiddenActivationMutations
             || this.type == NNodeType.Output && NNode.AllowOutputActivationMutations) {
-            if (Math.random() < NNode.MutateActivationFunctionChance) {
+            if (Math.random() < NNode.MutateActivationFunctionChance) { // activation function mutation
                 this.activationFunction = ActivationFunction.Arr[Math.floor(Math.random() * ActivationFunction.Arr.length)];
             }
         }
