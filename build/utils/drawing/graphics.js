@@ -11,8 +11,8 @@ class Graphics {
         this.canvas.height = height;
         return this;
     }
-    appendTo(ele) {
-        ele.appendChild(this.canvas);
+    appendTo(element) {
+        element.appendChild(this.canvas);
         return this;
     }
     appendToBody() {

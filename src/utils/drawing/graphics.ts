@@ -14,8 +14,8 @@ class Graphics {
     return this
   }
 
-  appendTo(ele: HTMLElement) {
-    ele.appendChild(this.canvas)
+  appendTo(element: HTMLElement) {
+    element.appendChild(this.canvas)
     return this
   }
 
