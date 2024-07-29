@@ -1,6 +1,8 @@
 class Graphics {
+    canvas;
+    context;
+    drawQueues = [];
     constructor(canvas) {
-        this.drawQueues = [];
         this.canvas = canvas || document.createElement('canvas');
         this.context = this.canvas.getContext('2d');
     }

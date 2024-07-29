@@ -16,12 +16,36 @@
  * in the brain's topology to a node in an earlier layer.
  */
 class Connection {
+    /** Toggle for weight mutations */
+    static AllowWeightMutations = true;
+    /** The minimum value that a weight can be */
+    static MinimumWeightValue = -10;
+    /** The maximum value that a weight can be */
+    static MaximumWeightValue = 10;
+    /** The chance for the weight to get mutated */
+    static MutateWeightChance = 0.8;
+    /** The chance for the weight to be nudged rather than randomized when mutated */
+    static NudgeWeightChance = 0.9;
     /**
      * Helper method to generate a random weight value between the minimum and maximum values.
      */
     static GenerateRandomWeight() {
         return lerp(Math.random(), 0, 1, this.MinimumWeightValue, this.MaximumWeightValue);
     }
+    /** This connection's incoming node id */
+    inNode;
+    /** This connection's outgoing node id */
+    outNode;
+    /** This connection's weight */
+    weight;
+    /** Whether or not this Connection is enabled */
+    enabled;
+    /** Whether or not this Connection is recurrent */
+    recurrent;
+    /** This Connection's innovation id */
+    innovationID;
+    /** This Connection's index in the Brain's connections array */
+    id;
     /**
      * Constructs a connection with the specified incoming node id, outgoing node id, weight,
      * enabled and recurrent flags.
@@ -91,14 +115,4 @@ class Connection {
         };
     }
 }
-/** Toggle for weight mutations */
-Connection.AllowWeightMutations = true;
-/** The minimum value that a weight can be */
-Connection.MinimumWeightValue = -10;
-/** The maximum value that a weight can be */
-Connection.MaximumWeightValue = 10;
-/** The chance for the weight to get mutated */
-Connection.MutateWeightChance = 0.8;
-/** The chance for the weight to be nudged rather than randomized when mutated */
-Connection.NudgeWeightChance = 0.9;
 //# sourceMappingURL=connection.js.map

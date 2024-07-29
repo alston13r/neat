@@ -5,6 +5,28 @@
  * offspring for the next generation.
  */
 class Population {
+    /** Toggle for speciation between generations */
+    static Speciation = true;
+    /** Toggle for elitism */
+    static Elitism = true;
+    /** The percent of members who get carried over as elites */
+    static ElitePercent = 0.3;
+    /** A counter for the current generation */
+    generationCounter = 0;
+    /** An array of the population's members */
+    members = [];
+    /** The number of members the population will always have */
+    popSize;
+    /** The number of input nodes that members will be initialized with */
+    inputN;
+    /** The number of hidden nodes that members will be initialized with */
+    hiddenN;
+    /** The number of output nodes that members will be initialized with */
+    outputN;
+    /** The enabled connections percent that members will be initialized with */
+    enabledChance;
+    /** A reference to the population's fittest member ever */
+    fittestEver;
     /**
      * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
      * and chance for connections to start enabled.
@@ -15,10 +37,6 @@ class Population {
      * @param enabledChance the chance for connections to start enabled
      */
     constructor(popSize, inputN, hiddenN, outputN, enabledChance = 1) {
-        /** A counter for the current generation */
-        this.generationCounter = 0;
-        /** An array of the population's members */
-        this.members = [];
         this.popSize = popSize;
         this.inputN = inputN;
         this.hiddenN = hiddenN;
@@ -249,10 +267,4 @@ class Population {
         };
     }
 }
-/** Toggle for speciation between generations */
-Population.Speciation = true;
-/** Toggle for elitism */
-Population.Elitism = true;
-/** The percent of members who get carried over as elites */
-Population.ElitePercent = 0.3;
 //# sourceMappingURL=population.js.map

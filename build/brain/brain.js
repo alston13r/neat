@@ -6,20 +6,36 @@
  * data.
  */
 class Brain {
-    constructor() {
-        /** The current fitness of the brain */
-        this.fitness = 0;
-        /** An array of the brain's nodes */
-        this.nodes = [];
-        /** An array of the brain's input nodes */
-        this.inputNodes = [];
-        /** An array of the brain's output nodes */
-        this.outputNodes = [];
-        /** An array of the brain's connections */
-        this.connections = [];
-        /** Boolean indicating if the brain is an elite from the prior generation */
-        this.isElite = false;
-    }
+    /** Toggle for new connections */
+    static AllowNewConnections = true;
+    /** Toggle for connection disabling */
+    static AllowDisablingConnections = false;
+    /** Toggle for allowing recurrent connections */
+    static AllowRecurrent = false;
+    /** The chance for a new connection to be made */
+    static AddConnectionChance = 0.4;
+    /** The chance for a connection to be disabled */
+    static DisableConnectionChance = 0.05;
+    /** The chance for a connection to be reenabled */
+    static ReenableConnectionChance = 0.25;
+    /** Toggle for new nodes */
+    static AllowNewNodes = true;
+    /** The chance for a new node to be made */
+    static AddANodeChance = 0.01;
+    /** The current fitness of the brain */
+    fitness = 0;
+    /** The current species this brain belongs to, null if none assigned */
+    species;
+    /** An array of the brain's nodes */
+    nodes = [];
+    /** An array of the brain's input nodes */
+    inputNodes = [];
+    /** An array of the brain's output nodes */
+    outputNodes = [];
+    /** An array of the brain's connections */
+    connections = [];
+    /** Boolean indicating if the brain is an elite from the prior generation */
+    isElite = false;
     /**
      * Initializes the brain's topology to contain the specified number of input nodes,
      * hidden nodes, output nodes, and enabled chance.
@@ -441,20 +457,4 @@ class Brain {
         return brain;
     }
 }
-/** Toggle for new connections */
-Brain.AllowNewConnections = true;
-/** Toggle for connection disabling */
-Brain.AllowDisablingConnections = false;
-/** Toggle for allowing recurrent connections */
-Brain.AllowRecurrent = false;
-/** The chance for a new connection to be made */
-Brain.AddConnectionChance = 0.4;
-/** The chance for a connection to be disabled */
-Brain.DisableConnectionChance = 0.05;
-/** The chance for a connection to be reenabled */
-Brain.ReenableConnectionChance = 0.25;
-/** Toggle for new nodes */
-Brain.AllowNewNodes = true;
-/** The chance for a new node to be made */
-Brain.AddANodeChance = 0.01;
 //# sourceMappingURL=brain.js.map

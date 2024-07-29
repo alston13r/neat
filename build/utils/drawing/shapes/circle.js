@@ -1,4 +1,6 @@
 class Circle {
+    pos;
+    radius;
     constructor(x, y, radius) {
         this.pos = vec2.fromValues(x, y);
         this.radius = radius;

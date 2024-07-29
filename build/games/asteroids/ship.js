@@ -1,9 +1,25 @@
 class Ship {
+    static MaxSpeed = 3;
+    static ShootDelay = 33;
+    static TopAngle = 0;
+    static SideAngle = 2.4;
+    static TopDistance = 20;
+    static SideDistance = 20;
+    static NumRays = 5;
+    static RayDeltaTheta = 0.3;
+    static RayLength = 300;
+    pos;
+    game;
+    heading;
+    velocity;
+    lasers;
+    alive;
+    top = vec2.create();
+    left = vec2.create();
+    right = vec2.create();
+    rays;
+    shootTimer = 0;
     constructor(game, x, y) {
-        this.top = vec2.create();
-        this.left = vec2.create();
-        this.right = vec2.create();
-        this.shootTimer = 0;
         this.game = game;
         this.pos = vec2.fromValues(x, y);
         this.heading = -Math.PI / 2;
@@ -135,13 +151,4 @@ class Ship {
         };
     }
 }
-Ship.MaxSpeed = 3;
-Ship.ShootDelay = 33;
-Ship.TopAngle = 0;
-Ship.SideAngle = 2.4;
-Ship.TopDistance = 20;
-Ship.SideDistance = 20;
-Ship.NumRays = 5;
-Ship.RayDeltaTheta = 0.3;
-Ship.RayLength = 300;
 //# sourceMappingURL=ship.js.map

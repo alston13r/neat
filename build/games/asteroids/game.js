@@ -1,9 +1,14 @@
 class Asteroids extends EventTarget {
+    static MinAsteroids = 5;
+    asteroids;
+    spawningAsteroids = true;
+    asteroidCounter = 0;
+    frameCounter = 0;
+    width;
+    height;
+    ship;
     constructor(width, height) {
         super();
-        this.spawningAsteroids = true;
-        this.asteroidCounter = 0;
-        this.frameCounter = 0;
         this.width = width;
         this.height = height;
         this.createShip();
@@ -64,5 +69,4 @@ class Asteroids extends EventTarget {
         drawQueue.dispatch();
     }
 }
-Asteroids.MinAsteroids = 5;
 //# sourceMappingURL=game.js.map

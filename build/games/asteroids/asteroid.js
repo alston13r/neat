@@ -1,15 +1,47 @@
-var _a;
 class Asteroid {
+    static SizeCutoff = 10;
+    static OffsetArray1 = new Array(10).fill(0).map((_, i) => {
+        const index = i * 360;
+        return vec2.fromValues(FastCos(index), FastSin(index));
+    });
+    static OffsetArray2 = new Array(11).fill(0).map((_, i) => {
+        const index = i * 327;
+        return vec2.fromValues(FastCos(index), FastSin(index));
+    });
+    static OffsetArray3 = new Array(12).fill(0).map((_, i) => {
+        const index = i * 300;
+        return vec2.fromValues(FastCos(index), FastSin(index));
+    });
+    static OffsetArray4 = new Array(13).fill(0).map((_, i) => {
+        const index = i * 276;
+        return vec2.fromValues(FastCos(index), FastSin(index));
+    });
+    static OffsetArray5 = new Array(14).fill(0).map((_, i) => {
+        const index = i * 257;
+        return vec2.fromValues(FastCos(index), FastSin(index));
+    });
+    static OffsetArrays = [
+        this.OffsetArray1,
+        this.OffsetArray2,
+        this.OffsetArray3,
+        this.OffsetArray4,
+        this.OffsetArray5
+    ];
+    game;
+    pos;
+    radius;
+    velocity;
+    collisionRadius;
+    points = [];
     constructor(game, pos, radius) {
-        this.points = [];
         this.game = game;
         this.pos = pos || vec2.create();
         this.radius = radius || Math.random() * 25 + 25;
         this.velocity = vec2.random(vec2.create(), Math.random() * 0.5 + 1);
-        _a.GenerateRandomPoints(this);
+        Asteroid.GenerateRandomPoints(this);
     }
     static GenerateRandomPoints(asteroid) {
-        const offsetArray = _a.OffsetArrays[Math.floor(Math.random() * 5)];
+        const offsetArray = Asteroid.OffsetArrays[Math.floor(Math.random() * 5)];
         const radiusOffsets = new Array(offsetArray.length).fill(0).map(() => Math.random() * 20 - 8 + asteroid.radius);
         let max = -Infinity;
         let min = Infinity;
@@ -37,9 +69,9 @@ class Asteroid {
             }
         }
         const half = this.radius / 2;
-        if (half < _a.SizeCutoff)
+        if (half < Asteroid.SizeCutoff)
             return;
-        this.game.asteroids.push(new _a(this.game, this.pos, half), new _a(this.game, vec2.copy([], this.pos), half));
+        this.game.asteroids.push(new Asteroid(this.game, this.pos, half), new Asteroid(this.game, vec2.copy([], this.pos), half));
         this.game.dispatchEvent(new CustomEvent('asteroiddestroyed'));
     }
     draw(g) {
@@ -81,33 +113,4 @@ class Asteroid {
         return new Circle(this.pos[0], this.pos[1], this.collisionRadius);
     }
 }
-_a = Asteroid;
-Asteroid.SizeCutoff = 10;
-Asteroid.OffsetArray1 = new Array(10).fill(0).map((_, i) => {
-    const index = i * 360;
-    return vec2.fromValues(FastCos(index), FastSin(index));
-});
-Asteroid.OffsetArray2 = new Array(11).fill(0).map((_, i) => {
-    const index = i * 327;
-    return vec2.fromValues(FastCos(index), FastSin(index));
-});
-Asteroid.OffsetArray3 = new Array(12).fill(0).map((_, i) => {
-    const index = i * 300;
-    return vec2.fromValues(FastCos(index), FastSin(index));
-});
-Asteroid.OffsetArray4 = new Array(13).fill(0).map((_, i) => {
-    const index = i * 276;
-    return vec2.fromValues(FastCos(index), FastSin(index));
-});
-Asteroid.OffsetArray5 = new Array(14).fill(0).map((_, i) => {
-    const index = i * 257;
-    return vec2.fromValues(FastCos(index), FastSin(index));
-});
-Asteroid.OffsetArrays = [
-    _a.OffsetArray1,
-    _a.OffsetArray2,
-    _a.OffsetArray3,
-    _a.OffsetArray4,
-    _a.OffsetArray5
-];
 //# sourceMappingURL=asteroid.js.map

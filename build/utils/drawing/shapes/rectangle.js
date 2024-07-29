@@ -1,4 +1,6 @@
 class Rectangle {
+    pos;
+    size;
     constructor(x, y, width, height) {
         this.pos = vec2.fromValues(x, y);
         this.size = vec2.fromValues(width, height);

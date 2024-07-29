@@ -1,7 +1,32 @@
 // TODO
 class NeuralNetwork {
+    /** The chance for a weight to be mutated */
+    static MutateWeightChance = 0.5;
+    /** The chance for a weight to be nudged when mutated, rather than randomized */
+    static NudgeWeightChance = 0.8;
+    /** The minimum value that a weight can be */
+    static MinimumWeightValue = -1;
+    /** The maximum value that a weight can be */
+    static MaximumWeightValue = 1;
+    /** The chance for a bias to be mutated */
+    static MutateBiasChance = 0.5;
+    /** The chance for a bias to be nudged when mutated, rather than randomized */
+    static NudgeBiasChance = 0.8;
+    /** The minimum value that a bias can be */
+    static MinimumBiasValue = -1;
+    /** The maximum value that a bias can be */
+    static MaximumBiasValue = 1;
+    /** The chance for an activation function to be mutated */
+    static MutateActivationFunctionChance = 0.05;
+    inputSize;
+    outputSize;
+    hiddenSizes;
+    weights;
+    biases;
+    activationFunctions;
+    dActivationFunctions;
+    alpha = 0.01;
     constructor(a, b, c) {
-        this.alpha = 0.01;
         this.inputSize = a;
         if (c == null) {
             this.hiddenSizes = [];
@@ -161,24 +186,6 @@ class NeuralNetwork {
         return NeuralNetwork.Copy(this);
     }
 }
-/** The chance for a weight to be mutated */
-NeuralNetwork.MutateWeightChance = 0.5;
-/** The chance for a weight to be nudged when mutated, rather than randomized */
-NeuralNetwork.NudgeWeightChance = 0.8;
-/** The minimum value that a weight can be */
-NeuralNetwork.MinimumWeightValue = -1;
-/** The maximum value that a weight can be */
-NeuralNetwork.MaximumWeightValue = 1;
-/** The chance for a bias to be mutated */
-NeuralNetwork.MutateBiasChance = 0.5;
-/** The chance for a bias to be nudged when mutated, rather than randomized */
-NeuralNetwork.NudgeBiasChance = 0.8;
-/** The minimum value that a bias can be */
-NeuralNetwork.MinimumBiasValue = -1;
-/** The maximum value that a bias can be */
-NeuralNetwork.MaximumBiasValue = 1;
-/** The chance for an activation function to be mutated */
-NeuralNetwork.MutateActivationFunctionChance = 0.05;
 // class BasicNeuralNetwork {
 //   static Crossover(a: BasicNeuralNetwork, b: BasicNeuralNetwork): BasicNeuralNetwork {
 //     let listErr: string = '['
