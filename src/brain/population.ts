@@ -50,11 +50,11 @@ class Population {
    * The list of all current species that the members are registered to.
    */
   get speciesList() {
-    const returnArr: Species[] = []
-    this.members.forEach(member => {
-      if (member.species != null && !returnArr.includes(member.species)) returnArr.push(member.species)
-    })
-    return returnArr
+    const speciesSet = new Set<Species>()
+    for (const member of this.members) {
+      if (member.species != null) speciesSet.add(member.species)
+    }
+    return [...speciesSet]
   }
 
   /**

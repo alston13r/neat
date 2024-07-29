@@ -18,6 +18,8 @@
  * in the brain's topology to a node in an earlier layer.
  */
 class Connection {
+  /** Toggle for weight mutations */
+  static AllowWeightMutations = true
   /** The minimum value that a weight can be */
   static MinimumWeightValue = -10
   /** The maximum value that a weight can be */
@@ -58,7 +60,7 @@ class Connection {
    * @param enabled whether or not the connection is enabled
    * @param recurrent whether or not the connection is recurrent
    */
-  constructor(id: number, inNode: number, outNode: number, weight: number, enabled: boolean, recurrent: boolean) {
+  constructor(id: number, inNode: number, outNode: number, weight: number, enabled = true, recurrent = false) {
     this.id = id
     this.inNode = inNode
     this.outNode = outNode
@@ -69,20 +71,27 @@ class Connection {
   }
 
   /**
+   * Clones this connection and returns said clone with the same id, input node, output node, weight,
+   * enabled and recurrent flags, and innovation id.
+   * @returns the clone
+   */
+  clone() {
+    return new Connection(this.id, this.inNode, this.outNode, this.weight, this.enabled, this.recurrent)
+  }
+
+  /**
    * Mutates this connection's weight. Mutations occur by chance, only if a call to Math.random()
    * yields a value less than the predefined static values. A connection's weight, when mutated,
    * can either be nudged or completely randomized.
    */
   mutate() {
-    if (Math.random() < Connection.MutateWeightChance) {
-      // connection weight will be mutated
-      if (Math.random() < Connection.NudgeWeightChance) {
-        // weight will only be nudged by 20%
+    if (Connection.AllowWeightMutations
+      && Math.random() < Connection.MutateWeightChance) { // connection weight will be mutated
+      if (Math.random() < Connection.NudgeWeightChance) { // weight will only be nudged by 20%
         this.weight += 0.2 * this.weight * (Math.random() > 0.5 ? 1 : -1)
-      } else {
-        // weight will be randomized
+      } else { // weight will be randomized
         this.weight = Connection.GenerateRandomWeight()
-      }
+      } // ensure weight is within acceptable bounds
       this.clamp()
     }
   }
@@ -106,8 +115,8 @@ class Connection {
   serialize(): ConnectionSerial {
     return {
       'id': this.id,
-      'inNode': this.inNode.id,
-      'outNode': this.outNode.id,
+      'inNode': this.inNode,
+      'outNode': this.outNode,
       'weight': this.weight,
       'enabled': this.enabled,
       'recurrent': this.recurrent,
