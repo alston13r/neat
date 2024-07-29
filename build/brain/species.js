@@ -45,12 +45,8 @@ class Species {
      * @returns the compatibility of the two brains
      */
     static Compare(brainA, brainB) {
-        const enabledA = brainA.connections
-            .filter(connection => connection.enabled)
-            .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID);
-        const enabledB = brainB.connections
-            .filter(connection => connection.enabled)
-            .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID);
+        const enabledA = brainA.getSortedConnections().filter(connection => connection.enabled);
+        const enabledB = brainB.getSortedConnections().filter(connection => connection.enabled);
         const N = Math.max(enabledA.length, enabledB.length);
         let disjoint = 0;
         let excess = 0;
@@ -59,28 +55,44 @@ class Species {
         let j = 0;
         const maxI = enabledA.length - 1;
         const maxJ = enabledB.length - 1;
+        let leftWasInRight = false;
+        let rightWasInLeft = false;
         while (i <= maxI && j <= maxJ) {
-            const currLeft = enabledA[i];
-            const currRight = enabledB[j];
-            const leftID = currLeft.innovationID;
-            const rightID = currRight.innovationID;
+            const left = enabledA[i];
+            const right = enabledB[j];
+            const A = left.innovationID;
+            const B = right.innovationID;
             let di = 1;
             let dj = 1;
-            if (leftID == rightID) {
-                weights += Math.abs(currLeft.weight - currRight.weight);
+            if (A == B) {
+                weights += Math.abs(left.weight - right.weight);
+                leftWasInRight = true;
+                rightWasInLeft = true;
             }
-            else if (leftID < rightID) {
-                if (i == maxI)
+            else if (A < B) {
+                if (i == maxI) {
                     excess++;
+                    if (!leftWasInRight) {
+                        disjoint++;
+                        leftWasInRight = false;
+                    }
+                }
                 else {
+                    leftWasInRight = false;
                     disjoint++;
                     dj = 0;
                 }
             }
             else {
-                if (j == maxJ)
+                if (j == maxJ) {
                     excess++;
+                    if (!rightWasInLeft) {
+                        disjoint++;
+                        rightWasInLeft = false;
+                    }
+                }
                 else {
+                    rightWasInLeft = false;
                     disjoint++;
                     di = 0;
                 }

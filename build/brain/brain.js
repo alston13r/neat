@@ -34,6 +34,8 @@ class Brain {
     outputNodes = [];
     /** An array of the brain's connections */
     connections = [];
+    /** Helper array that has connections sorted by innovation ID */
+    #connectionsSorted = [];
     /** Boolean indicating if the brain is an elite from the prior generation */
     isElite = false;
     /**
@@ -82,7 +84,24 @@ class Brain {
                 }
             }
         }
+        this.#updateSortedConnections();
         return this;
+    }
+    /**
+     * Helper method to update the private sorted connections array using for comparing brains.
+     * This does not run if speciation is not enabled.
+     */
+    #updateSortedConnections() {
+        if (Population.Speciation) {
+            this.#connectionsSorted = this.connections.slice().sort((a, b) => a.innovationID - b.innovationID);
+        }
+    }
+    /**
+     * Getter for the sorted connections array.
+     * @returns the connections sorted by innovation ID
+     */
+    getSortedConnections() {
+        return this.#connectionsSorted;
     }
     /**
      * Helper method to construct a connection between two nodes. This constructs the connection
@@ -155,6 +174,7 @@ class Brain {
             potentialConflicts.push(...outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent));
         }
         this.fixRecurrent();
+        this.#updateSortedConnections();
     }
     /**
      * Helper method to add a new connection to the brain's topology during the mutation process.
@@ -189,6 +209,7 @@ class Brain {
             } // outside of connection search loop
             // therefore connection does not exist yet
             this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(), true, nodeA.layer > nodeB.layer);
+            this.#updateSortedConnections();
             break attempt;
         }
     }
@@ -311,6 +332,7 @@ class Brain {
         this.connections.forEach(connection => {
             clone.constructConnection(clone.nodes[connection.inNode], clone.nodes[connection.outNode], connection.weight, connection.enabled, connection.recurrent);
         });
+        clone.#updateSortedConnections();
         return clone;
     }
     /**
