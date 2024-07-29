@@ -132,43 +132,6 @@ function roundNicely(list, key, total) {
  * $100 is hard to compare with 5 lemons, but 0s and 1s are much more comparable.
  */
 class ActivationFunction {
-    /** The sigmoid activation function */
-    static Sigmoid = new ActivationFunction(x => 1 / (1 + Math.exp(-x)), 'Sigmoid');
-    /** A scaled version of the sigmoid activation function */
-    static ScaledSigmoid = new ActivationFunction(x => 2 / (1 + Math.exp(-x)) - 1, 'Scaled Sigmoid');
-    /** The hyperbolic tangent activation function */
-    static Tanh = new ActivationFunction(Math.tanh, 'Tanh');
-    /** The relu activation function */
-    static ReLU = new ActivationFunction(x => Math.max(0, x), 'ReLU');
-    /** The leaky relu activation function */
-    static LeakyReLU = new ActivationFunction(x => Math.max(0.1 * x, x), 'Leaky ReLU');
-    /** The soft plus activation function */
-    static Softplus = new ActivationFunction(x => (x >= 20 ? x : Math.log(1 + Math.exp(x))), 'Softplus');
-    /** The soft sign activation function */
-    static Softsign = new ActivationFunction(x => x / (1 + Math.abs(x)), 'Softsign');
-    /** The identity activation function */
-    static Identity = new ActivationFunction(x => x, 'Identity');
-    /** The sign activation function */
-    static Sign = new ActivationFunction(Math.sign, 'Sign');
-    /**
-     * A static array containing references to all activation functions, this is to help
-     * with the mutation of a node's activation function
-     */
-    static Arr = [
-        ActivationFunction.Sigmoid,
-        ActivationFunction.ScaledSigmoid,
-        ActivationFunction.Tanh,
-        ActivationFunction.ReLU,
-        ActivationFunction.LeakyReLU,
-        ActivationFunction.Softplus,
-        ActivationFunction.Softsign,
-        ActivationFunction.Identity,
-        ActivationFunction.Sign
-    ];
-    /** The activation function */
-    fn;
-    /** The name of the activation function */
-    name;
     /**
      * Constructs an Activation Function with the specified function and name.
      * @param fn the function's function :)
@@ -185,6 +148,39 @@ class ActivationFunction {
         }
     }
 }
+/** The sigmoid activation function */
+ActivationFunction.Sigmoid = new ActivationFunction(x => 1 / (1 + Math.exp(-x)), 'Sigmoid');
+/** A scaled version of the sigmoid activation function */
+ActivationFunction.ScaledSigmoid = new ActivationFunction(x => 2 / (1 + Math.exp(-x)) - 1, 'Scaled Sigmoid');
+/** The hyperbolic tangent activation function */
+ActivationFunction.Tanh = new ActivationFunction(Math.tanh, 'Tanh');
+/** The relu activation function */
+ActivationFunction.ReLU = new ActivationFunction(x => Math.max(0, x), 'ReLU');
+/** The leaky relu activation function */
+ActivationFunction.LeakyReLU = new ActivationFunction(x => Math.max(0.1 * x, x), 'Leaky ReLU');
+/** The soft plus activation function */
+ActivationFunction.Softplus = new ActivationFunction(x => (x >= 20 ? x : Math.log(1 + Math.exp(x))), 'Softplus');
+/** The soft sign activation function */
+ActivationFunction.Softsign = new ActivationFunction(x => x / (1 + Math.abs(x)), 'Softsign');
+/** The identity activation function */
+ActivationFunction.Identity = new ActivationFunction(x => x, 'Identity');
+/** The sign activation function */
+ActivationFunction.Sign = new ActivationFunction(Math.sign, 'Sign');
+/**
+ * A static array containing references to all activation functions, this is to help
+ * with the mutation of a node's activation function
+ */
+ActivationFunction.Arr = [
+    ActivationFunction.Sigmoid,
+    ActivationFunction.ScaledSigmoid,
+    ActivationFunction.Tanh,
+    ActivationFunction.ReLU,
+    ActivationFunction.LeakyReLU,
+    ActivationFunction.Softplus,
+    ActivationFunction.Softsign,
+    ActivationFunction.Identity,
+    ActivationFunction.Sign
+];
 /**
  * Utility class containing references to the derivatives of activation functions.
  * An activation function normalizes a node's output value before proceeding to
@@ -194,65 +190,6 @@ class ActivationFunction {
  * will be identicle to the ActivationFunction utility class.
  */
 class DActivationFunction {
-    /** The derivative of the sigmoid activation function */
-    static DSigmoid = new DActivationFunction(x => {
-        const value = ActivationFunction.Sigmoid.fn(x);
-        return value * (1 - value);
-    }, ActivationFunction.Sigmoid, 'D Sigmoid');
-    static DScaledSigmoid = new DActivationFunction(x => {
-        const value = ActivationFunction.Sigmoid.fn(x);
-        return 2 * value * (1 - value);
-    }, ActivationFunction.ScaledSigmoid, 'D Scaled Sigmoid');
-    /** The derivative of the hyperbolic tangent activation function */
-    static DTanh = new DActivationFunction(x => {
-        return 1 - Math.tanh(x) ** 2;
-    }, ActivationFunction.Tanh, 'D Tanh');
-    /** The derivative of the relu activation function */
-    static DReLU = new DActivationFunction(x => {
-        return x >= 0 ? 1 : 0;
-    }, ActivationFunction.ReLU, 'D ReLU');
-    /** The derivative of the leaky relu activation function */
-    static DLeakyReLU = new DActivationFunction(x => {
-        return x >= 0 ? 1 : 0.1;
-    }, ActivationFunction.LeakyReLU, 'D Leaky ReLU');
-    /** The derivative of the soft plus activation function */
-    static DSoftplus = new DActivationFunction(x => {
-        const value = Math.exp(x);
-        return value / (1 + value);
-    }, ActivationFunction.Softplus, 'D Softplus');
-    /** The derivative of the soft sign activation function */
-    static DSoftsign = new DActivationFunction(x => {
-        return 1 / (1 + Math.abs(x)) ** 2;
-    }, ActivationFunction.Softsign, 'D Softsign');
-    /** The derivative of the identity activation function */
-    static DIdentity = new DActivationFunction(x => {
-        return 1;
-    }, ActivationFunction.Identity, 'D Identity');
-    /** The derivative of the sign activation function */
-    static DSign = new DActivationFunction(x => {
-        return 0;
-    }, ActivationFunction.Sign, 'D Sign');
-    /**
-     * A static array containing references to all activation functions, this is to help
-     * with the mutation of a node's activation function
-     */
-    static Arr = [
-        DActivationFunction.DSigmoid,
-        DActivationFunction.DScaledSigmoid,
-        DActivationFunction.DTanh,
-        DActivationFunction.DReLU,
-        DActivationFunction.DLeakyReLU,
-        DActivationFunction.DSoftplus,
-        DActivationFunction.DSoftsign,
-        DActivationFunction.DIdentity,
-        DActivationFunction.DSign
-    ];
-    /** The derivative activation function */
-    fn;
-    /** The original activation function */
-    original;
-    /** The name of the derivative activation function */
-    name;
     /**
      * Constructs a the derivative of an Activation Function with the specified
      * derivative function, original function, and name.
@@ -265,4 +202,57 @@ class DActivationFunction {
         this.name = name;
     }
 }
+/** The derivative of the sigmoid activation function */
+DActivationFunction.DSigmoid = new DActivationFunction(x => {
+    const value = ActivationFunction.Sigmoid.fn(x);
+    return value * (1 - value);
+}, ActivationFunction.Sigmoid, 'D Sigmoid');
+DActivationFunction.DScaledSigmoid = new DActivationFunction(x => {
+    const value = ActivationFunction.Sigmoid.fn(x);
+    return 2 * value * (1 - value);
+}, ActivationFunction.ScaledSigmoid, 'D Scaled Sigmoid');
+/** The derivative of the hyperbolic tangent activation function */
+DActivationFunction.DTanh = new DActivationFunction(x => {
+    return 1 - Math.pow(Math.tanh(x), 2);
+}, ActivationFunction.Tanh, 'D Tanh');
+/** The derivative of the relu activation function */
+DActivationFunction.DReLU = new DActivationFunction(x => {
+    return x >= 0 ? 1 : 0;
+}, ActivationFunction.ReLU, 'D ReLU');
+/** The derivative of the leaky relu activation function */
+DActivationFunction.DLeakyReLU = new DActivationFunction(x => {
+    return x >= 0 ? 1 : 0.1;
+}, ActivationFunction.LeakyReLU, 'D Leaky ReLU');
+/** The derivative of the soft plus activation function */
+DActivationFunction.DSoftplus = new DActivationFunction(x => {
+    const value = Math.exp(x);
+    return value / (1 + value);
+}, ActivationFunction.Softplus, 'D Softplus');
+/** The derivative of the soft sign activation function */
+DActivationFunction.DSoftsign = new DActivationFunction(x => {
+    return 1 / Math.pow((1 + Math.abs(x)), 2);
+}, ActivationFunction.Softsign, 'D Softsign');
+/** The derivative of the identity activation function */
+DActivationFunction.DIdentity = new DActivationFunction(x => {
+    return 1;
+}, ActivationFunction.Identity, 'D Identity');
+/** The derivative of the sign activation function */
+DActivationFunction.DSign = new DActivationFunction(x => {
+    return 0;
+}, ActivationFunction.Sign, 'D Sign');
+/**
+ * A static array containing references to all activation functions, this is to help
+ * with the mutation of a node's activation function
+ */
+DActivationFunction.Arr = [
+    DActivationFunction.DSigmoid,
+    DActivationFunction.DScaledSigmoid,
+    DActivationFunction.DTanh,
+    DActivationFunction.DReLU,
+    DActivationFunction.DLeakyReLU,
+    DActivationFunction.DSoftplus,
+    DActivationFunction.DSoftsign,
+    DActivationFunction.DIdentity,
+    DActivationFunction.DSign
+];
 //# sourceMappingURL=math.js.map

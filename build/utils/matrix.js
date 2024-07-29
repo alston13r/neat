@@ -1,8 +1,5 @@
 // TODO
 class Matrix {
-    rows;
-    cols;
-    mat;
     // TODO
     constructor(rows = 4, cols = 4) {
         this.rows = rows;

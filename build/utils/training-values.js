@@ -3,67 +3,9 @@
  * for XOR, OR, and AND training.
  */
 class TrainingValues {
-    /** Training data for XOR */
-    static XOR = new TrainingValues([
-        {
-            inputs: [0, 0],
-            outputs: [0]
-        },
-        {
-            inputs: [0, 1],
-            outputs: [1]
-        },
-        {
-            inputs: [1, 0],
-            outputs: [1]
-        },
-        {
-            inputs: [1, 1],
-            outputs: [0]
-        }
-    ]);
-    /** Training data for OR */
-    static OR = new TrainingValues([
-        {
-            inputs: [0, 0],
-            outputs: [0]
-        },
-        {
-            inputs: [0, 1],
-            outputs: [1]
-        },
-        {
-            inputs: [1, 0],
-            outputs: [1]
-        },
-        {
-            inputs: [1, 1],
-            outputs: [1]
-        }
-    ]);
-    /** Training data for AND */
-    static AND = new TrainingValues([
-        {
-            inputs: [0, 0],
-            outputs: [0]
-        },
-        {
-            inputs: [0, 1],
-            outputs: [0]
-        },
-        {
-            inputs: [1, 0],
-            outputs: [0]
-        },
-        {
-            inputs: [1, 1],
-            outputs: [1]
-        }
-    ]);
-    values;
-    inputSize = 0;
-    outputSize = 0;
     constructor(values) {
+        this.inputSize = 0;
+        this.outputSize = 0;
         this.values = values || [];
         if (values != null) {
             this.inputSize = this.values[0].inputs.length;
@@ -108,4 +50,61 @@ class TrainingValues {
         return res;
     }
 }
+/** Training data for XOR */
+TrainingValues.XOR = new TrainingValues([
+    {
+        inputs: [0, 0],
+        outputs: [0]
+    },
+    {
+        inputs: [0, 1],
+        outputs: [1]
+    },
+    {
+        inputs: [1, 0],
+        outputs: [1]
+    },
+    {
+        inputs: [1, 1],
+        outputs: [0]
+    }
+]);
+/** Training data for OR */
+TrainingValues.OR = new TrainingValues([
+    {
+        inputs: [0, 0],
+        outputs: [0]
+    },
+    {
+        inputs: [0, 1],
+        outputs: [1]
+    },
+    {
+        inputs: [1, 0],
+        outputs: [1]
+    },
+    {
+        inputs: [1, 1],
+        outputs: [1]
+    }
+]);
+/** Training data for AND */
+TrainingValues.AND = new TrainingValues([
+    {
+        inputs: [0, 0],
+        outputs: [0]
+    },
+    {
+        inputs: [0, 1],
+        outputs: [0]
+    },
+    {
+        inputs: [1, 0],
+        outputs: [0]
+    },
+    {
+        inputs: [1, 1],
+        outputs: [1]
+    }
+]);
 //# sourceMappingURL=training-values.js.map

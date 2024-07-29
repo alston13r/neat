@@ -1,7 +1,4 @@
 class Particle {
-    static NumLines = 360;
-    pos;
-    rays;
     constructor() {
         this.pos = vec2.fromValues(raycastingGraphics.width / 2, raycastingGraphics.height / 2);
         this.rays = [];
@@ -83,4 +80,5 @@ class Particle {
         }
     }
 }
+Particle.NumLines = 360;
 //# sourceMappingURL=particle.js.map

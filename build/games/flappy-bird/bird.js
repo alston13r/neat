@@ -1,15 +1,9 @@
 class Bird {
-    static Size = 16;
-    static Gravity = 0.2;
-    static Lift = -10;
-    static Friction = 0.98;
-    pos;
-    velocity = vec2.create();
-    score = 0;
-    fitness = 0;
-    brain;
-    alive = true;
     constructor(brain) {
+        this.velocity = vec2.create();
+        this.score = 0;
+        this.fitness = 0;
+        this.alive = true;
         this.brain = brain || new Brain().initialize(6, 0, 1);
         this.pos = vec2.fromValues(64, flappyBirdGraphics.height / 2);
     }
@@ -30,6 +24,10 @@ class Bird {
             this.alive = false;
     }
 }
+Bird.Size = 16;
+Bird.Gravity = 0.2;
+Bird.Lift = -10;
+Bird.Friction = 0.98;
 //   mutate(): void {
 //     this.brain.mutateWeights()
 //     this.brain.mutateBiases()

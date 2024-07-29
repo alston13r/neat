@@ -6,28 +6,16 @@
  * and the desired number.
  */
 class Species {
-    /** The weight that excess connections have in the compatibility difference */
-    static ExcessFactor = 1;
-    /** The weight that disjoint connections have in the compatibility difference */
-    static DisjointFactor = 1;
-    /** The weight that the average of weight difference have in the compatibility difference  */
-    static WeightFactor = 0.4;
-    /** The number of generations that a species can run for simultaneously without improvement without being penalized */
-    static GenerationPenalization = 15;
-    /** The current target number of species */
-    static TargetSpecies = 10;
-    /** The current compatibility threshold used for comparisons */
-    static DynamicThreshold = 100;
-    /** The compatibility threshold step size */
-    static DynamicThresholdStepSize = 0.5;
-    /** An array of this species' members */
-    members = [];
-    /** The number of allowed offspring this species can produce */
-    allowedOffspring = 0;
-    /** The number of generations since this species has improved */
-    gensSinceImproved = 0;
-    /** Record of this species' highest fitness value */
-    highestFitness = 0;
+    constructor() {
+        /** An array of this species' members */
+        this.members = [];
+        /** The number of allowed offspring this species can produce */
+        this.allowedOffspring = 0;
+        /** The number of generations since this species has improved */
+        this.gensSinceImproved = 0;
+        /** Record of this species' highest fitness value */
+        this.highestFitness = 0;
+    }
     /**
      * Compares two brains based on their topologies. Topologies are compared by
      * only their enabled connections' innovation IDs and weights. For every connection
@@ -213,4 +201,18 @@ class Species {
         };
     }
 }
+/** The weight that excess connections have in the compatibility difference */
+Species.ExcessFactor = 1;
+/** The weight that disjoint connections have in the compatibility difference */
+Species.DisjointFactor = 1;
+/** The weight that the average of weight difference have in the compatibility difference  */
+Species.WeightFactor = 0.4;
+/** The number of generations that a species can run for simultaneously without improvement without being penalized */
+Species.GenerationPenalization = 15;
+/** The current target number of species */
+Species.TargetSpecies = 10;
+/** The current compatibility threshold used for comparisons */
+Species.DynamicThreshold = 100;
+/** The compatibility threshold step size */
+Species.DynamicThresholdStepSize = 0.5;
 //# sourceMappingURL=species.js.map

@@ -1,7 +1,4 @@
 class Ray2 {
-    pos;
-    dir;
-    length;
     constructor(pos, angle = 0, length = 1) {
         this.pos = pos;
         this.dir = vec2.fromValues(Math.cos(angle), Math.sin(angle));
@@ -70,17 +67,17 @@ class Ray2 {
         const y1 = py - circle.y;
         const x2 = px + dx - circle.x;
         const y2 = py + dy - circle.y;
-        const dr = Math.sqrt(dx ** 2 + dy ** 2);
+        const dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
         const det = x1 * y2 - x2 * y1;
-        const disc = circle.radius ** 2 * dr ** 2 - det ** 2;
+        const disc = Math.pow(circle.radius, 2) * Math.pow(dr, 2) - Math.pow(det, 2);
         if (disc < 0)
             return;
         const discSqrt = Math.sqrt(disc);
         const sgn = dy < 0 ? -1 : 1;
-        const P = (det * dy + sgn * dx * discSqrt) / dr ** 2;
-        const Q = (-det * dx + Math.abs(dy) * discSqrt) / dr ** 2;
-        const R = (det * dy - sgn * dx * discSqrt) / dr ** 2;
-        const S = (-det * dx - Math.abs(dy) * discSqrt) / dr ** 2;
+        const P = (det * dy + sgn * dx * discSqrt) / Math.pow(dr, 2);
+        const Q = (-det * dx + Math.abs(dy) * discSqrt) / Math.pow(dr, 2);
+        const R = (det * dy - sgn * dx * discSqrt) / Math.pow(dr, 2);
+        const S = (-det * dx - Math.abs(dy) * discSqrt) / Math.pow(dr, 2);
         const p1 = vec2.fromValues(P, Q);
         const p2 = vec2.fromValues(R, S);
         vec2.add(p1, p1, circle.pos);

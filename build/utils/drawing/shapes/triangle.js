@@ -1,7 +1,4 @@
 class Triangle {
-    pos1;
-    pos2;
-    pos3;
     constructor(x1, y1, x2, y2, x3, y3) {
         this.pos1 = vec2.fromValues(x1, y1);
         this.pos2 = vec2.fromValues(x2, y2);

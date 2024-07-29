@@ -1,10 +1,7 @@
 class Laser {
-    static Speed = 5;
-    static Radius = 5;
-    ship;
-    pos = vec2.create();
-    velocity = vec2.create();
     constructor(ship) {
+        this.pos = vec2.create();
+        this.velocity = vec2.create();
         this.ship = ship;
         ship.lasers.push(this);
         vec2.copy(this.pos, ship.top);
@@ -41,4 +38,6 @@ class Laser {
             this.terminate();
     }
 }
+Laser.Speed = 5;
+Laser.Radius = 5;
 //# sourceMappingURL=laser.js.map

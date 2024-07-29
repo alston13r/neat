@@ -1,11 +1,6 @@
 class DrawQueue {
-    graphics;
-    color;
-    fill;
-    stroke;
-    lineWidth;
-    path = new Path2D();
     constructor(graphics, color, fill = true, stroke = false, lineWidth = 1) {
+        this.path = new Path2D();
         this.graphics = graphics;
         this.color = color;
         this.fill = fill;
