@@ -87,7 +87,7 @@ class NNode {
         this.type = type;
         this.layer = layer;
         this.activationFunction = NNode.DefaultActivationFunctions[type];
-        if (type > 0)
+        if (type != 0)
             this.bias = bias;
     }
     /**
