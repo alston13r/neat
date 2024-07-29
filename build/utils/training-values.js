@@ -93,7 +93,7 @@ class TrainingValues {
      * @returns the array values
      */
     get ordered() {
-        return [...this.values];
+        return this.values;
     }
     /**
      * Returns a generator for the local values in a random sequence.
