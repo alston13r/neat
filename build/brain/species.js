@@ -45,8 +45,8 @@ class Species {
      * @returns the compatibility of the two brains
      */
     static Compare(brainA, brainB) {
-        const enabledA = brainA.getSortedConnections().filter(connection => connection.enabled);
-        const enabledB = brainB.getSortedConnections().filter(connection => connection.enabled);
+        const enabledA = brainA.getSortedConnections();
+        const enabledB = brainB.getSortedConnections();
         const N = Math.max(enabledA.length, enabledB.length);
         let disjoint = 0;
         let excess = 0;

@@ -93,7 +93,7 @@ class Brain {
      */
     #updateSortedConnections() {
         if (Population.Speciation) {
-            this.#connectionsSorted = this.connections.slice().sort((a, b) => a.innovationID - b.innovationID);
+            this.#connectionsSorted = this.connections.filter(c => c.enabled).sort((a, b) => a.innovationID - b.innovationID);
         }
     }
     /**
