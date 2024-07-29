@@ -35,6 +35,8 @@ class Brain {
   outputNodes: NNode[] = []
   /** An array of the brain's connections */
   connections: Connection[] = []
+  /** Helper array that has connections sorted by innovation ID */
+  #connectionsSorted: Connection[] = []
   /** Boolean indicating if the brain is an elite from the prior generation */
   isElite = false
 
@@ -88,7 +90,27 @@ class Brain {
       }
     }
 
+    this.#updateSortedConnections()
+
     return this
+  }
+
+  /**
+   * Helper method to update the private sorted connections array using for comparing brains.
+   * This does not run if speciation is not enabled.
+   */
+  #updateSortedConnections() {
+    if (Population.Speciation) {
+      this.#connectionsSorted = this.connections.slice().sort((a, b) => a.innovationID - b.innovationID)
+    }
+  }
+
+  /**
+   * Getter for the sorted connections array.
+   * @returns the connections sorted by innovation ID
+   */
+  getSortedConnections() {
+    return this.#connectionsSorted
   }
 
   /**
@@ -157,6 +179,7 @@ class Brain {
       potentialConflicts.push(...outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent))
     }
     this.fixRecurrent()
+    this.#updateSortedConnections()
   }
 
   /**
@@ -190,6 +213,7 @@ class Brain {
       } // outside of connection search loop
       // therefore connection does not exist yet
       this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(), true, nodeA.layer > nodeB.layer)
+      this.#updateSortedConnections()
       break attempt
     }
   }
@@ -322,6 +346,8 @@ class Brain {
         connection.weight, connection.enabled, connection.recurrent
       )
     })
+
+    clone.#updateSortedConnections()
 
     return clone
   }
