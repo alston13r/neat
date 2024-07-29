@@ -225,15 +225,14 @@ class Population {
      * Draws this population to the local graphics.
      */
     draw(g) {
-        const round = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
         g.textBaseline = 'top';
         g.textAlign = 'left';
         g.fillStyle = '#fff';
         g.font = '20px arial';
         g.fillText(`Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5);
         const getMemberText = (brain, i) => {
-            const a = round(brain.fitness, 5);
-            const b = round(brain.fitness / brain.species.members.length, 5);
+            const a = brain.fitness.toPrecision(6);
+            const b = (brain.fitness / brain.species.members.length).toPrecision(6);
             return `${i + 1}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`;
         };
         g.font = '10px arial';
@@ -248,8 +247,8 @@ class Population {
             g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 240, 5);
             const getSpeciesText = (species) => {
                 const a = species.members.length;
-                const b = round(species.getAverageFitness(), 5);
-                const c = round(species.getAverageFitnessAdjusted(), 5);
+                const b = species.getAverageFitness().toPrecision(6);
+                const c = species.getAverageFitnessAdjusted().toPrecision(6);
                 const d = species.gensSinceImproved;
                 return `<${a}, ${d}> ${b} -> ${c}`;
             };
