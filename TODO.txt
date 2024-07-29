@@ -1,11 +1,7 @@
-Fix Species.Compare not calculating disjoint correctly
+Fix Species Compare() not calculating disjoint correctly
   Check fix
+Optimize Species Compare()
 Preserve best ever brain
-Optimize nextGeneration
-  Brain
-    initialize()
-  NNode
-    constructor?
 Improve creation of population with an options object
 Improve raycasting
 Add workers
