@@ -1,3 +1,4 @@
+Fix Species.Compare not calculating disjoint correctly
 Preserve best ever brain
 Optimize nextGeneration
   Brain

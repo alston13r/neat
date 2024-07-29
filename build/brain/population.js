@@ -47,12 +47,12 @@ class Population {
      * The list of all current species that the members are registered to.
      */
     get speciesList() {
-        const returnArr = [];
-        this.members.forEach(member => {
-            if (member.species != null && !returnArr.includes(member.species))
-                returnArr.push(member.species);
-        });
-        return returnArr;
+        const speciesSet = new Set();
+        for (const member of this.members) {
+            if (member.species != null)
+                speciesSet.add(member.species);
+        }
+        return [...speciesSet];
     }
     /**
      * Adjusts the dynamic compatibility threshold for the species class given the current

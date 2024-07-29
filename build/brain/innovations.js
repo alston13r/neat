@@ -1,7 +1,7 @@
 class Innovations {
     static #InnovationArray = [];
     static GetInnovationID(inNode, outNode) {
-        const identifier = (inNode.id << 16) + outNode.id;
+        const identifier = (inNode << 16) + outNode;
         const N = this.#InnovationArray.length;
         for (let i = 0; i < N; i++) {
             const val = Innovations.#InnovationArray[i];

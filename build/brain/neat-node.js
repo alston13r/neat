@@ -111,8 +111,7 @@ class NNode {
      * @returns the clone
      */
     clone() {
-        const copy = new NNode(this.id, this.type, this.layer);
-        copy.bias = this.bias;
+        const copy = new NNode(this.id, this.type, this.layer, this.bias);
         copy.activationFunction = this.activationFunction;
         return copy;
     }
@@ -132,8 +131,8 @@ class NNode {
                 }
                 else { // bias weight will be randomized
                     this.bias = NNode.GenerateRandomBias();
-                }
-                this.clamp(); // ensure weight is within acceptable bounds
+                } // ensure weight is within acceptable bounds
+                this.clamp();
             }
         }
         if (this.type == NNodeType.Input && NNode.AllowInputActivationMutations

@@ -6,42 +6,30 @@ function stressTest(name, fn) {
     console.log(name + ': ' + diff + ' ms');
     return diff;
 }
-const stressAmount = 100000;
-// construct 100000 NNodes of random types
-const randomTypes = new Array(stressAmount).fill(0).map(() => Math.floor(Math.random() * 3));
-const resultArray = [];
-const nodeType0 = randomTypes.reduce((sum, curr) => sum + (curr == 0), 0);
-const nodeType1 = randomTypes.reduce((sum, curr) => sum + (curr == 1), 0);
-const nodeType2 = randomTypes.reduce((sum, curr) => sum + (curr == 2), 0);
-console.log(`constructions nodes with input<${nodeType0}> hidden<${nodeType1}> output<${nodeType2}>`);
-stressTest('random types', () => {
-    for (let i = 0; i < stressAmount; i++) {
-        const node = new NNode(0, randomTypes[i], 0);
-        resultArray.push(node);
+function calcFitness(brain) {
+    brain.fitness = 0;
+    for (const value of TrainingValues.XOR.random) {
+        const actual = brain.think(value.inputs);
+        const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0));
+        errors.forEach(error => brain.fitness += error);
     }
-});
-resultArray.length = 0;
-// construct 100000 input NNodes
-stressTest('input type', () => {
-    for (let i = 0; i < stressAmount; i++) {
-        const node = new NNode(0, 0, 0);
-        resultArray.push(node);
-    }
-});
-resultArray.length = 0;
-// construct 100000 hidden NNodes
-stressTest('hidden type', () => {
-    for (let i = 0; i < stressAmount; i++) {
-        const node = new NNode(0, 1, 0);
-        resultArray.push(node);
-    }
-});
-resultArray.length = 0;
-// construct 100000 output NNodes
-stressTest('output type', () => {
-    for (let i = 0; i < stressAmount; i++) {
-        const node = new NNode(0, 2, 0);
-        resultArray.push(node);
-    }
-});
+}
+const results = new Array(1000);
+const stressPop = new Population(1000, 2, 0, 1);
+for (let i = 0; i < 1000; i++) {
+    console.log(i);
+    stressPop.nextGeneration();
+    stressPop.members.forEach(calcFitness);
+    stressPop.updateFittestEver();
+    const start = performance.now();
+    stressPop.speciate();
+    const end = performance.now();
+    results[i] = end - start;
+}
+const resultsSum = results.reduce((sum, curr) => sum + curr);
+const resultsAvg = resultsSum / 1000;
+const resultsDeviation = Math.sqrt(results.reduce((sum, curr) => sum + (curr - resultsAvg) ** 2) / 1000);
+console.log(`Total time: ${resultsSum}`);
+console.log(`Average time: ${resultsAvg}`);
+console.log(`Standard deviation: ${resultsDeviation}`);
 //# sourceMappingURL=index.js.map
