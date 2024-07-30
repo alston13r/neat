@@ -48,9 +48,20 @@ class Species {
         const enabledA = brainA.getSortedConnections();
         const enabledB = brainB.getSortedConnections();
         const N = Math.max(enabledA.length, enabledB.length);
-        let disjoint = 0;
         let excess = 0;
+        let disjoint = 0;
         let weights = 0;
+        // {
+        //   let j = 0
+        //   main: for (const left of enabledA) {
+        //     let right = enabledB[j++]
+        //     const A = left.innovationID
+        //     const B = right.innovationID
+        //     if (A == B) continue main
+        //     else if (A > B) while (right.innovationID < A) right = enabledB[j++]
+        //     else disjoint++
+        //   }
+        // }
         let i = 0;
         let j = 0;
         const maxI = enabledA.length - 1;
