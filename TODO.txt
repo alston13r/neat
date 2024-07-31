@@ -1,6 +1,4 @@
-Fix Species Compare() not calculating disjoint correctly
-  Check fix
-Optimize Species Compare()
+Optimize Species.Speciate()
 Preserve best ever brain
 Improve creation of population with an options object
 Improve raycasting
