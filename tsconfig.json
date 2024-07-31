@@ -5,6 +5,7 @@
     "module": "CommonJS",
     "sourceMap": true,
     "outDir": "build",
-    "rootDir": "src"
+    "rootDir": "src",
+    "removeComments": true
   }
 }
