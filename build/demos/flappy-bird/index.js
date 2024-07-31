@@ -1,9 +1,3 @@
-// const TOTAL = 300
-// let birds: Bird[] = []
-// let savedBirds: Bird[] = []
-// let pipes: Pipe[] = []
-// let counter: number = 0
-// let cycles: number = 1
 const flappyBirdGraphics = new Graphics().setSize(400, 600).appendTo(document.body);
 const sliderDiv = document.createElement('div');
 const slider = document.createElement('input');
@@ -44,46 +38,4 @@ function flappyBirdLoop() {
         console.log('dead');
 }
 window.requestAnimationFrame(flappyBirdLoop);
-// for (let i = 0; i < TOTAL; i++) {
-//   birds[i] = new Bird().setGraphics(xorGraphics)
-// }
-// function birdLoop(): void {
-//   for (let n = 0; n < getSliderValue(); n++) {
-//     if (counter % 100 == 0) {
-//       pipes.push(new Pipe(xorGraphics))
-//     }
-//     counter++
-//     for (let i = pipes.length - 1; i >= 0; i--) {
-//       pipes[i].update()
-//       for (let j = birds.length - 1; j >= 0; j--) {
-//         if (pipes[i].hits(birds[j])) {
-//           savedBirds.push(birds.splice(j, 1)[0])
-//         } else if (birds[j].hitBounds) {
-//           savedBirds.push(birds.splice(j, 1)[0])
-//         }
-//       }
-//       if (pipes[i].offscreen()) {
-//         pipes.splice(i, 1)
-//       }
-//     }
-//     for (let bird of birds) {
-//       bird.think(pipes)
-//       bird.update()
-//     }
-//     if (birds.length == 0) {
-//       counter = 0
-//       nextGeneration()
-//       pipes = []
-//     }
-//   }
-//   xorGraphics.bg()
-//   for (let bird of birds) {
-//     bird.draw()
-//   }
-//   for (let pipe of pipes) {
-//     pipe.draw()
-//   }
-//   window.requestAnimationFrame(birdLoop)
-// }
-// window.requestAnimationFrame(birdLoop)
 //# sourceMappingURL=index.js.map

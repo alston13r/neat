@@ -1,22 +1,12 @@
-// TODO
 class NeuralNetwork {
-    /** The chance for a weight to be mutated */
     static MutateWeightChance = 0.5;
-    /** The chance for a weight to be nudged when mutated, rather than randomized */
     static NudgeWeightChance = 0.8;
-    /** The minimum value that a weight can be */
     static MinimumWeightValue = -1;
-    /** The maximum value that a weight can be */
     static MaximumWeightValue = 1;
-    /** The chance for a bias to be mutated */
     static MutateBiasChance = 0.5;
-    /** The chance for a bias to be nudged when mutated, rather than randomized */
     static NudgeBiasChance = 0.8;
-    /** The minimum value that a bias can be */
     static MinimumBiasValue = -1;
-    /** The maximum value that a bias can be */
     static MaximumBiasValue = 1;
-    /** The chance for an activation function to be mutated */
     static MutateActivationFunctionChance = 0.05;
     inputSize;
     outputSize;
@@ -72,19 +62,15 @@ class NeuralNetwork {
             this.activationFunctions.push(dActivationFunctionLayer.map(dActivationFunction => dActivationFunction.original));
         }
     }
-    // TODO
     adjustAlpha(error) {
         this.alpha = clamp(0.6 * Math.exp(-5.4342 * error), 0.01, 1);
     }
-    // TODO
     static GenerateRandomWeight() {
         return Math.random() * (NeuralNetwork.MaximumWeightValue - NeuralNetwork.MinimumWeightValue) + NeuralNetwork.MinimumWeightValue;
     }
-    // TODO
     static GenerateRandomBias() {
         return Math.random() * (NeuralNetwork.MaximumBiasValue - NeuralNetwork.MinimumBiasValue) + NeuralNetwork.MinimumBiasValue;
     }
-    // TODO
     mutateWeights() {
         this.weights.forEach(weight => Matrix.Map(weight, x => {
             if (Math.random() < NeuralNetwork.MutateWeightChance) {
@@ -98,7 +84,6 @@ class NeuralNetwork {
         }));
         this.clampWeights();
     }
-    // TODO
     mutateBiases() {
         this.biases.forEach(bias => Matrix.Map(bias, x => {
             if (Math.random() < NeuralNetwork.MutateBiasChance) {
@@ -112,15 +97,12 @@ class NeuralNetwork {
         }));
         this.clampBiases();
     }
-    // TODO
     clampWeights() {
         this.weights.forEach(weight => Matrix.Map(weight, x => clamp(x, NeuralNetwork.MinimumWeightValue, NeuralNetwork.MaximumWeightValue)));
     }
-    // TODO
     clampBiases() {
         this.biases.forEach(bias => Matrix.Map(bias, x => clamp(x, NeuralNetwork.MinimumBiasValue, NeuralNetwork.MaximumBiasValue)));
     }
-    // TODO
     mutateActivationFunctions() {
         for (let i = 0; i < this.dActivationFunctions.length; i++) {
             let row = this.dActivationFunctions[i];
@@ -132,7 +114,6 @@ class NeuralNetwork {
             }
         }
     }
-    // TODO
     feedForward(inputs) {
         let lastOutput = Matrix.FromArr(inputs).transpose();
         for (let [i, e] of this.weights.entries()) {
@@ -140,7 +121,6 @@ class NeuralNetwork {
         }
         return lastOutput.toArray();
     }
-    // TODO
     backPropagation(values) {
         const trainingValues = values instanceof TrainingValues ? values : new TrainingValues(values);
         for (let value of trainingValues.random) {
@@ -169,7 +149,6 @@ class NeuralNetwork {
             }
         }
     }
-    // TODO
     static Copy(brain) {
         const copy = new NeuralNetwork(brain.inputSize, brain.hiddenSizes, brain.outputSize);
         for (let i in brain.weights)
@@ -181,31 +160,8 @@ class NeuralNetwork {
         copy.alpha = brain.alpha;
         return copy;
     }
-    // TODO
     copy() {
         return NeuralNetwork.Copy(this);
     }
 }
-// class BasicNeuralNetwork {
-//   static Crossover(a: BasicNeuralNetwork, b: BasicNeuralNetwork): BasicNeuralNetwork {
-//     let listErr: string = '['
-//     if (a.inputSize != b.inputSize) listErr += 'inputSize'
-//     if (!a.hiddenSizes.every(e => b.hiddenSizes.includes(e))) {
-//       if (listErr.length > 1) listErr += ','
-//       listErr += 'hiddenSizes'
-//     }
-//     if (a.outputSize != b.outputSize) {
-//       if (listErr.length > 1) listErr += ','
-//       listErr += 'outputSize'
-//     }
-//     if (listErr.length > 1) {
-//       listErr += ']'
-//       throw Error('Network incompatibility - ' + listErr)
-//     }
-//     let n: BasicNeuralNetwork = a.copy()
-//     for (let [i, e] of n.weights.entries()) Matrix.Map(e, (e, j, k) => rand(a.weights[i].m[j][k], b.weights[i].m[j][k]) as number)
-//     for (let [i, e] of n.biases.entries()) Matrix.Map(e, (e, j, k) => rand(a.biases[i].m[j][k], b.biases[i].m[j][k]) as number)
-//     return n
-//   }
-// }
 //# sourceMappingURL=neural-network.js.map
