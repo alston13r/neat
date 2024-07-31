@@ -29,22 +29,20 @@ class Species {
     /** Record of this species' highest fitness value */
     highestFitness = 0;
     /**
-     * Compares two brains based on their topologies. Topologies are compared by
-     * only their enabled connections' innovation IDs and weights. For every connection
-     * that is not in the other, they are considered disjoint, or excess if they
-     * exceed the maximum innovation ID of the other. The weights of the connections
-     * are only compared for connections in both topologies, with the weights value
-     * simply being the sum of the differences between them. The disjoint number,
-     * excess number, and weight differences are then weighted by the static Factor
-     * values and that value is returned, indicating the compatibility of the two
-     * brains. If the two brains are identical, the compatibility value is expected
-     * to be 0. Two brains belong to the same species if their compatibility is
-     * below the current threshold.
-     * @param brainA the first brain to compare
-     * @param brainB the second brain to compare
-     * @returns the compatibility of the two brains
+     * Compares two topologies based on connections. The comparison is a weighted
+     * sum of the pairing's disjoint, excess, and overlapping connections. Disjoint
+     * connections are ones that don't exist in the other topology. Excess are
+     * connections that have innovation IDs outside the range of the other topology.
+     * The overlapping connections are combined into an average difference of weights.
+     * The more similar two topologies are, the closer to 0 this method returns.
+     * If the value falls below the compatibility threshold, they belong to the
+     * same species.
+     * @param brainA the first topology
+     * @param brainB the second topology
+     * @returns compatibility of the topologies
      */
     static Compare(brainA, brainB) {
+        // this method was derived from a big truth table and a lot of boolean algebra
         const enabledA = brainA.getSortedConnections();
         const enabledB = brainB.getSortedConnections();
         const lenA = enabledA.length;
