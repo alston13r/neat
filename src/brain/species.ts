@@ -36,15 +36,15 @@ class Species {
    * connections are ones that don't exist in the other topology. Excess are
    * connections that have innovation IDs outside the range of the other topology.
    * The overlapping connections are combined into an average difference of weights.
-   * The more similar two topologies are, the closer to 0 this method returns.
-   * If the value falls below the compatibility threshold, they belong to the
-   * same species.
+   * The more similar two topologies are, the closer to 0 this method returns. If
+   * the value falls below the compatibility threshold, they belong to the same
+   * species. This was derived from a big truth table and a lot of boolean algebra, see
+   * {@link https://docs.google.com/spreadsheets/d/1vLFl3Y7DDsnzVoI0IpjJZIh0uJcby4OsPjn-gxxWptY/edit?usp=sharing | Google Sheets}.
    * @param brainA the first topology
    * @param brainB the second topology
    * @returns compatibility of the topologies
    */
   static Compare(brainA: Brain, brainB: Brain) {
-    // this method was derived from a big truth table and a lot of boolean algebra
     const enabledA = brainA.getSortedConnections()
     const enabledB = brainB.getSortedConnections()
     const lenA = enabledA.length
