@@ -49,128 +49,64 @@ class Species {
   static Compare(brainA: Brain, brainB: Brain) {
     const enabledA = brainA.getSortedConnections()
     const enabledB = brainB.getSortedConnections()
-    const N = Math.max(enabledA.length, enabledB.length)
-
-    let A = false // incremented i
-    let B = false // incremented j
-    let C = false // i is at max
-    let D = false // j is at max
-    let E = false // right innovation > left innovation
-    let F = false // left innovation > right innovation
-    let bootleg = false // flag added after-the-fact because i can't think of anything else
+    const lenA = enabledA.length
+    const lenB = enabledB.length
+    const N = Math.max(lenA, lenB)
 
     let disjoint = 0
     let excess = 0
     let weights = 0
 
-    const iMax = enabledA.length - 1
-    const jMax = enabledB.length - 1
+    let A = false // incremented i
+    let B = false // incremented j
+    let C = false // iMax
+    let D = false // jMax
+    let E = false // left < right
+    let F = false // left > right
+    let G = false // left = right
+    let H = false // counting excess
+
     let i = 0
     let j = 0
+    const iMax = lenA - 1
+    const jMax = lenB - 1
 
-    const maxIters = enabledA.length + enabledB.length
-    for (let iter = 0; iter < maxIters; iter++) {
+    const iterMax = lenA + lenB
+    for (let iter = 0; iter < iterMax; iter++) {
+      if (H) {
+        excess += iMax - i + jMax - j + 1
+        break
+      }
+
       const left = enabledA[i]
       const right = enabledB[j]
-      const leftInnovation = left.innovationID
-      const rightInnovation = right.innovationID
+      const leftID = left.innovationID
+      const rightID = right.innovationID
+
       C = i == iMax
       D = j == jMax
-      E = rightInnovation > leftInnovation
-      F = leftInnovation > rightInnovation
-      A = (!C && (D && !E || !F)) // increment i
-      if (A) {
-        i++
+      E = leftID < rightID
+      F = leftID > rightID
+      G = leftID == rightID
+
+      if (G) weights += Math.abs(left.weight - right.weight)
+      else {
+        const dp = E || F
+        if (dp) disjoint++
+        const ep = D && F && !E || C && E && !F
+        if (ep) excess++
+        H = dp && ep
       }
-      B = !D && (!E || !F && C && E)
-      if (B) { // increment j
-        j++
-      }
-      if (E && (A || B || D || !C) || F && (A || B || C || !D)) { // disjoint connection
-        if (!bootleg) disjoint++
-      }
-      if (D && F || C && E) { // excess connection
-        excess++
-      }
-      if (!E && !F) { // overlapping connections
-        weights += Math.abs(left.weight - right.weight)
-      }
-      if (!bootleg && !A && B && !C && D && !E && F
-        || !A && B && C && !D && E && !F) {
-        bootleg = true
-      }
-      if (C && D) break
+
+      A = !C && (G || E || H)
+      B = !D && (G || F || H)
+      if (A) i++
+      if (B) j++
+      if (!A && !B) break
     }
+
     return disjoint * Species.DisjointFactor / N + excess * Species.ExcessFactor / N + weights * Species.WeightFactor
   }
-
-  // static Compare(brainA: Brain, brainB: Brain) {
-  //   const enabledA = brainA.getSortedConnections()
-  //   const enabledB = brainB.getSortedConnections()
-  //   const N = Math.max(enabledA.length, enabledB.length)
-
-  //   let excess = 0
-  //   let disjoint = 0
-  //   let weights = 0
-
-  //   let i = 0
-  //   let j = 0
-  //   const maxI = enabledA.length - 1
-  //   const maxJ = enabledB.length - 1
-  //   let leftWasInRight = false
-  //   let rightWasInLeft = false
-
-  //   while (i <= maxI && j <= maxJ) {
-  //     const left = enabledA[i]
-  //     const right = enabledB[j]
-  //     const A = left.innovationID
-  //     const B = right.innovationID
-  //     let di = 1
-  //     let dj = 1
-  //     if (A == B) {
-  //       weights += Math.abs(left.weight - right.weight)
-  //       leftWasInRight = true
-  //       rightWasInLeft = true
-  //     } else if (A < B) {
-  //       if (i == maxI) {
-  //         excess++
-  //         if (!leftWasInRight) {
-  //           disjoint++
-  //           leftWasInRight = false
-  //         }
-  //       }
-  //       else {
-  //         leftWasInRight = false
-  //         disjoint++
-  //         dj = 0
-  //       }
-  //     } else {
-  //       if (j == maxJ) {
-  //         excess++
-  //         if (!rightWasInLeft) {
-  //           disjoint++
-  //           rightWasInLeft = false
-  //         }
-  //       }
-  //       else {
-  //         rightWasInLeft = false
-  //         disjoint++
-  //         di = 0
-  //       }
-  //     }
-  //     if (i == maxI) di = 0
-  //     if (j == maxJ) dj = 0
-  //     if (i == maxI && j == maxJ) break
-  //     i += di
-  //     j += dj
-  //   }
-
-  //   excess *= Species.ExcessFactor / N
-  //   disjoint *= Species.DisjointFactor / N
-  //   weights *= Species.WeightFactor
-
-  //   return excess + disjoint + weights
-  // }
 
   /**
    * Returns the average fitness of all members in this species.
