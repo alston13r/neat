@@ -28,6 +28,8 @@ class Population {
   enabledChance: number
   /** A reference to the population's fittest member ever */
   fittestEver: Brain
+  /** Array of all current species */
+  speciesList: Species[] = []
 
   /**
    * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
@@ -44,17 +46,6 @@ class Population {
     this.hiddenN = hiddenN
     this.outputN = outputN
     this.enabledChance = enabledChance
-  }
-
-  /**
-   * The list of all current species that the members are registered to.
-   */
-  get speciesList() {
-    const speciesSet = new Set<Species>()
-    for (const member of this.members) {
-      if (member.species != null) speciesSet.add(member.species)
-    }
-    return [...speciesSet]
   }
 
   /**
@@ -137,14 +128,15 @@ class Population {
    */
   produceOffspring(): void {
     if (Population.Speciation) {
-      const speciesList = this.speciesList
       this.members = []
-      speciesList.forEach(species => {
+      this.speciesList.forEach(species => {
         const speciesOffspring = species.produceOffspring()
         this.members.push(...speciesOffspring)
         speciesOffspring.forEach(offspring => offspring.species = species)
         species.members = speciesOffspring
       })
+
+      this.speciesList = this.speciesList.filter(s => s.members.length > 0)
 
       if (this.members.length < this.popSize) {
         const difference = this.popSize - this.members.length
