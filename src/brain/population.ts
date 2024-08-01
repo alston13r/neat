@@ -146,7 +146,8 @@ class Population {
       }
     } else {
       const copyOfMembers = [...this.members]
-      this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : []
+      if (Population.Elitism) Population.GetElites(this.members, copyOfMembers, this.popSize)
+      else this.members.length = 0
       const pairings = Population.GeneratePairings(copyOfMembers, this.popSize)
       pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)))
     }
@@ -212,17 +213,16 @@ class Population {
    * @param softLimit the soft limit for the number of elites
    * @returns the elites
    */
-  static GetElites(list: Brain[], softLimit: number): Brain[] {
-    if (softLimit == 0) return []
-    const res: Brain[] = []
-    const sorted: Brain[] = [...list].sort((a, b) => a.fitness - b.fitness)
-    const amount: number = Math.min(Math.round(Population.ElitePercent * list.length), softLimit)
-    for (let i = 0; i < amount; i++) {
-      const eliteMember: Brain = sorted[i]
-      eliteMember.isElite = true
-      res.push(eliteMember)
+  static GetElites(out: Brain[], list: Brain[], softLimit: number) {
+    out.length = 0
+    if (softLimit == 0) return out
+    list.sort((a, b) => b.fitness - a.fitness)
+    const N = Math.min(softLimit, Math.round(Population.ElitePercent * list.length))
+    for (let i = 0; i < N; i++) {
+      out[i] = list[i]
+      out[i].isElite = true
     }
-    return res
+    return out
   }
 
   /**
