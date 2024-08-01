@@ -236,12 +236,14 @@ class Population {
   }
 
   /**
-   * Static helper method to generate pairings of brains that will serve as parents
-   * for the next generation. Parents are chosen based on fitness and rolled through
-   * a roulette wheel.
-   * @param list the list of parents to choose from
-   * @param count the desired number of offspring
-   * @returns an array of parent pairings where parents are p1 and p2
+   * Generates a selection of brains that will be the parents of the
+   * next generation. Selections are made through the
+   * {@link Population.RouletteWheel RouletteWheel} method where the
+   * wheel is portioned out by fitness values.
+   * @param out the array to put the pairings in
+   * @param list the list of brains
+   * @param count the number of pairs to select
+   * @returns the array of pairings
    */
   static GeneratePairings(out: Brain[], list: Brain[], count: number) {
     if (count == 0) {
