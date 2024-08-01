@@ -22,3 +22,9 @@ declare interface BrainSerial {
   nodes: NeatNodeSerial[]
   connections: ConnectionSerial[]
 }
+
+declare interface RouletteWheelItem {
+  brain: Brain
+  value: number
+  sum: number
+}

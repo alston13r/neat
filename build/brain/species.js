@@ -87,47 +87,56 @@ class Species {
             this.gensSinceImproved++;
     }
     static Speciate(population) {
-        const speciesList = population.speciesList;
-        const champions = [];
-        for (let species of speciesList) {
-            const champion = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0];
-            champions.push(champion);
+        const list = population.speciesList;
+        const champions = list.map(species => {
+            const champion = Brain.TakeRandomMember(species.members);
             species.members.forEach(member => member.species = null);
             species.members = [champion];
-        }
-        const toSpeciate = population.members.filter(member => member.species == null);
-        while (toSpeciate.length > 0) {
-            let champion;
-            if (champions.length == 0) {
-                champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0];
-                champion.species = new Species();
-                champion.species.members.push(champion);
-            }
-            else
-                champion = champions.shift();
-            const count = toSpeciate.length;
-            for (let i = 0; i < count; i++) {
-                const brain = toSpeciate.shift();
-                if (Species.Compare(champion, brain) <= Species.DynamicThreshold) {
+            return champion;
+        });
+        let unspeciated;
+        champions.forEach(champion => {
+            unspeciated = population.members.filter(member => member.species == null);
+            if (unspeciated.length == 0)
+                return;
+            for (let i = 0; i < unspeciated.length; i++) {
+                const brain = unspeciated[i];
+                if (this.Compare(champion, brain) <= this.DynamicThreshold) {
                     brain.species = champion.species;
                     brain.species.members.push(brain);
                 }
-                else
-                    toSpeciate.push(brain);
             }
+        });
+        unspeciated = population.members.filter(member => member.species == null);
+        while (unspeciated.length > 0) {
+            const champion = Brain.TakeRandomMember(unspeciated);
+            champion.species = new Species();
+            champion.species.members.push(champion);
+            population.speciesList.push(champion.species);
+            for (let i = 0; i < unspeciated.length; i++) {
+                const brain = unspeciated[i];
+                if (this.Compare(champion, brain) <= this.DynamicThreshold) {
+                    brain.species = champion.species;
+                    brain.species.members.push(brain);
+                }
+            }
+            unspeciated = population.members.filter(member => member.species == null);
         }
     }
     produceOffspring() {
         if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
+            this.members.length = 0;
             return [];
         }
-        else {
-            const offspring = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : [];
-            const remainingCount = this.allowedOffspring - offspring.length;
-            Population.GeneratePairings(this.members, remainingCount)
-                .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)));
-            return offspring;
+        const offspring = [];
+        if (Population.Elitism)
+            Population.GetElites(offspring, this.members, this.allowedOffspring);
+        const parents = [];
+        Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length);
+        for (let i = 0; i < parents.length; i += 2) {
+            offspring.push(Brain.Crossover(parents[i], parents[i + 1]));
         }
+        return offspring;
     }
     static GetPresets() {
         return {

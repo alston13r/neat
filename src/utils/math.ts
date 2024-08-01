@@ -59,34 +59,6 @@ function gauss() {
 }
 
 /**
- * Does a roulette wheel on the list of items based on the specified param values.
- * A roulette wheel will assign a portion of a "roll" to each item in the list, where
- * items with bigger portions will come up more often when rolled. If smallValues is
- * set to true, then the wheel will revert the values and favor smaller values instead.
- * @param list the list of items to select from
- * @param param the value to assign portions from
- * @param count the number of items to select
- * @param smallValues boolean specifying if smaller values are favored, false by default
- * @returns the selected items
- */
-function rouletteWheel<k>(list: k[], param: string, count: number): k[] {
-  if (count == 0) return []
-  if (list.length == 0) return []
-  if (list.length == 1) return new Array(count).fill(list[0])
-  const entry = list.map(item => ({ item, value: item[param] as number, sum: 0 }))
-  const max = entry.reduce((sum, curr) => {
-    curr.sum = sum + curr.value
-    return curr.sum
-  }, 0)
-  return new Array(count).fill(0).map(() => {
-    const value = Math.random() * max
-    for (const pair of entry) {
-      if (value < pair.sum) return pair.item
-    }
-  })
-}
-
-/**
  * Clamps the given value to be within the bounds. If the value is greater
  * than the maximum, this will return the maximum value. Likewise, if the
  * value is less than the minimum, this will return the minimum value.

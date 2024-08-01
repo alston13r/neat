@@ -10,20 +10,13 @@ class Population {
     outputN;
     enabledChance;
     fittestEver;
+    speciesList = [];
     constructor(popSize, inputN, hiddenN, outputN, enabledChance = 1) {
         this.popSize = popSize;
         this.inputN = inputN;
         this.hiddenN = hiddenN;
         this.outputN = outputN;
         this.enabledChance = enabledChance;
-    }
-    get speciesList() {
-        const speciesSet = new Set();
-        for (const member of this.members) {
-            if (member.species != null)
-                speciesSet.add(member.species);
-        }
-        return [...speciesSet];
     }
     adjustDynamicThreshold() {
         Species.DynamicThreshold += Math.sign(this.speciesList.length - Species.TargetSpecies) * Species.DynamicThresholdStepSize;
@@ -62,14 +55,14 @@ class Population {
     }
     produceOffspring() {
         if (Population.Speciation) {
-            const speciesList = this.speciesList;
             this.members = [];
-            speciesList.forEach(species => {
+            this.speciesList.forEach(species => {
                 const speciesOffspring = species.produceOffspring();
                 this.members.push(...speciesOffspring);
                 speciesOffspring.forEach(offspring => offspring.species = species);
                 species.members = speciesOffspring;
             });
+            this.speciesList = this.speciesList.filter(s => s.members.length > 0);
             if (this.members.length < this.popSize) {
                 const difference = this.popSize - this.members.length;
                 for (let i = 0; i < difference; i++) {
@@ -79,9 +72,15 @@ class Population {
         }
         else {
             const copyOfMembers = [...this.members];
-            this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : [];
-            const pairings = Population.GeneratePairings(copyOfMembers, this.popSize);
-            pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)));
+            if (Population.Elitism)
+                Population.GetElites(this.members, copyOfMembers, this.popSize);
+            else
+                this.members.length = 0;
+            const parents = [];
+            Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length);
+            for (let i = 0; i < parents.length; i += 2) {
+                this.members.push(Brain.Crossover(parents[i], parents[i + 1]));
+            }
         }
     }
     mutate() {
@@ -106,26 +105,50 @@ class Population {
             this.calculateAllowedOffspring();
         }
     }
-    static GeneratePairings(list, offspringN) {
-        if (offspringN == 0)
-            return [];
-        const parents = rouletteWheel(list, 'fitness', offspringN * 2);
-        return new Array(offspringN).fill(0).map(() => {
-            return { p1: parents.pop(), p2: parents.pop() };
-        });
-    }
-    static GetElites(list, softLimit) {
-        if (softLimit == 0)
-            return [];
-        const res = [];
-        const sorted = [...list].sort((a, b) => a.fitness - b.fitness);
-        const amount = Math.min(Math.round(Population.ElitePercent * list.length), softLimit);
-        for (let i = 0; i < amount; i++) {
-            const eliteMember = sorted[i];
-            eliteMember.isElite = true;
-            res.push(eliteMember);
+    static RouletteWheel(out, list, count) {
+        if (count == 0 || list.length == 0) {
+            out.length = 0;
+            return out;
         }
-        return res;
+        if (list.length == 1) {
+            out.fill(list[0]);
+            return out;
+        }
+        const items = list.map(item => ({ brain: item, value: item.fitness, sum: 0 }));
+        const max = items.reduce((sum, curr) => {
+            curr.sum = sum + curr.value;
+            return curr.sum;
+        }, 0);
+        for (let i = 0; i < count; i++) {
+            const value = Math.random() * max;
+            search: for (const item of items) {
+                if (value < item.sum) {
+                    out[i] = item.brain;
+                    break search;
+                }
+            }
+        }
+        return out;
+    }
+    static GeneratePairings(out, list, count) {
+        if (count == 0) {
+            out.length = 0;
+            return out;
+        }
+        out.length = count * 2;
+        return this.RouletteWheel(out, list, count * 2);
+    }
+    static GetElites(out, list, limit) {
+        out.length = 0;
+        if (limit == 0)
+            return out;
+        list.sort((a, b) => b.fitness - a.fitness);
+        const N = Math.min(limit, Math.round(Population.ElitePercent * list.length));
+        for (let i = 0; i < N; i++) {
+            out[i] = list[i];
+            out[i].isElite = true;
+        }
+        return out;
     }
     draw(g) {
         g.textBaseline = 'top';

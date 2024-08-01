@@ -1,6 +1,6 @@
 function calcFitness(brain: Brain) {
   brain.fitness = 0
-  for (const value of TrainingValues.XOR.random) {
+  for (const value of TrainingValues.XOR.random()) {
     const actual = brain.think(value.inputs)
     const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0))
     errors.forEach(error => brain.fitness += error)

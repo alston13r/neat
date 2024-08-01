@@ -33,26 +33,6 @@ function gauss() {
     }
     return s / 6;
 }
-function rouletteWheel(list, param, count) {
-    if (count == 0)
-        return [];
-    if (list.length == 0)
-        return [];
-    if (list.length == 1)
-        return new Array(count).fill(list[0]);
-    const entry = list.map(item => ({ item, value: item[param], sum: 0 }));
-    const max = entry.reduce((sum, curr) => {
-        curr.sum = sum + curr.value;
-        return curr.sum;
-    }, 0);
-    return new Array(count).fill(0).map(() => {
-        const value = Math.random() * max;
-        for (const pair of entry) {
-            if (value < pair.sum)
-                return pair.item;
-        }
-    });
-}
 function clamp(x, minimum, maximum) {
     return Math.max(minimum, Math.min(x, maximum));
 }
