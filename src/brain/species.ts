@@ -44,9 +44,6 @@ class Species {
    * @param brainB the second topology
    * @returns compatibility of the topologies
    */
-
-
-
   static Compare(brainA: Brain, brainB: Brain) {
     const enabledA = brainA.getSortedConnections()
     const enabledB = brainB.getSortedConnections()
