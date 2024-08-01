@@ -8,7 +8,7 @@ const neuralNet = new NeuralNetwork(2, 2, 1)
 
 function getError() {
   let error = 0
-  for (let value of desired.ordered) {
+  for (let value of desired.values) {
     const actual = neuralNet.feedForward(value.inputs)
     const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0))
     errors.forEach(e => error += e)
@@ -37,7 +37,7 @@ function neuralNetLoop() {
     if (error >= desiredError) {
       solutionFound = true
       console.log(`Solution found in ${currentIteration} iterations`)
-      for (let pair of desired.ordered) {
+      for (let pair of desired.values) {
         console.log('[' + pair.inputs.join(', ') + '] -> [' + neuralNet.feedForward(pair.inputs).join(', ') + ']')
       }
       break
@@ -55,7 +55,7 @@ function neuralNetLoop() {
   neuralNetGraphics.fillStyle = '#fff'
   neuralNetGraphics.fillText(`Current iteration: ${currentIteration}`, 5, 5)
 
-  for (let [i, pair] of desired.ordered.entries()) {
+  for (let [i, pair] of desired.values.entries()) {
     neuralNetGraphics.fillText(
       `[${pair.inputs.join(', ')}] -> [${neuralNet.feedForward(pair.inputs).join(', ')}]`,
       5, 25 + i * 20

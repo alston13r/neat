@@ -110,28 +110,24 @@ class TrainingValues {
     return this
   }
 
-  /** The number of training values in this set */
-  get length() {
-    return this.values.length
-  }
-
   /**
-   * Returns a shalloy copy of the input output values in an ordered sequence.
-   * @returns the array values
+   * Returns the number of training values in this set
+   * @returns the number of training values
    */
-  get ordered(): InputOutput[] {
-    return this.values
+  size() {
+    return this.values.length
   }
 
   /**
    * Returns a generator for the local values in a random sequence.
    * @returns the array of values
    */
-  get random() {
-    const temp: InputOutput[] = [...this.values]
-    const res: InputOutput[] = []
-    while (temp.length > 0) {
-      res.push(temp.splice(Math.floor(Math.random() * temp.length), 1)[0])
+  random() {
+    const N = this.values.length
+    const res: InputOutput[] = new Array(N)
+    const temp = this.values.slice()
+    for (let i = 0; i < N; i++) {
+      res[i] = temp.splice(Math.floor(Math.random() * temp.length), 1)[0]
     }
     return res
   }
