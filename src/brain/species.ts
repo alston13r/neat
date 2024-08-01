@@ -44,6 +44,9 @@ class Species {
    * @param brainB the second topology
    * @returns compatibility of the topologies
    */
+
+
+
   static Compare(brainA: Brain, brainB: Brain) {
     const enabledA = brainA.getSortedConnections()
     const enabledB = brainB.getSortedConnections()
@@ -55,14 +58,14 @@ class Species {
     let excess = 0
     let weights = 0
 
-    let A = false // incremented i
-    let B = false // incremented j
-    let C = false // iMax
-    let D = false // jMax
-    let E = false // left < right
-    let F = false // left > right
-    let G = false // left = right
-    let H = false // counting excess
+    let A = false
+    let B = false
+    let C = false
+    let D = false
+    let E = false
+    let F = false
+    let G = false
+    let H = false
 
     let i = 0
     let j = 0
@@ -86,21 +89,23 @@ class Species {
       E = leftID < rightID
       F = leftID > rightID
       G = leftID == rightID
+      A = !C
+      B = !D
 
       if (G) weights += Math.abs(left.weight - right.weight)
       else {
-        const dp = E || F
-        if (dp) disjoint++
-        const ep = D && F && !E || C && E && !F
-        if (ep) excess++
-        H = dp && ep
+        disjoint++
+        H = D && F && !E || C && E && !F
+        if (H) excess++
+        else {
+          A &&= E
+          B &&= F
+        }
       }
 
-      A = !C && (G || E || H)
-      B = !D && (G || F || H)
+      if (!A && !B) break
       if (A) i++
       if (B) j++
-      if (!A && !B) break
     }
 
     return disjoint * Species.DisjointFactor / N + excess * Species.ExcessFactor / N + weights * Species.WeightFactor
