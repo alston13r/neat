@@ -389,6 +389,16 @@ class Brain {
   }
 
   /**
+   * Helper method to take a random member from an array of brains, removing said
+   * member from the list and returning it.
+   * @param members the list of members to select from
+   * @returns the random member
+   */
+  static TakeRandomMember(members: Brain[]) {
+    return members.splice(Math.floor(Math.random() * members.length), 1)[0]
+  }
+
+  /**
    * Draws this brain to the local graphics.
    * @param options the options to draw the brain with
    */
