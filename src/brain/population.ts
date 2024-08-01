@@ -148,7 +148,7 @@ class Population {
       const copyOfMembers = [...this.members]
       if (Population.Elitism) Population.GetElites(this.members, copyOfMembers, this.popSize)
       else this.members.length = 0
-      const pairings = Population.GeneratePairings(copyOfMembers, this.popSize)
+      const pairings = Population.GeneratePairings(copyOfMembers, this.popSize - this.members.length)
       pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)))
     }
   }
