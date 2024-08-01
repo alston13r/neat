@@ -46,25 +46,26 @@ class Species {
             E = leftID < rightID;
             F = leftID > rightID;
             G = leftID == rightID;
+            A = !C;
+            B = !D;
             if (G)
                 weights += Math.abs(left.weight - right.weight);
             else {
-                const dp = E || F;
-                if (dp)
-                    disjoint++;
-                const ep = D && F && !E || C && E && !F;
-                if (ep)
+                disjoint++;
+                H = D && F && !E || C && E && !F;
+                if (H)
                     excess++;
-                H = dp && ep;
+                else {
+                    A &&= E;
+                    B &&= F;
+                }
             }
-            A = !C && (G || E || H);
-            B = !D && (G || F || H);
+            if (!A && !B)
+                break;
             if (A)
                 i++;
             if (B)
                 j++;
-            if (!A && !B)
-                break;
         }
         return disjoint * Species.DisjointFactor / N + excess * Species.ExcessFactor / N + weights * Species.WeightFactor;
     }
