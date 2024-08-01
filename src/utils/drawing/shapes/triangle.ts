@@ -1,4 +1,4 @@
-class Triangle implements HasThreePoints, Drawable, HasPath {
+class Triangle implements Drawable, HasPath {
   pos1: Vec2
   pos2: Vec2
   pos3: Vec2

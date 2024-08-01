@@ -17,22 +17,6 @@ asteroidsSlider.style.display = 'block';
 document.body.appendChild(asteroidsSlider);
 let gameScale = 1;
 asteroidsSlider.oninput = () => gameScale = parseInt(asteroidsSlider.value);
-// code for individual play
-// const keysPressed = {}
-// window.addEventListener('keydown', e => keysPressed[e.key] = true)
-// window.addEventListener('keyup', e => keysPressed[e.key] = false)
-// const game: AsteroidsGame = new AsteroidsGame(gameGraphics)
-// const brain: Brain = new Brain().initialize(11, 0, 3, 0.5)
-// let lastTimestamp: number = 0
-// function asteroidsLoop(timestamp: number = 0): void {
-//   gameGraphics.bg()
-//   const diff: number = timestamp - lastTimestamp
-//   lastTimestamp = timestamp
-//   game.update(keysPressed)
-//   game.draw()
-//   window.requestAnimationFrame(asteroidsLoop)
-// }
-// window.requestAnimationFrame(asteroidsLoop)
 const maxTimeAlive = 30;
 let currentGenerationTimeAlive = 0;
 function thinkBrain(brain, game) {
