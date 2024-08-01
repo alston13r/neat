@@ -31,74 +31,81 @@ class Species {
   highestFitness = 0
 
   /**
-   * Compares two brains based on their topologies. Topologies are compared by
-   * only their enabled connections' innovation IDs and weights. For every connection
-   * that is not in the other, they are considered disjoint, or excess if they
-   * exceed the maximum innovation ID of the other. The weights of the connections
-   * are only compared for connections in both topologies, with the weights value
-   * simply being the sum of the differences between them. The disjoint number,
-   * excess number, and weight differences are then weighted by the static Factor
-   * values and that value is returned, indicating the compatibility of the two
-   * brains. If the two brains are identical, the compatibility value is expected
-   * to be 0. Two brains belong to the same species if their compatibility is
-   * below the current threshold.
-   * @param brainA the first brain to compare
-   * @param brainB the second brain to compare
-   * @returns the compatibility of the two brains
+   * Compares two topologies based on connections. The comparison is a weighted
+   * sum of the pairing's disjoint, excess, and overlapping connections. Disjoint
+   * connections are ones that don't exist in the other topology. Excess are
+   * connections that have innovation IDs outside the range of the other topology.
+   * The overlapping connections are combined into an average difference of weights.
+   * The more similar two topologies are, the closer to 0 this method returns. If
+   * the value falls below the compatibility threshold, they belong to the same
+   * species. This was derived from a big truth table and a lot of boolean algebra, see
+   * {@link https://docs.google.com/spreadsheets/d/1vLFl3Y7DDsnzVoI0IpjJZIh0uJcby4OsPjn-gxxWptY/edit?usp=sharing | Google Sheets}.
+   * @param brainA the first topology
+   * @param brainB the second topology
+   * @returns compatibility of the topologies
    */
   static Compare(brainA: Brain, brainB: Brain) {
-    const enabledA = brainA.connections
-      .filter(connection => connection.enabled)
-      .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID)
-    const enabledB = brainB.connections
-      .filter(connection => connection.enabled)
-      .sort((connectionA, connectionB) => connectionA.innovationID - connectionB.innovationID)
-
-    const N = Math.max(enabledA.length, enabledB.length)
+    const enabledA = brainA.getSortedConnections()
+    const enabledB = brainB.getSortedConnections()
+    const lenA = enabledA.length
+    const lenB = enabledB.length
+    const N = Math.max(lenA, lenB)
 
     let disjoint = 0
     let excess = 0
     let weights = 0
 
+    let A = false
+    let B = false
+    let C = false
+    let D = false
+    let E = false
+    let F = false
+    let G = false
+    let H = false
+
     let i = 0
     let j = 0
-    const maxI = enabledA.length - 1
-    const maxJ = enabledB.length - 1
+    const iMax = lenA - 1
+    const jMax = lenB - 1
 
-    while (i <= maxI && j <= maxJ) {
-      const currLeft = enabledA[i]
-      const currRight = enabledB[j]
-      const leftID = currLeft.innovationID
-      const rightID = currRight.innovationID
-      let di = 1
-      let dj = 1
-      if (leftID == rightID) {
-        weights += Math.abs(currLeft.weight - currRight.weight)
-      } else if (leftID < rightID) {
-        if (i == maxI) excess++
+    const iterMax = lenA + lenB
+    for (let iter = 0; iter < iterMax; iter++) {
+      if (H) {
+        excess += iMax - i + jMax - j + 1
+        break
+      }
+
+      const left = enabledA[i]
+      const right = enabledB[j]
+      const leftID = left.innovationID
+      const rightID = right.innovationID
+
+      C = i == iMax
+      D = j == jMax
+      E = leftID < rightID
+      F = leftID > rightID
+      G = leftID == rightID
+      A = !C
+      B = !D
+
+      if (G) weights += Math.abs(left.weight - right.weight)
+      else {
+        disjoint++
+        H = D && F && !E || C && E && !F
+        if (H) excess++
         else {
-          disjoint++
-          dj = 0
-        }
-      } else {
-        if (j == maxJ) excess++
-        else {
-          disjoint++
-          di = 0
+          A &&= E
+          B &&= F
         }
       }
-      if (i == maxI) di = 0
-      if (j == maxJ) dj = 0
-      if (i == maxI && j == maxJ) break
-      i += di
-      j += dj
+
+      if (!A && !B) break
+      if (A) i++
+      if (B) j++
     }
 
-    excess *= Species.ExcessFactor / N
-    disjoint *= Species.DisjointFactor / N
-    weights *= Species.WeightFactor
-
-    return excess + disjoint + weights
+    return disjoint * Species.DisjointFactor / N + excess * Species.ExcessFactor / N + weights * Species.WeightFactor
   }
 
   /**

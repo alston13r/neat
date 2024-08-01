@@ -8,7 +8,18 @@
  * interpreted as a Brain's "memory" since inputs from one propagation can influence the output
  * of the next propagation.
  */
+
+
+/**
+ * A connection connects two nodes within the brain's topology. Each connection has a weight
+ * associated with it, multiplying the value of the node prior to passing it on. Connections
+ * can be enabled or disabled, passing or being skipped over during the propagation process.
+ * Connections can also be recurrent, where values get passed from a node in a layer further
+ * in the brain's topology to a node in an earlier layer.
+ */
 class Connection {
+  /** Toggle for weight mutations */
+  static AllowWeightMutations = true
   /** The minimum value that a weight can be */
   static MinimumWeightValue = -10
   /** The maximum value that a weight can be */
@@ -25,10 +36,10 @@ class Connection {
     return lerp(Math.random(), 0, 1, this.MinimumWeightValue, this.MaximumWeightValue)
   }
 
-  /** This connection's incoming node */
-  inNode: NNode
-  /** This connection's outgoing node */
-  outNode: NNode
+  /** This connection's incoming node id */
+  inNode: number
+  /** This connection's outgoing node id */
+  outNode: number
   /** This connection's weight */
   weight: number
   /** Whether or not this Connection is enabled */
@@ -41,17 +52,15 @@ class Connection {
   id: number
 
   /**
-   * Constructs a connection with the specified incoming node, outgoing node, weight, enabled value,
-   * and recurrent value. A connection will take the incoming node's sum output value, multiply it
-   * by the connection's weight, and pass it on to the outgoing node's sum input value. This transfer
-   * of data only happens if the Connection is enabled.
-   * @param inNode the connection's incoming node
-   * @param outNode the connection's outgoing node
-   * @param weight the Connection's weight
+   * Constructs a connection with the specified incoming node id, outgoing node id, weight,
+   * enabled and recurrent flags.
+   * @param inNode the connection's incoming node's id
+   * @param outNode the connection's outgoing node's id
+   * @param weight the connection's weight
    * @param enabled whether or not the connection is enabled
    * @param recurrent whether or not the connection is recurrent
    */
-  constructor(id: number, inNode: NNode, outNode: NNode, weight: number, enabled: boolean, recurrent: boolean) {
+  constructor(id: number, inNode: number, outNode: number, weight: number, enabled = true, recurrent = false) {
     this.id = id
     this.inNode = inNode
     this.outNode = outNode
@@ -59,8 +68,15 @@ class Connection {
     this.enabled = enabled
     this.recurrent = recurrent
     this.innovationID = Innovations.GetInnovationID(inNode, outNode)
-    this.inNode.connectionsOut.push(id)
-    this.outNode.connectionsIn.push(id)
+  }
+
+  /**
+   * Clones this connection and returns said clone with the same id, input node, output node, weight,
+   * enabled and recurrent flags, and innovation id.
+   * @returns the clone
+   */
+  clone() {
+    return new Connection(this.id, this.inNode, this.outNode, this.weight, this.enabled, this.recurrent)
   }
 
   /**
@@ -69,15 +85,13 @@ class Connection {
    * can either be nudged or completely randomized.
    */
   mutate() {
-    if (Math.random() < Connection.MutateWeightChance) {
-      // connection weight will be mutated
-      if (Math.random() < Connection.NudgeWeightChance) {
-        // weight will only be nudged by 20%
+    if (Connection.AllowWeightMutations
+      && Math.random() < Connection.MutateWeightChance) { // connection weight will be mutated
+      if (Math.random() < Connection.NudgeWeightChance) { // weight will only be nudged by 20%
         this.weight += 0.2 * this.weight * (Math.random() > 0.5 ? 1 : -1)
-      } else {
-        // weight will be randomized
+      } else { // weight will be randomized
         this.weight = Connection.GenerateRandomWeight()
-      }
+      } // ensure weight is within acceptable bounds
       this.clamp()
     }
   }
@@ -101,8 +115,8 @@ class Connection {
   serialize(): ConnectionSerial {
     return {
       'id': this.id,
-      'inNode': this.inNode.id,
-      'outNode': this.outNode.id,
+      'inNode': this.inNode,
+      'outNode': this.outNode,
       'weight': this.weight,
       'enabled': this.enabled,
       'recurrent': this.recurrent,

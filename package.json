@@ -1,0 +1,14 @@
+{
+  "name": "neat",
+  "version": "1.0.0",
+  "description": "This project is my personal implementation of the Neat AI algorithm in JavaScript. It has a source directory written in TypeScript and utilizes the glMatrix library.",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.6.0-dev.20240729"
+  }
+}

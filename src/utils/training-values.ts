@@ -120,7 +120,7 @@ class TrainingValues {
    * @returns the array values
    */
   get ordered(): InputOutput[] {
-    return [...this.values]
+    return this.values
   }
 
   /**

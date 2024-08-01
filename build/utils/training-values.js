@@ -1,9 +1,4 @@
-/**
- * Utility class to help with organizing basic training data. This already includes data
- * for XOR, OR, and AND training.
- */
 class TrainingValues {
-    /** Training data for XOR */
     static XOR = new TrainingValues([
         {
             inputs: [0, 0],
@@ -22,7 +17,6 @@ class TrainingValues {
             outputs: [0]
         }
     ]);
-    /** Training data for OR */
     static OR = new TrainingValues([
         {
             inputs: [0, 0],
@@ -41,7 +35,6 @@ class TrainingValues {
             outputs: [1]
         }
     ]);
-    /** Training data for AND */
     static AND = new TrainingValues([
         {
             inputs: [0, 0],
@@ -70,12 +63,6 @@ class TrainingValues {
             this.outputSize = this.values[0].outputs.length;
         }
     }
-    /**
-     * Adds the specified given inputs and outputs to the internal array.
-     * @param inputs the inputs to add
-     * @param outputs the outputs to add
-     * @returns a reference to this TrainingValues object
-     */
     addValue(inputs, outputs) {
         if (this.inputSize == 0 || this.outputSize == 0) {
             this.inputSize = inputs.length;
@@ -84,21 +71,12 @@ class TrainingValues {
         this.values.push({ inputs, outputs });
         return this;
     }
-    /** The number of training values in this set */
     get length() {
         return this.values.length;
     }
-    /**
-     * Returns a shalloy copy of the input output values in an ordered sequence.
-     * @returns the array values
-     */
     get ordered() {
-        return [...this.values];
+        return this.values;
     }
-    /**
-     * Returns a generator for the local values in a random sequence.
-     * @returns the array of values
-     */
     get random() {
         const temp = [...this.values];
         const res = [];
