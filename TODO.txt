@@ -2,7 +2,6 @@ Optimize Species.Speciate()
   Create reference to current species, similar to array of connections
   in Brain where species have an index specifying where they are in
   the array
-Preserve best ever brain
 Improve creation of population with an options object
 Improve raycasting
 Add workers
