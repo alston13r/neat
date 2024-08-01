@@ -10,20 +10,13 @@ class Population {
     outputN;
     enabledChance;
     fittestEver;
+    speciesList = [];
     constructor(popSize, inputN, hiddenN, outputN, enabledChance = 1) {
         this.popSize = popSize;
         this.inputN = inputN;
         this.hiddenN = hiddenN;
         this.outputN = outputN;
         this.enabledChance = enabledChance;
-    }
-    get speciesList() {
-        const speciesSet = new Set();
-        for (const member of this.members) {
-            if (member.species != null)
-                speciesSet.add(member.species);
-        }
-        return [...speciesSet];
     }
     adjustDynamicThreshold() {
         Species.DynamicThreshold += Math.sign(this.speciesList.length - Species.TargetSpecies) * Species.DynamicThresholdStepSize;
@@ -62,14 +55,14 @@ class Population {
     }
     produceOffspring() {
         if (Population.Speciation) {
-            const speciesList = this.speciesList;
             this.members = [];
-            speciesList.forEach(species => {
+            this.speciesList.forEach(species => {
                 const speciesOffspring = species.produceOffspring();
                 this.members.push(...speciesOffspring);
                 speciesOffspring.forEach(offspring => offspring.species = species);
                 species.members = speciesOffspring;
             });
+            this.speciesList = this.speciesList.filter(s => s.members.length > 0);
             if (this.members.length < this.popSize) {
                 const difference = this.popSize - this.members.length;
                 for (let i = 0; i < difference; i++) {

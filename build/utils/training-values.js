@@ -71,17 +71,15 @@ class TrainingValues {
         this.values.push({ inputs, outputs });
         return this;
     }
-    get length() {
+    size() {
         return this.values.length;
     }
-    get ordered() {
-        return this.values;
-    }
-    get random() {
-        const temp = [...this.values];
-        const res = [];
-        while (temp.length > 0) {
-            res.push(temp.splice(Math.floor(Math.random() * temp.length), 1)[0]);
+    random() {
+        const N = this.values.length;
+        const res = new Array(N);
+        const temp = this.values.slice();
+        for (let i = 0; i < N; i++) {
+            res[i] = temp.splice(Math.floor(Math.random() * temp.length), 1)[0];
         }
         return res;
     }
