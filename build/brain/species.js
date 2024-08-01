@@ -131,9 +131,11 @@ class Species {
         const offspring = [];
         if (Population.Elitism)
             Population.GetElites(offspring, this.members, this.allowedOffspring);
-        const remainingCount = this.allowedOffspring - offspring.length;
-        Population.GeneratePairings(this.members, remainingCount)
-            .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)));
+        const parents = [];
+        Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length);
+        for (let i = 0; i < parents.length; i += 2) {
+            offspring.push(Brain.Crossover(parents[i], parents[i + 1]));
+        }
         return offspring;
     }
     static GetPresets() {
