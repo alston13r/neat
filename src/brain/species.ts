@@ -203,13 +203,13 @@ class Species {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       this.members.length = 0
       return []
-    } else {
-      const offspring = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
-      const remainingCount = this.allowedOffspring - offspring.length
-      Population.GeneratePairings(this.members, remainingCount)
-        .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
-      return offspring
     }
+    const offspring: Brain[] = []
+    if (Population.Elitism) Population.GetElites(offspring, this.members, this.allowedOffspring)
+    const remainingCount = this.allowedOffspring - offspring.length
+    Population.GeneratePairings(this.members, remainingCount)
+      .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
+    return offspring
   }
 
   static GetPresets() {
