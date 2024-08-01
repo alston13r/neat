@@ -72,7 +72,10 @@ class Population {
         }
         else {
             const copyOfMembers = [...this.members];
-            this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : [];
+            if (Population.Elitism)
+                Population.GetElites(this.members, copyOfMembers, this.popSize);
+            else
+                this.members.length = 0;
             const pairings = Population.GeneratePairings(copyOfMembers, this.popSize);
             pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)));
         }
@@ -107,18 +110,17 @@ class Population {
             return { p1: parents.pop(), p2: parents.pop() };
         });
     }
-    static GetElites(list, softLimit) {
+    static GetElites(out, list, softLimit) {
+        out.length = 0;
         if (softLimit == 0)
-            return [];
-        const res = [];
-        const sorted = [...list].sort((a, b) => a.fitness - b.fitness);
-        const amount = Math.min(Math.round(Population.ElitePercent * list.length), softLimit);
-        for (let i = 0; i < amount; i++) {
-            const eliteMember = sorted[i];
-            eliteMember.isElite = true;
-            res.push(eliteMember);
+            return out;
+        list.sort((a, b) => b.fitness - a.fitness);
+        const N = Math.min(softLimit, Math.round(Population.ElitePercent * list.length));
+        for (let i = 0; i < N; i++) {
+            out[i] = list[i];
+            out[i].isElite = true;
         }
-        return res;
+        return out;
     }
     draw(g) {
         g.textBaseline = 'top';
