@@ -148,8 +148,11 @@ class Population {
       const copyOfMembers = [...this.members]
       if (Population.Elitism) Population.GetElites(this.members, copyOfMembers, this.popSize)
       else this.members.length = 0
-      const pairings = Population.GeneratePairings(copyOfMembers, this.popSize - this.members.length)
-      pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)))
+      const parents: Brain[] = []
+      Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length)
+      for (let i = 0; i < parents.length; i += 2) {
+        this.members.push(Brain.Crossover(parents[i], parents[i + 1]))
+      }
     }
   }
 
@@ -192,32 +195,75 @@ class Population {
   }
 
   /**
+   * Conducts a roulette wheel selection on the list of brains passed in
+   * based on their fitness values. A roulette wheel assigns a portion of
+   * a wheel to each brain in the list. Brains with higher fitness values
+   * take up larger portions of the wheel. The wheel is then spun and the
+   * brain corresponding to the portion of the wheel that was selected is
+   * passed into the out array.
+   * @param out the array to put the selections in
+   * @param list the list to select brains from
+   * @param count the number of brains to select
+   * @returns the selections
+   */
+  static RouletteWheel(out: Brain[], list: Brain[], count: number) {
+    if (count == 0 || list.length == 0) {
+      out.length = 0
+      return out
+    }
+    if (list.length == 1) {
+      out.fill(list[0])
+      return out
+    }
+
+    const items: RouletteWheelItem[] = list.map(item => ({ brain: item, value: item.fitness, sum: 0 }))
+    const max = items.reduce((sum, curr) => {
+      curr.sum = sum + curr.value
+      return curr.sum
+    }, 0)
+
+    for (let i = 0; i < count; i++) {
+      const value = Math.random() * max
+      search: for (const item of items) {
+        if (value < item.sum) {
+          out[i] = item.brain
+          break search
+        }
+      }
+    }
+
+    return out
+  }
+
+  /**
    * Static helper method to generate pairings of brains that will serve as parents
    * for the next generation. Parents are chosen based on fitness and rolled through
    * a roulette wheel.
    * @param list the list of parents to choose from
-   * @param offspringN the number of offspring desired
+   * @param count the desired number of offspring
    * @returns an array of parent pairings where parents are p1 and p2
    */
-  static GeneratePairings(list: Brain[], offspringN: number) {
-    if (offspringN == 0) return []
-    const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2)
-    return new Array(offspringN).fill(0).map(() => {
-      return { p1: parents.pop(), p2: parents.pop() }
-    })
+  static GeneratePairings(out: Brain[], list: Brain[], count: number) {
+    if (count == 0) {
+      out.length = 0
+      return out
+    }
+    out.length = count * 2
+    return this.RouletteWheel(out, list, count * 2)
   }
 
   /**
    * Static helper method to produce an array of elites.
+   * @param out the array to put the elites in
    * @param list the list of members to select elites from
-   * @param softLimit the soft limit for the number of elites
+   * @param limit the limit for the number of elites
    * @returns the elites
    */
-  static GetElites(out: Brain[], list: Brain[], softLimit: number) {
+  static GetElites(out: Brain[], list: Brain[], limit: number) {
     out.length = 0
-    if (softLimit == 0) return out
+    if (limit == 0) return out
     list.sort((a, b) => b.fitness - a.fitness)
-    const N = Math.min(softLimit, Math.round(Population.ElitePercent * list.length))
+    const N = Math.min(limit, Math.round(Population.ElitePercent * list.length))
     for (let i = 0; i < N; i++) {
       out[i] = list[i]
       out[i].isElite = true
