@@ -143,53 +143,52 @@ class Species {
   }
 
   /**
-   * Speciates the population, placing every member into a species. This works
-   * by selecting champions from either a preexisting set of species or a group
-   * of unspeciated members. Then, the rest of the members are compared to these
-   * champions and placed into their corresponding species.
+   * Speciates the specified population. So-called champions are selected
+   * (at random) to champion their species. All other unspeciated members are
+   * compared to these champions with {@link Species.Compare Compare}, where
+   * if two brain's comparison value falls below the threshold, they belong
+   * to the same species.
    * @param population the population to speciate
    */
   static Speciate(population: Population) {
-    // get any preexisting species
-    const speciesList = population.speciesList
-    const champions: Brain[] = []
-    // select champions from each one and store them in an array
-    for (let species of speciesList) {
-      const champion = species.members.splice(Math.floor(Math.random() * species.members.length), 1)[0]
-      champions.push(champion)
-      // clear species field for all other species members
+    const list = population.speciesList
+    const champions = list.map(species => {
+      const champion = Brain.TakeRandomMember(species.members)
       species.members.forEach(member => member.species = null)
       species.members = [champion]
-    }
+      return champion
+    })
 
-    // store all remaining and unspeciated members in an array
-    const toSpeciate = population.members.filter(member => member.species == null)
-    // while loop to go over each unspeciated member
-    while (toSpeciate.length > 0) {
-      // there can either be an array of champions from the previous generation
-      // or no champions
-      let champion: Brain
-      // this selects a random champion from the unspeciated array
-      if (champions.length == 0) {
-        champion = toSpeciate.splice(Math.floor(Math.random() * toSpeciate.length), 1)[0]
-        // create a species for the champion
-        champion.species = new Species()
-        champion.species.members.push(champion)
-      }
-      // this takes a champion from the front of the champions array
-      else champion = champions.shift()
+    let unspeciated: Brain[]
 
-      // for loop to go over the remaining members of the unspeciated array
-      // this will group them together with the champion if they are
-      // compatible or throw them back at the end of the array
-      const count = toSpeciate.length
-      for (let i = 0; i < count; i++) {
-        const brain = toSpeciate.shift()
-        if (Species.Compare(champion, brain) <= Species.DynamicThreshold) {
+    champions.forEach(champion => {
+      unspeciated = population.members.filter(member => member.species == null)
+      if (unspeciated.length == 0) return
+      for (let i = 0; i < unspeciated.length; i++) {
+        const brain = unspeciated[i]
+        if (this.Compare(champion, brain) <= this.DynamicThreshold) {
           brain.species = champion.species
           brain.species.members.push(brain)
-        } else toSpeciate.push(brain)
+        }
       }
+    })
+
+    unspeciated = population.members.filter(member => member.species == null)
+    while (unspeciated.length > 0) {
+      const champion = Brain.TakeRandomMember(unspeciated)
+      champion.species = new Species()
+      champion.species.members.push(champion)
+      population.speciesList.push(champion.species)
+
+      for (let i = 0; i < unspeciated.length; i++) {
+        const brain = unspeciated[i]
+        if (this.Compare(champion, brain) <= this.DynamicThreshold) {
+          brain.species = champion.species
+          brain.species.members.push(brain)
+        }
+      }
+
+      unspeciated = population.members.filter(member => member.species == null)
     }
   }
 
@@ -202,14 +201,19 @@ class Species {
    */
   produceOffspring(): Brain[] {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
+      this.members.length = 0
       return []
-    } else {
-      const offspring = Population.Elitism ? Population.GetElites(this.members, this.allowedOffspring) : []
-      const remainingCount = this.allowedOffspring - offspring.length
-      Population.GeneratePairings(this.members, remainingCount)
-        .forEach(({ p1, p2 }) => offspring.push(Brain.Crossover(p1, p2)))
-      return offspring
     }
+    const offspring: Brain[] = []
+    if (Population.Elitism) Population.GetElites(offspring, this.members, this.allowedOffspring)
+
+    const parents: Brain[] = []
+    Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length)
+    for (let i = 0; i < parents.length; i += 2) {
+      offspring.push(Brain.Crossover(parents[i], parents[i + 1]))
+    }
+
+    return offspring
   }
 
   static GetPresets() {

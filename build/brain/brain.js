@@ -240,6 +240,9 @@ class Brain {
             return offspring;
         }
     }
+    static TakeRandomMember(members) {
+        return members.splice(Math.floor(Math.random() * members.length), 1)[0];
+    }
     draw(g, maxWidth = 800, maxHeight = 600, xOffset = 0, yOffset = 0) {
         const nodePositions = new Map();
         const maxLayer = this.outputNodes[0].layer;

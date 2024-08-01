@@ -8,7 +8,7 @@ Brain.AllowRecurrent = false;
 let xorSolution;
 function calculateFitness(brain) {
     brain.fitness = 0;
-    for (const value of xorTrainingValues.random) {
+    for (const value of xorTrainingValues.random()) {
         const actual = brain.think(value.inputs);
         const errors = value.outputs.map((expected, i) => lerp(Math.abs(expected - actual[i]), 0, 2, 1, 0));
         errors.forEach(error => brain.fitness += error);
@@ -25,7 +25,7 @@ function xorLoop() {
     if (xorPopulation.fittestEver.fitness >= xorDesiredFitness) {
         xorSolution = xorPopulation.fittestEver;
         console.log('Solution found, storing to var<xorSolution>', xorSolution.fitness);
-        xorTrainingValues.ordered.forEach(io => {
+        xorTrainingValues.values.forEach(io => {
             console.log('[' + io.inputs.join(', ') + '] -> ['
                 + xorSolution.think(io.inputs).join(', ') + ']');
         });
@@ -34,7 +34,7 @@ function xorLoop() {
     if (xorPopulation.generationCounter >= xorMaxGenerations) {
         xorSolution = xorPopulation.fittestEver;
         console.log('Solution not found, storing best ever to var<xorSolution>', xorSolution.fitness);
-        xorTrainingValues.ordered.forEach(io => {
+        xorTrainingValues.values.forEach(io => {
             console.log('[' + io.inputs.join(', ') + '] -> ['
                 + xorSolution.think(io.inputs).join(', ') + ']');
         });

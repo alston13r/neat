@@ -28,6 +28,8 @@ class Population {
   enabledChance: number
   /** A reference to the population's fittest member ever */
   fittestEver: Brain
+  /** Array of all current species */
+  speciesList: Species[] = []
 
   /**
    * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
@@ -44,17 +46,6 @@ class Population {
     this.hiddenN = hiddenN
     this.outputN = outputN
     this.enabledChance = enabledChance
-  }
-
-  /**
-   * The list of all current species that the members are registered to.
-   */
-  get speciesList() {
-    const speciesSet = new Set<Species>()
-    for (const member of this.members) {
-      if (member.species != null) speciesSet.add(member.species)
-    }
-    return [...speciesSet]
   }
 
   /**
@@ -137,14 +128,15 @@ class Population {
    */
   produceOffspring(): void {
     if (Population.Speciation) {
-      const speciesList = this.speciesList
       this.members = []
-      speciesList.forEach(species => {
+      this.speciesList.forEach(species => {
         const speciesOffspring = species.produceOffspring()
         this.members.push(...speciesOffspring)
         speciesOffspring.forEach(offspring => offspring.species = species)
         species.members = speciesOffspring
       })
+
+      this.speciesList = this.speciesList.filter(s => s.members.length > 0)
 
       if (this.members.length < this.popSize) {
         const difference = this.popSize - this.members.length
@@ -154,9 +146,13 @@ class Population {
       }
     } else {
       const copyOfMembers = [...this.members]
-      this.members = Population.Elitism ? Population.GetElites(this.members, this.popSize) : []
-      const pairings = Population.GeneratePairings(copyOfMembers, this.popSize)
-      pairings.forEach(({ p1, p2 }) => this.members.push(Brain.Crossover(p1, p2)))
+      if (Population.Elitism) Population.GetElites(this.members, copyOfMembers, this.popSize)
+      else this.members.length = 0
+      const parents: Brain[] = []
+      Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length)
+      for (let i = 0; i < parents.length; i += 2) {
+        this.members.push(Brain.Crossover(parents[i], parents[i + 1]))
+      }
     }
   }
 
@@ -199,38 +195,82 @@ class Population {
   }
 
   /**
-   * Static helper method to generate pairings of brains that will serve as parents
-   * for the next generation. Parents are chosen based on fitness and rolled through
-   * a roulette wheel.
-   * @param list the list of parents to choose from
-   * @param offspringN the number of offspring desired
-   * @returns an array of parent pairings where parents are p1 and p2
+   * Conducts a roulette wheel selection on the list of brains passed in
+   * based on their fitness values. A roulette wheel assigns a portion of
+   * a wheel to each brain in the list. Brains with higher fitness values
+   * take up larger portions of the wheel. The wheel is then spun and the
+   * brain corresponding to the portion of the wheel that was selected is
+   * passed into the out array.
+   * @param out the array to put the selections in
+   * @param list the list to select brains from
+   * @param count the number of brains to select
+   * @returns the selections
    */
-  static GeneratePairings(list: Brain[], offspringN: number) {
-    if (offspringN == 0) return []
-    const parents: Brain[] = rouletteWheel(list, 'fitness', offspringN * 2)
-    return new Array(offspringN).fill(0).map(() => {
-      return { p1: parents.pop(), p2: parents.pop() }
-    })
+  static RouletteWheel(out: Brain[], list: Brain[], count: number) {
+    if (count == 0 || list.length == 0) {
+      out.length = 0
+      return out
+    }
+    if (list.length == 1) {
+      out.fill(list[0])
+      return out
+    }
+
+    const items: RouletteWheelItem[] = list.map(item => ({ brain: item, value: item.fitness, sum: 0 }))
+    const max = items.reduce((sum, curr) => {
+      curr.sum = sum + curr.value
+      return curr.sum
+    }, 0)
+
+    for (let i = 0; i < count; i++) {
+      const value = Math.random() * max
+      search: for (const item of items) {
+        if (value < item.sum) {
+          out[i] = item.brain
+          break search
+        }
+      }
+    }
+
+    return out
+  }
+
+  /**
+   * Generates a selection of brains that will be the parents of the
+   * next generation. Selections are made through the
+   * {@link Population.RouletteWheel RouletteWheel} method where the
+   * wheel is portioned out by fitness values.
+   * @param out the array to put the pairings in
+   * @param list the list of brains
+   * @param count the number of pairs to select
+   * @returns the array of pairings
+   */
+  static GeneratePairings(out: Brain[], list: Brain[], count: number) {
+    if (count == 0) {
+      out.length = 0
+      return out
+    }
+    out.length = count * 2
+    return this.RouletteWheel(out, list, count * 2)
   }
 
   /**
    * Static helper method to produce an array of elites.
+   * @param out the array to put the elites in
    * @param list the list of members to select elites from
-   * @param softLimit the soft limit for the number of elites
+   * @param limit the limit for the number of elites
    * @returns the elites
    */
-  static GetElites(list: Brain[], softLimit: number): Brain[] {
-    if (softLimit == 0) return []
-    const res: Brain[] = []
-    const sorted: Brain[] = [...list].sort((a, b) => a.fitness - b.fitness)
-    const amount: number = Math.min(Math.round(Population.ElitePercent * list.length), softLimit)
-    for (let i = 0; i < amount; i++) {
-      const eliteMember: Brain = sorted[i]
-      eliteMember.isElite = true
-      res.push(eliteMember)
+  static GetElites(out: Brain[], list: Brain[], limit: number) {
+    out.length = 0
+    if (limit == 0) return out
+    list.sort((a, b) => b.fitness - a.fitness)
+    const N = Math.min(limit, Math.round(Population.ElitePercent * list.length))
+    for (let i = 0; i < N; i++) {
+      out[i] = list[i]
+      out[i].isElite = true
     }
-    return res
+    return out
   }
 
   /**
