@@ -160,12 +160,6 @@ class ActivationFunction {
     this.fn = fn
     this.name = name
   }
-
-  static FromSerial(name: string) {
-    for (const activationFunction of this.Arr) {
-      if (activationFunction.name == name) return activationFunction
-    }
-  }
 }
 
 /**

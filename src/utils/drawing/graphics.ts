@@ -1,3 +1,9 @@
+/// <reference path="./shapes/circle.ts" />
+/// <reference path="./shapes/line.ts" />
+/// <reference path="./shapes/polygon.ts" />
+/// <reference path="./shapes/rectangle.ts" />
+/// <reference path="./shapes/triangle.ts" />
+
 class Graphics {
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D

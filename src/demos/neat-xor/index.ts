@@ -1,3 +1,6 @@
+/// <reference path="../../utils/drawing/graphics.ts" />
+/// <reference path="../../utils/training-values.ts" />
+
 const xorGraphics = new Graphics().setSize(800, 550).appendTo(document.body)
 const xorTrainingValues = TrainingValues.XOR
 const xorPopSize = 1000

@@ -1,3 +1,5 @@
+/// <reference path="../../neural-network/neural-network.ts" />
+
 const neuralNetGraphics = new Graphics().setSize(800, 600).appendToBody()
 neuralNetGraphics.font = '20px arial'
 neuralNetGraphics.textBaseline = 'top'

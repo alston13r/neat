@@ -1,3 +1,8 @@
+/// <reference path="../../utils/drawing/graphics.ts" />
+/// <reference path="../../games/flappy-bird/bird.ts" />
+/// <reference path="../../games/flappy-bird/ga.ts" />
+/// <reference path="../../games/flappy-bird/pipe.ts" />
+
 // const TOTAL = 300
 // let birds: Bird[] = []
 // let savedBirds: Bird[] = []
@@ -18,7 +23,7 @@ function getSliderValue(slider: HTMLInputElement): number {
   return parseInt(slider.value)
 }
 
-const bird: Bird = new Bird()
+const bird = new Bird()
 flappyBirdGraphics.bg()
 bird.draw(flappyBirdGraphics)
 
@@ -33,7 +38,7 @@ window.addEventListener('keyup', e => {
   if (e.key == ' ') currSpaceState = false
 })
 
-let pressedCounter: number = 0
+let pressedCounter = 0
 
 function flappyBirdLoop() {
   spacePressed = currSpaceState && !lastSpaceState

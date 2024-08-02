@@ -1,3 +1,5 @@
+/// <reference path="../../utils/drawing/graphics.ts" />
+
 const asteroidsGraphics = new Graphics()
 asteroidsGraphics.setSize(800, 600)
 asteroidsGraphics.appendToBody()
