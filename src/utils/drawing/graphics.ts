@@ -7,7 +7,6 @@
 class Graphics {
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
-  drawQueues: DrawQueue[] = []
 
   constructor(canvas?: HTMLCanvasElement) {
     this.canvas = canvas || document.createElement('canvas')
@@ -150,8 +149,9 @@ class Graphics {
     const nPoints = points.length
     if (nPoints <= 2) return
     const p1 = points[0]
+    this.context.beginPath()
     this.context.moveTo(p1[0], p1[1])
-    for (let i = 1; i < length; i++) {
+    for (let i = 1; i < nPoints; i++) {
       const p = points[i]
       this.context.lineTo(p[0], p[1])
     }
@@ -162,9 +162,9 @@ class Graphics {
   strokePolygon(points: ReadonlyVec2[]) {
     const nPoints = points.length
     if (nPoints <= 2) return
-    const p1 = points[0]
-    this.context.moveTo(p1[0], p1[1])
-    for (let i = 1; i < length; i++) {
+    this.context.beginPath()
+    this.context.moveTo(points[0][0], points[0][1])
+    for (let i = 1; i < nPoints; i++) {
       const p = points[i]
       this.context.lineTo(p[0], p[1])
     }
@@ -191,13 +191,6 @@ class Graphics {
 
   clear() {
     this.context.clearRect(0, 0, this.width, this.height)
-  }
-
-  initDrawQueue(color: string | CanvasGradient | CanvasPattern = '#fff',
-    filling = false, stroking = true, lineWidth = 1) {
-    let queue = new DrawQueue(this, color, filling, stroking, lineWidth)
-    this.drawQueues.push(queue)
-    return queue
   }
 
   record(time: number, name = 'video', framerate = 0) {
