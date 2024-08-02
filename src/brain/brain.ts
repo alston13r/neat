@@ -53,45 +53,39 @@ class Brain {
     this.nodes.length = 0
     this.inputNodes.length = 0
     this.outputNodes.length = 0
-
-    const toConnect: NNode[][] = [[], []]
+    this.connections.length = 0
 
     for (let i = 0; i < inputN; i++) {
       const node = new NNode(this.nodes.length, NNodeType.Input, 0)
       this.nodes.push(node)
       this.inputNodes.push(node)
-      toConnect[0].push(node)
     }
     const outputLayer = hiddenN > 0 ? 2 : 1
     for (let i = 0; i < outputN; i++) {
-      let node = new NNode(this.nodes.length, NNodeType.Output, outputLayer)
+      const node = new NNode(this.nodes.length, NNodeType.Output, outputLayer)
       this.nodes.push(node)
       this.outputNodes.push(node)
-      toConnect[1].push(node)
     }
     if (hiddenN > 0) {
-      toConnect[2] = toConnect[1]
-      toConnect[1] = []
       for (let i = 0; i < hiddenN; i++) {
-        let node = new NNode(this.nodes.length, NNodeType.Hidden, 1)
+        const node = new NNode(this.nodes.length, NNodeType.Hidden, 1)
         this.nodes.push(node)
-        toConnect[1].push(node)
+        for (const inputNode of this.inputNodes) {
+          this.constructConnection(inputNode, node, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
+        }
+        for (const outputNode of this.outputNodes) {
+          this.constructConnection(node, outputNode, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
+        }
       }
-    }
-
-    this.connections.length = 0
-    for (let i = 1; i < toConnect.length; i++) {
-      const layerA = toConnect[i - 1]
-      const layerB = toConnect[i]
-      for (let inNode of layerA) {
-        for (let outNode of layerB) {
-          this.constructConnection(inNode, outNode, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
+    } else {
+      for (const inputNode of this.inputNodes) {
+        for (const outputNode of this.outputNodes) {
+          this.constructConnection(inputNode, outputNode, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
         }
       }
     }
 
     if (Population.Speciation) this.#updateSortedConnections()
-
     return this
   }
 
@@ -123,7 +117,7 @@ class Brain {
    */
   constructConnection(inputNode: NNode, outputNode: NNode, weight: number, enabled = true, recurrent = false) {
     const connectionId = this.connections.length
-    const connection = new Connection(connectionId, inputNode.id, outputNode.id, weight, enabled, recurrent)
+    const connection = new Connection(connectionId, inputNode, outputNode, weight, enabled, recurrent)
     inputNode.connectionsOut.push(connectionId)
     outputNode.connectionsIn.push(connectionId)
     this.connections.push(connection)
@@ -142,8 +136,8 @@ class Brain {
     const recurrent = this.connections.filter(c => c.recurrent)
     if (recurrent.length == 0) return
     for (const connection of recurrent) {
-      const inputLayer = this.nodes[connection.inNode].layer
-      const outputLayer = this.nodes[connection.outNode].layer
+      const inputLayer = connection.inNode.layer
+      const outputLayer = connection.outNode.layer
       if (inputLayer == outputLayer) connection.enabled = false
       else if (outputLayer > inputLayer) connection.recurrent = false
     }
@@ -160,8 +154,8 @@ class Brain {
     if (forwardArr.length == 0) return
     const forwardIntercept = forwardArr[Math.floor(Math.random() * forwardArr.length)]
     forwardIntercept.enabled = false
-    const inputNode = this.nodes[forwardIntercept.inNode]
-    const outputNode = this.nodes[forwardIntercept.outNode]
+    const inputNode = forwardIntercept.inNode
+    const outputNode = forwardIntercept.outNode
     const newNode = new NNode(this.nodes.length, NNodeType.Hidden, inputNode.layer + 1)
     this.nodes.push(newNode)
     this.constructConnection(inputNode, newNode, forwardIntercept.weight)
@@ -171,8 +165,8 @@ class Brain {
     const potentialConflicts = outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent)
     while (potentialConflicts.length > 0) {
       const connection = potentialConflicts.splice(0, 1)[0]
-      const outputNode = this.nodes[connection.outNode]
-      if (outputNode.layer > this.nodes[connection.inNode].layer) continue
+      const outputNode = connection.outNode
+      if (outputNode.layer > connection.inNode.layer) continue
       outputNode.layer++
       potentialConflicts.push(...outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent))
     }
@@ -201,7 +195,7 @@ class Brain {
         || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer) continue
 
       for (const connection of this.connections) {
-        if (connection.inNode == A && connection.outNode == B) { // connection already exists
+        if (connection.inNode.id == A && connection.outNode.id == B) { // connection already exists
           if (connection.enabled) continue attempt // next attempt
           if (Math.random() < Brain.ReenableConnectionChance) { // reenable connection
             connection.enabled = true
@@ -278,15 +272,14 @@ class Brain {
    * node's activation function.
    */
   runTheNetwork() {
-    const maxLayer = this.outputNodes[0].layer
-    for (let i = 0; i <= maxLayer; i++) {
+    for (let i = 0; i <= this.outputNodes[0].layer; i++) {
       const currentLayer = this.nodes.filter(n => n.layer == i)
       for (const node of currentLayer) {
         if (i > 0) {
           node.sumInput = 0
           for (const connectionInId of node.connectionsIn) {
             const connectionIn = this.connections[connectionInId]
-            if (connectionIn.enabled) node.sumInput += this.nodes[connectionIn.inNode].sumOutput * connectionIn.weight
+            if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
           }
         }
         node.activate()
@@ -340,7 +333,7 @@ class Brain {
 
     // connections
     this.connections.forEach(connection => {
-      clone.constructConnection(clone.nodes[connection.inNode], clone.nodes[connection.outNode],
+      clone.constructConnection(clone.nodes[connection.inNode.id], clone.nodes[connection.outNode.id],
         connection.weight, connection.enabled, connection.recurrent
       )
     })
@@ -436,9 +429,9 @@ class Brain {
     const disabledConnections: Line[] = []
     const recurrentConnections: Line[] = []
 
-    for (let connection of this.connections) {
-      const inputNodePos = nodePositions.get(this.nodes[connection.inNode])
-      const outputNodePos = nodePositions.get(this.nodes[connection.outNode])
+    for (const connection of this.connections) {
+      const inputNodePos = nodePositions.get(connection.inNode)
+      const outputNodePos = nodePositions.get(connection.outNode)
 
       const point1 = vec2.create()
       const point2 = vec2.create()
