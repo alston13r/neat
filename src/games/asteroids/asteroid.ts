@@ -1,4 +1,4 @@
-class Asteroid implements Drawable, HasPath {
+class Asteroid {
   static SizeCutoff = 10
 
   static OffsetArray1 = new Array(10).fill(0).map((_, i) => {
@@ -35,6 +35,7 @@ class Asteroid implements Drawable, HasPath {
   velocity: Vec2
   collisionRadius: number
   points: Vec2[] = []
+  collisionCircle: Circle
 
   constructor(game: Asteroids, pos?: Vec2, radius?: number) {
     this.game = game
@@ -53,7 +54,8 @@ class Asteroid implements Drawable, HasPath {
       if (o > max) max = o
       if (o < min) min = o
     }
-    asteroid.collisionRadius = (min + max) / 2
+    asteroid.collisionRadius = (min + max) ** 2 / 4
+    asteroid.collisionCircle = Circle.FromPointAndRadius(asteroid.pos, asteroid.collisionRadius)
     asteroid.points = offsetArray.map((offset, index) => {
       return vec2.scale([], offset, radiusOffsets[index])
     })
@@ -66,7 +68,7 @@ class Asteroid implements Drawable, HasPath {
   }
 
   split() {
-    for (let i = this.game.asteroids.length; i >= 0; i--) {
+    for (let i = this.game.asteroids.length - 1; i >= 0; i--) {
       if (this.game.asteroids[i] === this) {
         this.game.asteroids.splice(i, 1)
         break
@@ -76,24 +78,9 @@ class Asteroid implements Drawable, HasPath {
     if (half < Asteroid.SizeCutoff) return
     this.game.asteroids.push(
       new Asteroid(this.game, this.pos, half),
-      new Asteroid(this.game, vec2.copy([], this.pos), half)
+      new Asteroid(this.game, vec2.clone(this.pos), half)
     )
-    this.game.dispatchEvent(new CustomEvent('asteroiddestroyed'))
-  }
-
-  draw(g: Graphics) {
-    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    g.strokePolygon(points)
-  }
-
-  createPath(): Path2D {
-    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    return new Polygon(points).createPath()
-  }
-
-  appendToPath(path: Path2D): Path2D {
-    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    return new Polygon(points).appendToPath(path)
+    this.game.asteroidCounter++
   }
 
   wrap() {
@@ -108,19 +95,18 @@ class Asteroid implements Drawable, HasPath {
   }
 
   collisionWithShip() {
-    const ship = this.game.ship
     return (
-      vec2.distance(this.pos, ship.top) <= this.collisionRadius
-      || vec2.distance(this.pos, ship.left) <= this.collisionRadius
-      || vec2.distance(this.pos, ship.right) <= this.collisionRadius
+      vec2.squaredDistance(this.pos, this.game.ship.top) <= this.collisionRadius
+      || vec2.squaredDistance(this.pos, this.game.ship.left) <= this.collisionRadius
+      || vec2.squaredDistance(this.pos, this.game.ship.right) <= this.collisionRadius
     )
   }
 
   collisionWithLaser(laser: Laser) {
-    return vec2.distance(this.pos, laser.pos) <= this.collisionRadius
+    return vec2.squaredDistance(this.pos, laser.pos) <= this.collisionRadius
   }
 
   getCollisionCircle() {
-    return new Circle(this.pos[0], this.pos[1], this.collisionRadius)
+    return new Circle(this.pos[0], this.pos[1], Math.sqrt(this.collisionRadius))
   }
 }

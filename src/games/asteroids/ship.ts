@@ -1,31 +1,12 @@
 type AsteroidsShipControls = {
-  'ArrowUp'?: boolean,
-  'ArrowDown'?: boolean,
-  'ArrowLeft'?: boolean,
-  'ArrowRight'?: boolean,
-  ' '?: boolean
+  'ArrowUp'?: number,
+  'ArrowDown'?: number,
+  'ArrowLeft'?: number,
+  'ArrowRight'?: number,
+  ' '?: number
 }
 
-interface RayInfo {
-  ray: Ray2
-  hitting: boolean
-  distance: number
-}
-
-interface ShipInfo {
-  game: Asteroids
-  ship: Ship
-  alive: boolean
-  posX: number
-  posY: number
-  velX: number
-  velY: number
-  heading: number
-  canShoot: boolean
-  rays: RayInfo[]
-}
-
-class Ship implements Drawable, HasPath {
+class Ship {
   static MaxSpeed = 3
   static ShootDelay = 33
 
@@ -37,44 +18,47 @@ class Ship implements Drawable, HasPath {
   static NumRays = 5
   static RayDeltaTheta = 0.3
   static RayLength = 300
+  static UpdateRaysConstantA = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta
+  static UpdateRaysConstantB = (Ship.NumRays - 1) * Ship.RayDeltaTheta / Ship.NumRays
 
-  pos: Vec2
+  pos = vec2.create()
   game: Asteroids
-  heading: number
-  velocity: Vec2
-  lasers: Laser[]
-  alive: boolean
-  top = vec2.create()
-  left = vec2.create()
-  right = vec2.create()
+  heading = -Math.PI / 2
+  velocity = vec2.create()
+  lasers: Laser[] = []
+  alive = true
+  top = vec2.fromValues(0, -20)
+  left = vec2.fromValues(13.511804342269897, 14.745546579360962)
+  right = vec2.fromValues(-13.486047983169556, 14.769107103347778)
   rays: Ray2[]
 
   shootTimer = 0
 
-  constructor(game: Asteroids, x: number, y: number) {
+  constructor(game: Asteroids) {
     this.game = game
-    this.pos = vec2.fromValues(x, y)
-    this.heading = -Math.PI / 2
-    this.velocity = vec2.create()
-    this.lasers = []
-    this.alive = true
+    vec2.set(this.pos, game.width / 2, game.height / 2)
 
-    this.updateTopLeftRight()
+    vec2.add(this.top, this.top, this.pos)
+    vec2.add(this.left, this.left, this.pos)
+    vec2.add(this.right, this.right, this.pos)
 
-    this.rays = new Array(Ship.NumRays).fill(0).map(
-      () => new Ray2(this.pos)
-        .setLength(Ship.RayLength)
-    )
+    this.rays = []
+    for (let i = 0; i < Ship.NumRays; i++) {
+      this.rays.push(new Ray2(this.pos).setLength(Ship.RayLength))
+    }
     this.updateRays()
   }
 
-  get canShoot(): boolean {
-    return this.shootTimer <= 0
-  }
-
-  kill(): void {
-    this.alive = false
-    this.game.dispatchEvent(new CustomEvent('end'))
+  reset() {
+    vec2.set(this.pos, this.game.width / 2, this.game.height / 2)
+    this.heading = -Math.PI / 2
+    vec2.zero(this.velocity)
+    this.lasers.length = 0
+    this.alive = true
+    vec2.set(this.top, 0, -20)
+    vec2.set(this.left, 13.511804342269897, 14.745546579360962)
+    vec2.set(this.right, -13.486047983169556, 14.769107103347778)
+    this.updateRays()
   }
 
   loadInputs(straight = 0, turn = 0, shoot = 0): void {
@@ -84,13 +68,13 @@ class Ship implements Drawable, HasPath {
   }
 
   update(): void {
-    this.shootTimer--
-    this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay)
+    if (this.shootTimer > 0) this.shootTimer--
+    if (this.shootTimer < 0) this.shootTimer = 0
     vec2.add(this.pos, this.pos, this.velocity)
     vec2.scale(this.velocity, this.velocity, 0.999)
     this.wrap()
     this.updateTopLeftRight()
-    for (let laser of [...this.lasers].reverse()) {
+    for (const laser of this.lasers) {
       laser.update()
     }
     this.updateRays()
@@ -107,19 +91,18 @@ class Ship implements Drawable, HasPath {
   }
 
   updateRays(): void {
-    const maxHeadingOffset: number = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta
-    this.rays.forEach((ray, i) => ray.setAngle(lerp(
-      i, 0, Ship.NumRays, this.heading - maxHeadingOffset, this.heading + maxHeadingOffset
-    )))
+    for (let i = 0; i < Ship.NumRays; i++) {
+      const angle = i * Ship.UpdateRaysConstantB + (this.heading - Ship.UpdateRaysConstantA)
+      const ray = this.rays[i]
+      vec2.copy(ray.dir, FastVec2FromRadian(angle))
+      vec2.add(ray.posPlusDir, ray.pos, ray.dir)
+    }
   }
 
   push(direction: number): void {
     if (direction == 0) return
-    const c = Math.cos(this.heading) * direction * 0.1
-    const s = Math.sin(this.heading) * direction * 0.1
-    const dir = vec2.fromValues(c, s)
-    vec2.add(this.velocity, this.velocity, dir)
-
+    const dir = FastVec2FromRadian(this.heading)
+    vec2.scaleAndAdd(this.velocity, this.velocity, dir, direction * 0.1)
     if (vec2.length(this.velocity) > Ship.MaxSpeed) {
       vec2.normalize(this.velocity, this.velocity)
       vec2.scale(this.velocity, this.velocity, Ship.MaxSpeed)
@@ -127,14 +110,10 @@ class Ship implements Drawable, HasPath {
   }
 
   wrap(): void {
-    const x = this.pos[0]
-    const y = this.pos[1]
-    const w = this.game.width
-    const h = this.game.height
-    if (x > w) this.pos[0] = 0
-    if (x < 0) this.pos[0] = w
-    if (y > h) this.pos[1] = 0
-    if (y < 0) this.pos[1] = h
+    if (this.pos[0] > this.game.width) this.pos[0] = 0
+    else if (this.pos[0] < 0) this.pos[0] = this.game.width
+    if (this.pos[1] > this.game.height) this.pos[1] = 0
+    else if (this.pos[1] < 0) this.pos[1] = this.game.height
   }
 
   turn(direction: number): void {
@@ -144,75 +123,42 @@ class Ship implements Drawable, HasPath {
   }
 
   shoot(): void {
-    if (this.canShoot) {
+    if (this.shootTimer <= 0) {
       new Laser(this)
       this.shootTimer = Ship.ShootDelay
     }
   }
 
-  draw(g: Graphics): void {
-    g.strokeTriangle(
-      this.top[0], this.top[1],
-      this.left[0], this.left[1],
-      this.right[0], this.right[1]
-    )
-    this.lasers.forEach(laser => laser.draw(g))
-  }
-
-  createPath(): Path2D {
-    let path = new Triangle(
-      this.top[0], this.top[1],
-      this.left[0], this.left[1],
-      this.right[0], this.right[1]
-    ).createPath()
-
-    this.lasers.forEach(laser => laser.appendToPath(path))
-
-    return path
-  }
-
-  appendToPath(path: Path2D): Path2D {
-    new Triangle(
-      this.top[0], this.top[1],
-      this.left[0], this.left[1],
-      this.right[0], this.right[1]
-    ).appendToPath(path)
-
-    this.lasers.forEach(laser => laser.appendToPath(path))
-
-    return path
-  }
-
-  getRayInfo(): RayInfo[] {
-    const info: RayInfo[] = []
-
+  getRayInfo() {
     const asteroidCircles = this.game.asteroids.map(asteroid => asteroid.getCollisionCircle())
-
-    for (const ray of this.rays) {
-      const point = ray.castOntoClosest(asteroidCircles)
-      if (point) {
-        const distance = vec2.distance(this.pos, point)
-        const hitting = distance <= Ship.RayLength
-        info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) })
-      } else {
-        info.push({ ray, hitting: false, distance: -1 })
-      }
-    }
-    return info
+    return this.rays.map(ray => {
+      const point = ray.castOntoCircles(asteroidCircles)
+      if (point) return vec2.distance(this.pos, point) / (Ship.RayLength)
+      return -1
+    })
   }
 
-  getInfo(): ShipInfo {
-    return {
-      game: this.game,
-      ship: this,
-      alive: this.alive,
-      posX: this.pos[0] / this.game.width,
-      posY: this.pos[1] / this.game.height,
-      velX: this.velocity[0] / Ship.MaxSpeed,
-      velY: this.velocity[1] / Ship.MaxSpeed,
-      heading: this.heading / Math.PI / 2,
-      canShoot: this.canShoot,
-      rays: this.getRayInfo()
-    }
+  getInfo() {
+    return [
+      this.pos[0] / this.game.width,
+      this.pos[1] / this.game.height,
+      this.velocity[0] / Ship.MaxSpeed,
+      this.velocity[1] / Ship.MaxSpeed,
+      this.heading / TwoPi,
+      this.shootTimer == 0 ? 1 : 0,
+      ...this.getRayInfo()
+    ]
+  }
+
+  loadIntoBrain(b: Brain) {
+    return b.think([
+      this.pos[0] / this.game.width,
+      this.pos[1] / this.game.height,
+      this.velocity[0] / Ship.MaxSpeed,
+      this.velocity[1] / Ship.MaxSpeed,
+      this.heading / TwoPi,
+      this.shootTimer <= 0 ? 1 : 0,
+      ...this.getRayInfo()
+    ])
   }
 }

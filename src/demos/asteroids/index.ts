@@ -8,7 +8,6 @@ asteroidsGraphics.textBaseline = 'bottom'
 asteroidsGraphics.textAlign = 'left'
 asteroidsGraphics.fillStyle = '#fff'
 asteroidsGraphics.context.font = 'arial 10px'
-const asteroidsDrawQueue = asteroidsGraphics.initDrawQueue('#fff', false, true, 1)
 
 const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
 
@@ -26,23 +25,29 @@ asteroidsSlider.oninput = () => gameScale = parseInt(asteroidsSlider.value)
 
 // code for individual play
 
-// const keysPressed = {}
-// window.addEventListener('keydown', e => keysPressed[e.key] = true)
-// window.addEventListener('keyup', e => keysPressed[e.key] = false)
+// const keysPressed: Record<string, number> = {
+//   'ArrowUp': 0,
+//   'ArrowDown': 0,
+//   'ArrowLeft': 0,
+//   'ArrowRight': 0,
+//   ' ': 0
+// }
+// window.addEventListener('keydown', e => keysPressed[e.key] = 1)
+// window.addEventListener('keyup', e => keysPressed[e.key] = 0)
 
-// const game: AsteroidsGame = new AsteroidsGame(gameGraphics)
-// const brain: Brain = new Brain().initialize(11, 0, 3, 0.5)
+// const game = new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
+// const brain = new Brain().initialize(11, 0, 3, 0.5)
 
-// let lastTimestamp: number = 0
-// function asteroidsLoop(timestamp: number = 0): void {
-//   gameGraphics.bg()
-//   const diff: number = timestamp - lastTimestamp
-//   lastTimestamp = timestamp
-//   game.update(keysPressed)
-//   game.draw()
+// function asteroidsLoop(): void {
+//   asteroidsGraphics.bg()
+//   game.loadInputs(keysPressed)
+//   game.update()
+//   game.draw(asteroidsGraphics)
 //   window.requestAnimationFrame(asteroidsLoop)
 // }
 // window.requestAnimationFrame(asteroidsLoop)
+
+
 
 const maxTimeAlive = 30
 let currentGenerationTimeAlive = 0
@@ -53,31 +58,7 @@ type GameBrainPair = {
 }
 
 function thinkBrain(brain: Brain, game: Asteroids): number[] {
-  const inputs: number[] = []
-  const shipInfo = game.ship.getInfo()
-  inputs[0] = shipInfo.posX
-  inputs[1] = shipInfo.posY
-  inputs[2] = shipInfo.heading
-  inputs[3] = shipInfo.velX
-  inputs[4] = shipInfo.velY
-  inputs[5] = shipInfo.canShoot ? 1 : 0
-  inputs[6] = shipInfo.rays[0].distance
-  inputs[7] = shipInfo.rays[1].distance
-  inputs[8] = shipInfo.rays[2].distance
-  inputs[9] = shipInfo.rays[3].distance
-  inputs[10] = shipInfo.rays[4].distance
-  return brain.think(inputs)
-}
-
-function updateFitness(pair: GameBrainPair) {
-  pair.brain.fitness = pair.game.asteroidCounter * 5 + pair.game.frameCounter / 120
-}
-
-function addListeners(arr: GameBrainPair[]) {
-  arr.forEach(pair => {
-    pair.game.addEventListener('asteroiddestroyed', () => updateFitness(pair))
-    pair.game.addEventListener('end', () => updateFitness(pair))
-  })
+  return game.ship.loadIntoBrain(brain)
 }
 
 const fittestRecords: Brain[] = []
@@ -95,7 +76,7 @@ function loop(timestamp: number) {
     const stillAlive = pairings.filter(pair => pair.game.ship.alive)
 
     if (currentGenerationTimeAlive > maxTimeAlive) {
-      stillAlive.forEach(pair => pair.game.ship.kill())
+      stillAlive.forEach(pair => pair.game.ship.alive = false)
     }
 
     if (stillAlive.length > 0) {
@@ -103,9 +84,10 @@ function loop(timestamp: number) {
       asteroidsGraphics.bg()
 
       stillAlive.forEach(pair => {
-        const brainThoughts = thinkBrain(pair.brain, pair.game)
+        const brainThoughts = pair.game.ship.loadIntoBrain(pair.brain)
         pair.game.ship.loadInputs(...brainThoughts)
         pair.game.update()
+        pair.brain.fitness = pair.game.asteroidCounter * 5 + pair.game.frameCounter / 120
       })
 
       fittest.game.draw(asteroidsGraphics)
@@ -122,6 +104,10 @@ function loop(timestamp: number) {
       if (asteroidsPopulation.generationCounter > 0) {
         asteroidsPopulation.speciate()
         fittestRecords.push(asteroidsPopulation.getFittest())
+        pairings.forEach((pair, index) => {
+          pair.brain = asteroidsPopulation.members[index]
+          pair.game.reset()
+        })
       }
       pairings = asteroidsPopulation.members.map(member => {
         return {
@@ -129,7 +115,6 @@ function loop(timestamp: number) {
           game: new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
         }
       })
-      addListeners(pairings)
     }
   }
 

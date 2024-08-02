@@ -1,8 +1,7 @@
-class Asteroids extends EventTarget implements Drawable {
+class Asteroids implements Drawable {
   static MinAsteroids = 5
 
-  asteroids: Asteroid[]
-  spawningAsteroids = true
+  asteroids: Asteroid[] = []
   asteroidCounter = 0
   frameCounter = 0
   width: number
@@ -10,25 +9,38 @@ class Asteroids extends EventTarget implements Drawable {
   ship: Ship
 
   constructor(width: number, height: number) {
-    super()
-
     this.width = width
     this.height = height
     this.createShip()
-    this.asteroids = new Array(Asteroids.MinAsteroids).fill(0).map(() => new Asteroid(this))
-
-    this.addEventListener('asteroiddestroyed', () => this.asteroidCounter++)
+    for (let i = 0; i < Asteroids.MinAsteroids; i++) {
+      this.asteroids.push(new Asteroid(this))
+    }
   }
 
   createShip() {
-    this.ship = new Ship(this, this.width / 2, this.height / 2)
+    this.ship = new Ship(this)
+  }
+
+  reset() {
+    this.asteroidCounter = 0
+    this.frameCounter = 0
+
+    this.asteroids.length = 0
+    for (let i = 0; i < Asteroids.MinAsteroids; i++) {
+      this.asteroids.push(new Asteroid(this))
+    }
+
+    this.ship.reset()
+
+    return this
   }
 
   loadInputs(keys: AsteroidsShipControls) {
-    const straight = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0)
-    const turn = (keys['ArrowLeft'] ? -1 : 0) + (keys['ArrowRight'] ? 1 : 0)
-    const shoot = (keys[' '] ? 1 : 0)
-    this.ship.loadInputs(straight, turn, shoot)
+    this.ship.loadInputs(
+      keys['ArrowUp'] - keys['ArrowDown'],
+      keys['ArrowRight'] - keys['ArrowLeft'],
+      keys[' ']
+    )
   }
 
   collisions(): void {
@@ -37,7 +49,7 @@ class Asteroids extends EventTarget implements Drawable {
         for (let asteroid of [...this.asteroids].reverse()) {
           if (asteroid.collisionWithLaser(laser)) {
             asteroid.split()
-            laser.terminate()
+            this.ship.lasers.splice(this.ship.lasers.indexOf(laser), 1)
             this.checkAsteroidCount()
             continue laserLoop
           }
@@ -47,23 +59,22 @@ class Asteroids extends EventTarget implements Drawable {
 
     for (let asteroid of this.asteroids) {
       if (asteroid.collisionWithShip()) {
-        this.ship.kill()
+        this.ship.alive = false
         break
       }
     }
   }
 
   checkAsteroidCount(): void {
-    if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
+    if (this.asteroids.length < Asteroids.MinAsteroids) {
       for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
         this.asteroids.push(new Asteroid(this))
       }
     }
   }
 
-  update(keysPressed?: AsteroidsShipControls) {
+  update() {
     this.frameCounter++
-    if (keysPressed) this.loadInputs(keysPressed)
     this.ship.update()
     for (let asteroid of this.asteroids) {
       asteroid.update()
@@ -72,10 +83,24 @@ class Asteroids extends EventTarget implements Drawable {
   }
 
   draw(g: Graphics) {
-    const drawQueue = g.drawQueues[0]
-    const path = drawQueue.path
-    this.ship.appendToPath(path)
-    this.asteroids.forEach(asteroid => asteroid.appendToPath(path))
-    drawQueue.dispatch()
+    g.strokeStyle = '#fff'
+    g.lineWidth = 1
+
+    // ship
+    g.strokeTriangle(
+      this.ship.top[0], this.ship.top[1],
+      this.ship.left[0], this.ship.left[1],
+      this.ship.right[0], this.ship.right[1]
+    )
+
+    // lasers
+    for (const laser of this.ship.lasers) {
+      g.strokeCircle(laser.pos[0], laser.pos[1], Laser.Radius)
+    }
+
+    // asteroids
+    for (const asteroid of this.asteroids) {
+      g.strokePolygon(asteroid.points.map(point => vec2.add([], point, asteroid.pos)))
+    }
   }
 }
