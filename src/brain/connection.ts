@@ -1,16 +1,4 @@
 /**
- * A connection serves as the pathway between a brain's nodes within the brain's topology.
- * Each connection has a unique innovation id that allows brain's with differing topologies
- * to be compared. Connections also have weights that tell nodes how important the data is
- * from the incoming node. Connections can be enabled or disabled, where disabled connections
- * do not pass on their data while enabled ones do. Connections can also be recurrent,
- * where their incoming node's layer is greater than the outgoing node's, this can be
- * interpreted as a Brain's "memory" since inputs from one propagation can influence the output
- * of the next propagation.
- */
-
-
-/**
  * A connection connects two nodes within the brain's topology. Each connection has a weight
  * associated with it, multiplying the value of the node prior to passing it on. Connections
  * can be enabled or disabled, passing or being skipped over during the propagation process.
