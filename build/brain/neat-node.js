@@ -5,9 +5,11 @@ var NNodeType;
     NNodeType[NNodeType["Output"] = 2] = "Output";
 })(NNodeType || (NNodeType = {}));
 class NNode {
-    static DefaultInputActivationFunction = ActivationFunction.Identity;
-    static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
-    static DefaultOutputActivationFunction = ActivationFunction.Tanh;
+    static DefaultActivationFunctions = [
+        ActivationFunction.Identity,
+        ActivationFunction.Sigmoid,
+        ActivationFunction.Tanh
+    ];
     static AllowInputActivationMutations = false;
     static AllowHiddenActivationMutations = true;
     static AllowOutputActivationMutations = false;
@@ -28,16 +30,17 @@ class NNode {
     connectionsIn = [];
     connectionsOut = [];
     activationFunction;
+    static get DefaultInputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Input]; }
+    static set DefaultInputActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Input] = fn; }
+    static get DefaultHiddenActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Hidden]; }
+    static set DefaultHiddenActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Hidden] = fn; }
+    static get DefaultOutputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Output]; }
+    static set DefaultOutputActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Output] = fn; }
     constructor(id, type, layer, bias = NNode.GenerateRandomBias()) {
         this.id = id;
         this.type = type;
         this.layer = layer;
-        if (type == NNodeType.Input)
-            this.activationFunction = NNode.DefaultInputActivationFunction;
-        else if (type == NNodeType.Hidden)
-            this.activationFunction = NNode.DefaultHiddenActivationFunction;
-        else if (type == NNodeType.Output)
-            this.activationFunction = NNode.DefaultOutputActivationFunction;
+        this.activationFunction = NNode.DefaultActivationFunctions[type];
         if (type != 0)
             this.bias = bias;
     }

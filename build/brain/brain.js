@@ -52,13 +52,12 @@ class Brain {
                 }
             }
         }
-        this.#updateSortedConnections();
+        if (Population.Speciation)
+            this.#updateSortedConnections();
         return this;
     }
     #updateSortedConnections() {
-        if (Population.Speciation) {
-            this.#connectionsSorted = this.connections.filter(c => c.enabled).sort((a, b) => a.innovationID - b.innovationID);
-        }
+        this.#connectionsSorted = this.connections.filter(c => c.enabled).sort((a, b) => a.innovationID - b.innovationID);
     }
     getSortedConnections() {
         return this.#connectionsSorted;
@@ -111,7 +110,8 @@ class Brain {
             potentialConflicts.push(...outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent));
         }
         this.fixRecurrent();
-        this.#updateSortedConnections();
+        if (Population.Speciation)
+            this.#updateSortedConnections();
     }
     addAConnection() {
         attempt: for (let i = 0; i < 20; i++) {
@@ -120,7 +120,7 @@ class Brain {
             const nodeA = this.nodes[A];
             const nodeB = this.nodes[B];
             if (A == B || nodeA.layer == nodeB.layer
-                || nodeA.layer > nodeB.layer && !Brain.AllowRecurrent)
+                || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer)
                 continue;
             for (const connection of this.connections) {
                 if (connection.inNode == A && connection.outNode == B) {
@@ -135,7 +135,8 @@ class Brain {
                 }
             }
             this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(), true, nodeA.layer > nodeB.layer);
-            this.#updateSortedConnections();
+            if (Population.Speciation)
+                this.#updateSortedConnections();
             break attempt;
         }
     }
@@ -208,7 +209,8 @@ class Brain {
         this.connections.forEach(connection => {
             clone.constructConnection(clone.nodes[connection.inNode], clone.nodes[connection.outNode], connection.weight, connection.enabled, connection.recurrent);
         });
-        clone.#updateSortedConnections();
+        if (Population.Speciation)
+            clone.#updateSortedConnections();
         return clone;
     }
     static Crossover(brainA, brainB) {
