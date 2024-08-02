@@ -2,8 +2,8 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
     "sourceMap": true,
+    // "outFile": "build/super.js",
     "outDir": "build",
     "rootDir": "src",
     "removeComments": true
