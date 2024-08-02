@@ -1,5 +1,3 @@
-Optimize
-  - Replace clamp() calls with actual code
 Specify reference paths for every file
 Improve creation of population with an options object
 Improve raycasting
