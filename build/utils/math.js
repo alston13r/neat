@@ -85,12 +85,6 @@ class ActivationFunction {
         this.fn = fn;
         this.name = name;
     }
-    static FromSerial(name) {
-        for (const activationFunction of this.Arr) {
-            if (activationFunction.name == name)
-                return activationFunction;
-        }
-    }
 }
 class DActivationFunction {
     static DSigmoid = new DActivationFunction(x => {

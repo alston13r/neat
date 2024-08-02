@@ -11,10 +11,5 @@ class Innovations {
         Innovations.#InnovationArray[N] = identifier;
         return N;
     }
-    static Serialize() {
-        return {
-            'innovations': this.#InnovationArray.slice()
-        };
-    }
 }
 //# sourceMappingURL=innovations.js.map

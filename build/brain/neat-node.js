@@ -5,11 +5,9 @@ var NNodeType;
     NNodeType[NNodeType["Output"] = 2] = "Output";
 })(NNodeType || (NNodeType = {}));
 class NNode {
-    static DefaultActivationFunctions = [
-        ActivationFunction.Identity,
-        ActivationFunction.Sigmoid,
-        ActivationFunction.Tanh
-    ];
+    static DefaultInputActivationFunction = ActivationFunction.Identity;
+    static DefaultHiddenActivationFunction = ActivationFunction.Sigmoid;
+    static DefaultOutputActivationFunction = ActivationFunction.Tanh;
     static AllowInputActivationMutations = false;
     static AllowHiddenActivationMutations = true;
     static AllowOutputActivationMutations = false;
@@ -30,17 +28,16 @@ class NNode {
     connectionsIn = [];
     connectionsOut = [];
     activationFunction;
-    static get DefaultInputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Input]; }
-    static set DefaultInputActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Input] = fn; }
-    static get DefaultHiddenActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Hidden]; }
-    static set DefaultHiddenActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Hidden] = fn; }
-    static get DefaultOutputActivationFunction() { return this.DefaultActivationFunctions[NNodeType.Output]; }
-    static set DefaultOutputActivationFunction(fn) { this.DefaultActivationFunctions[NNodeType.Output] = fn; }
     constructor(id, type, layer, bias = NNode.GenerateRandomBias()) {
         this.id = id;
         this.type = type;
         this.layer = layer;
-        this.activationFunction = NNode.DefaultActivationFunctions[type];
+        if (type == NNodeType.Input)
+            this.activationFunction = NNode.DefaultInputActivationFunction;
+        else if (type == NNodeType.Hidden)
+            this.activationFunction = NNode.DefaultHiddenActivationFunction;
+        else if (type == NNodeType.Output)
+            this.activationFunction = NNode.DefaultOutputActivationFunction;
         if (type != 0)
             this.bias = bias;
     }
@@ -80,43 +77,6 @@ class NNode {
     }
     clamp() {
         this.bias = clamp(this.bias, NNode.MinimumBiasValue, NNode.MaximumBiasValue);
-    }
-    static GetPresets() {
-        return {
-            'DefaultInputActivationFunction': NNode.DefaultInputActivationFunction.name,
-            'DefaultHiddenActivationFunction': NNode.DefaultHiddenActivationFunction.name,
-            'DefaultOutputActivationFunction': NNode.DefaultOutputActivationFunction.name,
-            'AllowInputActivationMutations': NNode.AllowInputActivationMutations,
-            'AllowHiddenActivationMutations': NNode.AllowHiddenActivationMutations,
-            'AllowOutputActivationMutations': NNode.AllowOutputActivationMutations,
-            'AllowInputBiasMutations': NNode.AllowInputBiasMutations,
-            'AllowHiddenBiasMutations': NNode.AllowHiddenBiasMutations,
-            'AllowOutputBiasMutations': NNode.AllowOutputBiasMutations,
-            'MutateActivationFunctionChance': NNode.MutateActivationFunctionChance,
-            'MutateBiasChance': NNode.MutateBiasChance,
-            'NudgeBiasChance': NNode.NudgeBiasChance,
-            'MinimumBiasValue': NNode.MinimumBiasValue,
-            'MaximumBiasValue': NNode.MaximumBiasValue
-        };
-    }
-    serialize() {
-        return {
-            'id': this.id,
-            'type': this.type,
-            'layer': this.layer,
-            'bias': this.bias,
-            'connectionsIn': this.connectionsIn,
-            'connectionsOut': this.connectionsOut,
-            'activationFunction': this.activationFunction.name
-        };
-    }
-    static FromSerial(serial) {
-        const node = new NNode(serial.id, serial.type, serial.layer);
-        node.bias = serial.bias;
-        node.connectionsIn = serial.connectionsIn;
-        node.connectionsOut = serial.connectionsOut;
-        node.activationFunction = ActivationFunction.FromSerial(serial.activationFunction);
-        return node;
     }
 }
 //# sourceMappingURL=neat-node.js.map

@@ -41,24 +41,5 @@ class Connection {
     clamp() {
         this.weight = clamp(this.weight, Connection.MinimumWeightValue, Connection.MaximumWeightValue);
     }
-    static GetPresets() {
-        return {
-            'MinimumWeightValue': Connection.MinimumWeightValue,
-            'MaximumWeightValue': Connection.MaximumWeightValue,
-            'MutateWeightChance': Connection.MutateWeightChance,
-            'NudgeWeightChance': Connection.NudgeWeightChance
-        };
-    }
-    serialize() {
-        return {
-            'id': this.id,
-            'inNode': this.inNode,
-            'outNode': this.outNode,
-            'weight': this.weight,
-            'enabled': this.enabled,
-            'recurrent': this.recurrent,
-            'innovationID': this.innovationID
-        };
-    }
 }
 //# sourceMappingURL=connection.js.map

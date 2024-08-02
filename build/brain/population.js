@@ -185,12 +185,5 @@ class Population {
                 .forEach((s, i) => g.fillText(getSpeciesText(s), 240, 25 + i * 10));
         }
     }
-    static GetPresets() {
-        return {
-            'Speciation': Population.Speciation,
-            'Elitism': Population.Elitism,
-            'ElitePercent': Population.ElitePercent
-        };
-    }
 }
 //# sourceMappingURL=population.js.map
