@@ -215,16 +215,4 @@ class Species {
 
     return offspring
   }
-
-  static GetPresets() {
-    return {
-      'ExcessFactor': Species.ExcessFactor,
-      'DisjointFactor': Species.DisjointFactor,
-      'WeightFactor': Species.WeightFactor,
-      'GenerationPenalization': Species.GenerationPenalization,
-      'TargetSpecies': Species.TargetSpecies,
-      'DynamicThreshold': Species.DynamicThreshold,
-      'DynamicThresholdStepSize': Species.DynamicThresholdStepSize
-    }
-  }
 }

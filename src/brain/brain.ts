@@ -480,40 +480,4 @@ class Brain {
     g.fillStyle = '#fff'
     g.fillText(this.fitness.toString(), xOffset + 10, yOffset + 10)
   }
-
-  static GetPresets() {
-    return {
-      'AllowNewConnections': Brain.AllowNewConnections,
-      'AllowDisablingConnections': Brain.AllowDisablingConnections,
-      'AllowRecurrent': Brain.AllowRecurrent,
-      'AddConnectionChance': Brain.AddConnectionChance,
-      'DisableConnectionChance': Brain.DisableConnectionChance,
-      'ReenableConnectionChance': Brain.ReenableConnectionChance,
-      'AllowNewNodes': Brain.AllowNewNodes,
-      'AddANodeChance': Brain.AddANodeChance
-    }
-  }
-
-  serialize() {
-    return {
-      'nodes': this.nodes.map(n => n.serialize()),
-      'connections': this.connections.map(c => c.serialize())
-    }
-  }
-
-  static FromSerial(serial: string): Brain {
-    const brain = new Brain()
-    const serialObj = JSON.parse(serial) as BrainSerial
-    brain.nodes = serialObj.nodes.map(s => NNode.FromSerial(s))
-    for (const connection of serialObj.connections) {
-      const c = new Connection(connection.id,
-        connection.inNode, connection.outNode,
-        connection.weight, connection.enabled, connection.recurrent)
-      c.innovationID = connection.innovationID
-      brain.connections.push(c)
-    }
-    brain.inputNodes = brain.nodes.filter(n => n.type == NNodeType.Input)
-    brain.outputNodes = brain.nodes.filter(n => n.type == NNodeType.Output)
-    return brain
-  }
 }
