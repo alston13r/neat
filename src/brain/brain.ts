@@ -90,7 +90,7 @@ class Brain {
       }
     }
 
-    this.#updateSortedConnections()
+    if (Population.Speciation) this.#updateSortedConnections()
 
     return this
   }
@@ -100,9 +100,7 @@ class Brain {
    * This does not run if speciation is not enabled.
    */
   #updateSortedConnections() {
-    if (Population.Speciation) {
-      this.#connectionsSorted = this.connections.filter(c => c.enabled).sort((a, b) => a.innovationID - b.innovationID)
-    }
+    this.#connectionsSorted = this.connections.filter(c => c.enabled).sort((a, b) => a.innovationID - b.innovationID)
   }
 
   /**
@@ -179,7 +177,7 @@ class Brain {
       potentialConflicts.push(...outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent))
     }
     this.fixRecurrent()
-    this.#updateSortedConnections()
+    if (Population.Speciation) this.#updateSortedConnections()
   }
 
   /**
@@ -200,7 +198,7 @@ class Brain {
       const nodeB = this.nodes[B]
 
       if (A == B || nodeA.layer == nodeB.layer
-        || nodeA.layer > nodeB.layer && !Brain.AllowRecurrent) continue
+        || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer) continue
 
       for (const connection of this.connections) {
         if (connection.inNode == A && connection.outNode == B) { // connection already exists
@@ -213,7 +211,7 @@ class Brain {
       } // outside of connection search loop
       // therefore connection does not exist yet
       this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(), true, nodeA.layer > nodeB.layer)
-      this.#updateSortedConnections()
+      if (Population.Speciation) this.#updateSortedConnections()
       break attempt
     }
   }
@@ -347,7 +345,7 @@ class Brain {
       )
     })
 
-    clone.#updateSortedConnections()
+    if (Population.Speciation) clone.#updateSortedConnections()
 
     return clone
   }
