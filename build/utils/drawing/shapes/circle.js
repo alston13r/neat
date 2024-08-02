@@ -5,6 +5,11 @@ class Circle {
         this.pos = vec2.fromValues(x, y);
         this.radius = radius;
     }
+    static FromPointAndRadius(pos, radius) {
+        const circle = new Circle(0, 0, radius);
+        circle.pos = pos;
+        return circle;
+    }
     get x() {
         return this.pos[0];
     }

@@ -8,35 +8,41 @@ class Ship {
     static NumRays = 5;
     static RayDeltaTheta = 0.3;
     static RayLength = 300;
-    pos;
+    static UpdateRaysConstantA = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta;
+    static UpdateRaysConstantB = (Ship.NumRays - 1) * Ship.RayDeltaTheta / Ship.NumRays;
+    pos = vec2.create();
     game;
-    heading;
-    velocity;
-    lasers;
-    alive;
-    top = vec2.create();
-    left = vec2.create();
-    right = vec2.create();
+    heading = -Math.PI / 2;
+    velocity = vec2.create();
+    lasers = [];
+    alive = true;
+    top = vec2.fromValues(0, -20);
+    left = vec2.fromValues(13.511804342269897, 14.745546579360962);
+    right = vec2.fromValues(-13.486047983169556, 14.769107103347778);
     rays;
     shootTimer = 0;
-    constructor(game, x, y) {
+    constructor(game) {
         this.game = game;
-        this.pos = vec2.fromValues(x, y);
-        this.heading = -Math.PI / 2;
-        this.velocity = vec2.create();
-        this.lasers = [];
-        this.alive = true;
-        this.updateTopLeftRight();
-        this.rays = new Array(Ship.NumRays).fill(0).map(() => new Ray2(this.pos)
-            .setLength(Ship.RayLength));
+        vec2.set(this.pos, game.width / 2, game.height / 2);
+        vec2.add(this.top, this.top, this.pos);
+        vec2.add(this.left, this.left, this.pos);
+        vec2.add(this.right, this.right, this.pos);
+        this.rays = [];
+        for (let i = 0; i < Ship.NumRays; i++) {
+            this.rays.push(new Ray2(this.pos).setLength(Ship.RayLength));
+        }
         this.updateRays();
     }
-    get canShoot() {
-        return this.shootTimer <= 0;
-    }
-    kill() {
-        this.alive = false;
-        this.game.dispatchEvent(new CustomEvent('end'));
+    reset() {
+        vec2.set(this.pos, this.game.width / 2, this.game.height / 2);
+        this.heading = -Math.PI / 2;
+        vec2.zero(this.velocity);
+        this.lasers.length = 0;
+        this.alive = true;
+        vec2.set(this.top, 0, -20);
+        vec2.set(this.left, 13.511804342269897, 14.745546579360962);
+        vec2.set(this.right, -13.486047983169556, 14.769107103347778);
+        this.updateRays();
     }
     loadInputs(straight = 0, turn = 0, shoot = 0) {
         this.push(straight);
@@ -45,13 +51,15 @@ class Ship {
             this.shoot();
     }
     update() {
-        this.shootTimer--;
-        this.shootTimer = clamp(this.shootTimer, 0, Ship.ShootDelay);
+        if (this.shootTimer > 0)
+            this.shootTimer--;
+        if (this.shootTimer < 0)
+            this.shootTimer = 0;
         vec2.add(this.pos, this.pos, this.velocity);
         vec2.scale(this.velocity, this.velocity, 0.999);
         this.wrap();
         this.updateTopLeftRight();
-        for (let laser of [...this.lasers].reverse()) {
+        for (const laser of this.lasers) {
             laser.update();
         }
         this.updateRays();
@@ -65,34 +73,32 @@ class Ship {
         vec2.add(this.right, this.right, this.pos);
     }
     updateRays() {
-        const maxHeadingOffset = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta;
-        this.rays.forEach((ray, i) => ray.setAngle(lerp(i, 0, Ship.NumRays, this.heading - maxHeadingOffset, this.heading + maxHeadingOffset)));
+        for (let i = 0; i < Ship.NumRays; i++) {
+            const angle = i * Ship.UpdateRaysConstantB + (this.heading - Ship.UpdateRaysConstantA);
+            const ray = this.rays[i];
+            vec2.copy(ray.dir, FastVec2FromRadian(angle));
+            vec2.add(ray.posPlusDir, ray.pos, ray.dir);
+        }
     }
     push(direction) {
         if (direction == 0)
             return;
-        const c = Math.cos(this.heading) * direction * 0.1;
-        const s = Math.sin(this.heading) * direction * 0.1;
-        const dir = vec2.fromValues(c, s);
-        vec2.add(this.velocity, this.velocity, dir);
+        const dir = FastVec2FromRadian(this.heading);
+        vec2.scaleAndAdd(this.velocity, this.velocity, dir, direction * 0.1);
         if (vec2.length(this.velocity) > Ship.MaxSpeed) {
             vec2.normalize(this.velocity, this.velocity);
             vec2.scale(this.velocity, this.velocity, Ship.MaxSpeed);
         }
     }
     wrap() {
-        const x = this.pos[0];
-        const y = this.pos[1];
-        const w = this.game.width;
-        const h = this.game.height;
-        if (x > w)
+        if (this.pos[0] > this.game.width)
             this.pos[0] = 0;
-        if (x < 0)
-            this.pos[0] = w;
-        if (y > h)
+        else if (this.pos[0] < 0)
+            this.pos[0] = this.game.width;
+        if (this.pos[1] > this.game.height)
             this.pos[1] = 0;
-        if (y < 0)
-            this.pos[1] = h;
+        else if (this.pos[1] < 0)
+            this.pos[1] = this.game.height;
     }
     turn(direction) {
         if (direction == 0)
@@ -101,54 +107,41 @@ class Ship {
         this.heading %= 2 * Math.PI;
     }
     shoot() {
-        if (this.canShoot) {
+        if (this.shootTimer <= 0) {
             new Laser(this);
             this.shootTimer = Ship.ShootDelay;
         }
     }
-    draw(g) {
-        g.strokeTriangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1]);
-        this.lasers.forEach(laser => laser.draw(g));
-    }
-    createPath() {
-        let path = new Triangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1]).createPath();
-        this.lasers.forEach(laser => laser.appendToPath(path));
-        return path;
-    }
-    appendToPath(path) {
-        new Triangle(this.top[0], this.top[1], this.left[0], this.left[1], this.right[0], this.right[1]).appendToPath(path);
-        this.lasers.forEach(laser => laser.appendToPath(path));
-        return path;
-    }
     getRayInfo() {
-        const info = [];
         const asteroidCircles = this.game.asteroids.map(asteroid => asteroid.getCollisionCircle());
-        for (const ray of this.rays) {
-            const point = ray.castOntoClosest(asteroidCircles);
-            if (point) {
-                const distance = vec2.distance(this.pos, point);
-                const hitting = distance <= Ship.RayLength;
-                info.push({ ray, hitting, distance: lerp(distance, 0, Ship.RayLength, 0, 1) });
-            }
-            else {
-                info.push({ ray, hitting: false, distance: -1 });
-            }
-        }
-        return info;
+        return this.rays.map(ray => {
+            const point = ray.castOntoCircles(asteroidCircles);
+            if (point)
+                return vec2.distance(this.pos, point) / (Ship.RayLength);
+            return -1;
+        });
     }
     getInfo() {
-        return {
-            game: this.game,
-            ship: this,
-            alive: this.alive,
-            posX: this.pos[0] / this.game.width,
-            posY: this.pos[1] / this.game.height,
-            velX: this.velocity[0] / Ship.MaxSpeed,
-            velY: this.velocity[1] / Ship.MaxSpeed,
-            heading: this.heading / Math.PI / 2,
-            canShoot: this.canShoot,
-            rays: this.getRayInfo()
-        };
+        return [
+            this.pos[0] / this.game.width,
+            this.pos[1] / this.game.height,
+            this.velocity[0] / Ship.MaxSpeed,
+            this.velocity[1] / Ship.MaxSpeed,
+            this.heading / TwoPi,
+            this.shootTimer == 0 ? 1 : 0,
+            ...this.getRayInfo()
+        ];
+    }
+    loadIntoBrain(b) {
+        return b.think([
+            this.pos[0] / this.game.width,
+            this.pos[1] / this.game.height,
+            this.velocity[0] / Ship.MaxSpeed,
+            this.velocity[1] / Ship.MaxSpeed,
+            this.heading / TwoPi,
+            this.shootTimer <= 0 ? 1 : 0,
+            ...this.getRayInfo()
+        ]);
     }
 }
 //# sourceMappingURL=ship.js.map

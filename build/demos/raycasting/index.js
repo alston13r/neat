@@ -1,5 +1,4 @@
 const raycastingGraphics = new Graphics().setSize(800, 600).appendToBody();
-const raycastingDrawQueue = raycastingGraphics.initDrawQueue('#fff', false, true, 1);
 const particle = new Particle();
 const walls = [];
 const circles = [];

@@ -1,7 +1,6 @@
 class Graphics {
     canvas;
     context;
-    drawQueues = [];
     constructor(canvas) {
         this.canvas = canvas || document.createElement('canvas');
         this.context = this.canvas.getContext('2d');
@@ -116,8 +115,9 @@ class Graphics {
         if (nPoints <= 2)
             return;
         const p1 = points[0];
+        this.context.beginPath();
         this.context.moveTo(p1[0], p1[1]);
-        for (let i = 1; i < length; i++) {
+        for (let i = 1; i < nPoints; i++) {
             const p = points[i];
             this.context.lineTo(p[0], p[1]);
         }
@@ -128,9 +128,9 @@ class Graphics {
         const nPoints = points.length;
         if (nPoints <= 2)
             return;
-        const p1 = points[0];
-        this.context.moveTo(p1[0], p1[1]);
-        for (let i = 1; i < length; i++) {
+        this.context.beginPath();
+        this.context.moveTo(points[0][0], points[0][1]);
+        for (let i = 1; i < nPoints; i++) {
             const p = points[i];
             this.context.lineTo(p[0], p[1]);
         }
@@ -152,11 +152,6 @@ class Graphics {
     }
     clear() {
         this.context.clearRect(0, 0, this.width, this.height);
-    }
-    initDrawQueue(color = '#fff', filling = false, stroking = true, lineWidth = 1) {
-        let queue = new DrawQueue(this, color, filling, stroking, lineWidth);
-        this.drawQueues.push(queue);
-        return queue;
     }
     record(time, name = 'video', framerate = 0) {
         const chunks = [];

@@ -21,7 +21,7 @@ class Connection {
         this.weight = weight;
         this.enabled = enabled;
         this.recurrent = recurrent;
-        this.innovationID = Innovations.GetInnovationID(inNode, outNode);
+        this.innovationID = Innovations.GetInnovationID(inNode.id, outNode.id);
     }
     clone() {
         return new Connection(this.id, this.inNode, this.outNode, this.weight, this.enabled, this.recurrent);
