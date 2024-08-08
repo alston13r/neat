@@ -1,3 +1,103 @@
+class MatrixError extends Error {
+    constructor(message = '', options) {
+        super(message, options);
+        this.message = message;
+    }
+}
+class MatN {
+    rows = 0;
+    cols = 0;
+    data = [];
+    static Create() {
+        return new MatN();
+    }
+    static Clone(a) {
+        let clone = new MatN();
+        clone.rows = a.rows;
+        clone.cols = a.cols;
+        clone.data = a.data.slice();
+        return clone;
+    }
+    static Copy(out, a) {
+        out.rows = a.rows;
+        out.cols = a.cols;
+        out.data = a.data.slice();
+        return out;
+    }
+    static Identity(out, size) {
+        out.rows = size;
+        out.cols = size;
+        out.data.length = 0;
+        out.data = [];
+        for (let i = 0; i < size * size; i++) {
+            out.data[i] = i % (size + 1) == 0 ? 1 : 0;
+        }
+        return out;
+    }
+    static FromData(data, rows, cols) {
+        let out = new MatN();
+        out.rows = rows;
+        out.cols = cols;
+        out.data = data;
+        if (rows * cols != data.length) {
+            throw new MatrixError('Matrix Operation<SetData>: Data length incompatible with dimensions');
+        }
+        return out;
+    }
+    static SetData(out, data, rows, cols) {
+        if (rows * cols != data.length) {
+            throw new MatrixError('Matrix Operation<SetData>: Data length incompatible with dimensions');
+        }
+        out.rows = rows;
+        out.cols = cols;
+        out.data = data;
+        return out;
+    }
+    static Add(out, a, b) {
+        if (a.rows != b.rows || a.cols != b.cols) {
+            throw new MatrixError('Matrix Operation<Addition>: Incompatible dimensions');
+        }
+        if (out != a) {
+            out.rows = a.rows;
+            out.cols = a.cols;
+            out.data.length = 0;
+            out.data = [];
+        }
+        for (let i = 0; i < a.data.length; i++) {
+            out.data[i] = a.data[i] + b.data[i];
+        }
+        return out;
+    }
+    static Subtract(out, a, b) {
+        if (a.rows != b.rows || a.cols != b.cols) {
+            throw new MatrixError('Matrix Operation<Subtraction>: Incompatible dimensions');
+        }
+        if (out != a) {
+            out.rows = a.rows;
+            out.cols = a.cols;
+            out.data.length = 0;
+            out.data = [];
+        }
+        for (let i = 0; i < a.data.length; i++) {
+            out.data[i] = a.data[i] - b.data[i];
+        }
+        return out;
+    }
+    static Sub(out, a, b) { return null; }
+    static MultiplyScalar(out, a, scale) {
+        if (out != a) {
+            out.rows = a.rows;
+            out.cols = a.cols;
+            out.data.length = 0;
+            out.data = [];
+        }
+        for (let i = 0; i < a.rows * a.cols; i++) {
+            out.data[i] = a.data[i] * scale;
+        }
+        return out;
+    }
+}
+MatN.Sub = MatN.Subtract;
 class Matrix {
     rows;
     cols;
