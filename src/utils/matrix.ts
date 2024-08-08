@@ -1,4 +1,142 @@
-// TODO
+class MatrixError extends Error {
+  constructor(message = '', options?: ErrorOptions) {
+    super(message, options)
+    this.message = message
+  }
+}
+
+class MatN {
+  rows = 0
+  cols = 0
+  data: number[] = []
+
+  static Create() {
+    return new MatN()
+  }
+
+  static Clone(a: MatN) {
+    let clone = new MatN()
+    clone.rows = a.rows
+    clone.cols = a.cols
+    clone.data = a.data.slice()
+    return clone
+  }
+
+  static Copy(out: MatN, a: MatN) {
+    out.rows = a.rows
+    out.cols = a.cols
+    out.data = a.data.slice()
+    return out
+  }
+
+  static Identity(out: MatN, size: number) {
+    out.rows = size
+    out.cols = size
+    out.data.length = 0
+    out.data = []
+    for (let i = 0; i < size * size; i++) {
+      out.data[i] = i % (size + 1) == 0 ? 1 : 0
+    }
+    return out
+  }
+
+  static FromData(data: number[], rows: number, cols: number) {
+    let out = new MatN()
+    out.rows = rows
+    out.cols = cols
+    out.data = data
+    if (rows * cols != data.length) {
+      throw new MatrixError('Matrix Operation<SetData>: Data length incompatible with dimensions')
+    }
+    return out
+  }
+
+  static SetData(out: MatN, data: number[], rows: number, cols: number) {
+    if (rows * cols != data.length) {
+      throw new MatrixError('Matrix Operation<SetData>: Data length incompatible with dimensions')
+    }
+    out.rows = rows
+    out.cols = cols
+    out.data = data
+    return out
+  }
+
+  static Add(out: MatN, a: MatN, b: MatN) {
+    if (a.rows != b.rows || a.cols != b.cols) {
+      throw new MatrixError('Matrix Operation<Addition>: Incompatible dimensions')
+    }
+    if (out != a) {
+      out.rows = a.rows
+      out.cols = a.cols
+      out.data.length = 0
+      out.data = []
+    }
+    for (let i = 0; i < a.data.length; i++) {
+      out.data[i] = a.data[i] + b.data[i]
+    }
+    return out
+  }
+
+  static Subtract(out: MatN, a: MatN, b: MatN) {
+    if (a.rows != b.rows || a.cols != b.cols) {
+      throw new MatrixError('Matrix Operation<Subtraction>: Incompatible dimensions')
+    }
+    if (out != a) {
+      out.rows = a.rows
+      out.cols = a.cols
+      out.data.length = 0
+      out.data = []
+    }
+    for (let i = 0; i < a.data.length; i++) {
+      out.data[i] = a.data[i] - b.data[i]
+    }
+    return out
+  }
+  static Sub(out: MatN, a: MatN, b: MatN): MatN { return null }
+
+  // static Multiply(out: MatN, a: MatN, b: MatN) {
+  //   if (a.cols != b.rows) {
+  //     throw new MatrixError('Matrix Operation<Multiplication>: Incompatible dimensions')
+  //   }
+  //   out.rows = a.rows
+  //   out.cols = b.cols
+  //   out.data.length = 0
+  //   out.data = []
+  //   for (let i = 0; i < out.rows * out.cols; i++) {
+  //     // row = 
+  //     let s = 0
+  //     // TODO
+  //     // out.data[i] = a.rows[i] dot b.cols[i]
+  //   }
+  //   return out
+  // }
+  // static Mul(out: MatN, a: MatN, b: MatN): MatN { return null }
+
+  static MultiplyScalar(out: MatN, a: MatN, scale: number) {
+    if (out != a) {
+      out.rows = a.rows
+      out.cols = a.cols
+      out.data.length = 0
+      out.data = []
+    }
+    for (let i = 0; i < a.rows * a.cols; i++) {
+      out.data[i] = a.data[i] * scale
+    }
+    return out
+  }
+
+  // scalar and add
+
+  // transpose
+  // determinant
+  // str
+  // exact equals
+  // equals
+}
+
+MatN.Sub = MatN.Subtract
+// MatN.Mul = MatN.Multiply
+
 class Matrix {
   rows: number
   cols: number
