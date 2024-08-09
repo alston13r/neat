@@ -22,14 +22,14 @@ class Population {
         Species.DynamicThreshold += Math.sign(this.speciesList.length - Species.TargetSpecies) * Species.DynamicThresholdStepSize;
     }
     getFittest() {
-        return this.members.reduce((best, curr) => Brain.GetFitter(best, curr));
+        return this.members.reduce((best, curr) => BrainOOP.GetFitter(best, curr));
     }
     updateFittestEver() {
         const genFittest = this.getFittest();
         if (this.fittestEver == null)
             this.fittestEver = genFittest;
         else
-            this.fittestEver = Brain.GetFitter(this.fittestEver, genFittest);
+            this.fittestEver = BrainOOP.GetFitter(this.fittestEver, genFittest);
         return this.fittestEver;
     }
     updateGensSinceImproved() {
@@ -66,7 +66,7 @@ class Population {
             if (this.members.length < this.popSize) {
                 const difference = this.popSize - this.members.length;
                 for (let i = 0; i < difference; i++) {
-                    this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
+                    this.members.push(new BrainOOP().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
                 }
             }
         }
@@ -79,7 +79,7 @@ class Population {
             const parents = [];
             Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length);
             for (let i = 0; i < parents.length; i += 2) {
-                this.members.push(Brain.Crossover(parents[i], parents[i + 1]));
+                this.members.push(BrainOOP.Crossover(parents[i], parents[i + 1]));
             }
         }
     }
@@ -89,7 +89,7 @@ class Population {
     nextGeneration() {
         if (this.members.length == 0) {
             this.members = new Array(this.popSize).fill(0)
-                .map(() => new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
+                .map(() => new BrainOOP().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance));
         }
         else {
             this.produceOffspring();

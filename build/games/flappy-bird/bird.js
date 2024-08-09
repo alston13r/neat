@@ -10,7 +10,7 @@ class Bird {
     brain;
     alive = true;
     constructor(brain) {
-        this.brain = brain || new Brain().initialize(6, 0, 1);
+        this.brain = brain || new BrainOOP().initialize(6, 0, 1);
         this.pos = vec2.fromValues(64, flappyBirdGraphics.height / 2);
     }
     draw(g, many = false) {

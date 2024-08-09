@@ -1,4 +1,4 @@
-class ConnectionLike {
+class ConnectionBenchmark {
     innovationID;
     weight;
     constructor(innovationID, weight = Math.random() * 2 - 1) {
@@ -6,7 +6,7 @@ class ConnectionLike {
         this.innovationID = innovationID;
     }
     static FromValues(arr) {
-        return arr.map(x => new ConnectionLike(x));
+        return arr.map(x => new ConnectionBenchmark(x));
     }
 }
 function assertEqualsArray(expected, actual) {
@@ -38,8 +38,8 @@ function ConstructTest(fn, args, name, amount = 1) {
         return [diff, diff / amount, assertEqualsArray(expectedValues, results)];
     };
 }
-const brainALike = ConnectionLike.FromValues([0, 1, 2, 4, 6, 7, 9]);
-const brainBLike = ConnectionLike.FromValues([0, 1, 3, 4, 5, 7, 8, 10, 12]);
+const brainALike = ConnectionBenchmark.FromValues([0, 1, 2, 4, 6, 7, 9]);
+const brainBLike = ConnectionBenchmark.FromValues([0, 1, 3, 4, 5, 7, 8, 10, 12]);
 const testAmount = 10000000;
 const tests = [
     ConstructTest(CompareMethod1, [brainALike, brainBLike], 'Method 1: original', testAmount),

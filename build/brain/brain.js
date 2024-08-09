@@ -1,4 +1,4 @@
-class Brain {
+class BrainOOP {
     static AllowNewConnections = true;
     static AllowDisablingConnections = false;
     static AllowRecurrent = false;
@@ -69,7 +69,7 @@ class Brain {
         return connection;
     }
     fixRecurrent() {
-        if (!Brain.AllowRecurrent)
+        if (!BrainOOP.AllowRecurrent)
             return;
         const recurrent = this.connections.filter(c => c.recurrent);
         if (recurrent.length == 0)
@@ -118,13 +118,13 @@ class Brain {
             const nodeA = this.nodes[A];
             const nodeB = this.nodes[B];
             if (A == B || nodeA.layer == nodeB.layer
-                || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer)
+                || !BrainOOP.AllowRecurrent && nodeA.layer > nodeB.layer)
                 continue;
             for (const connection of this.connections) {
                 if (connection.inNode.id == A && connection.outNode.id == B) {
                     if (connection.enabled)
                         continue attempt;
-                    if (Math.random() < Brain.ReenableConnectionChance) {
+                    if (Math.random() < BrainOOP.ReenableConnectionChance) {
                         connection.enabled = true;
                         break attempt;
                     }
@@ -153,13 +153,13 @@ class Brain {
         for (let connection of this.connections) {
             connection.mutate();
         }
-        if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
+        if (BrainOOP.AllowNewConnections && Math.random() < BrainOOP.AddConnectionChance) {
             this.addAConnection();
         }
-        else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
+        else if (BrainOOP.AllowDisablingConnections && Math.random() < BrainOOP.DisableConnectionChance) {
             this.disableAConnection();
         }
-        else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
+        else if (BrainOOP.AllowNewNodes && Math.random() < BrainOOP.AddANodeChance) {
             this.addANode();
         }
         for (let node of this.nodes) {
@@ -199,7 +199,7 @@ class Brain {
         return (brainA.fitness > brainB.fitness ? brainA : brainB);
     }
     clone() {
-        const clone = new Brain();
+        const clone = new BrainOOP();
         clone.nodes = this.nodes.map(node => node.clone());
         clone.inputNodes = clone.nodes.filter(node => node.type == NNodeType.Input);
         clone.outputNodes = clone.nodes.filter(node => node.type == NNodeType.Output);
