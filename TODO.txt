@@ -9,7 +9,6 @@ Make navigator site a little more cool looking
 Allow saving and loading of Brain and NeuralNetwork
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
-Make sure NeuralNetwork works properly
 Add games
   car racing
   pendulum balancing
