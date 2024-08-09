@@ -77,7 +77,6 @@ class Ship {
             const angle = i * Ship.UpdateRaysConstantB + (this.heading - Ship.UpdateRaysConstantA);
             const ray = this.rays[i];
             vec2.copy(ray.dir, FastVec2FromRadian(angle));
-            vec2.add(ray.posPlusDir, ray.pos, ray.dir);
         }
     }
     push(direction) {

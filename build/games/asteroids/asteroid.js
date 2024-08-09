@@ -53,7 +53,7 @@ class Asteroid {
                 min = o;
         }
         asteroid.collisionRadius = (min + max) ** 2 / 4;
-        asteroid.collisionCircle = Circle.FromPointAndRadius(asteroid.pos, asteroid.collisionRadius);
+        asteroid.collisionCircle = Circle.FromPointAndRadius(asteroid.pos, Math.sqrt(asteroid.collisionRadius));
         asteroid.points = offsetArray.map((offset, index) => {
             return vec2.scale([], offset, radiusOffsets[index]);
         });
@@ -99,7 +99,7 @@ class Asteroid {
         return vec2.squaredDistance(this.pos, laser.pos) <= this.collisionRadius;
     }
     getCollisionCircle() {
-        return new Circle(this.pos[0], this.pos[1], Math.sqrt(this.collisionRadius));
+        return this.collisionCircle;
     }
 }
 //# sourceMappingURL=asteroid.js.map

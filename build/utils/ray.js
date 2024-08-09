@@ -1,17 +1,14 @@
 class Ray2 {
     pos;
     dir;
-    posPlusDir = vec2.create();
     length;
     constructor(pos, angle = 0, length = 1) {
         this.pos = pos;
         this.dir = FastVec2FromRadian(angle);
-        vec2.add(this.posPlusDir, pos, this.dir);
         this.length = length;
     }
     setAngle(angle) {
         vec2.copy(this.dir, FastVec2FromRadian(angle));
-        vec2.add(this.posPlusDir, this.pos, this.dir);
         return this;
     }
     setLength(length) {
@@ -87,7 +84,7 @@ class Ray2 {
         const x2 = x1 + dx;
         const y2 = y1 + dy;
         const det = x1 * y2 - x2 * y1;
-        const disc = circle.radius - det ** 2;
+        const disc = circle.radius ** 2 - det ** 2;
         if (disc < 0)
             return;
         const discSqrt = Math.sqrt(disc);
@@ -98,10 +95,11 @@ class Ray2 {
         const S = (-det * dx - Math.abs(dy) * discSqrt) + cy;
         const p1 = vec2.fromValues(P, Q);
         const p2 = vec2.fromValues(R, S);
+        const posAddDir = vec2.add(vec2.create(), this.pos, this.dir);
         const d1 = vec2.squaredDistance(this.pos, p1);
-        const d2 = vec2.squaredDistance(this.posPlusDir, p1);
+        const d2 = vec2.squaredDistance(posAddDir, p1);
         const d3 = vec2.squaredDistance(this.pos, p2);
-        const d4 = vec2.squaredDistance(this.posPlusDir, p2);
+        const d4 = vec2.squaredDistance(posAddDir, p2);
         const p1Forward = d2 < d1;
         const p2Forward = d4 < d3;
         if (!p1Forward && !p2Forward)
