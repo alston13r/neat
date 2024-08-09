@@ -1,4 +1,4 @@
-const neuralNetGraphics = new Graphics().setSize(800, 600).appendToBody();
+const neuralNetGraphics = new Graphics(document.getElementById('mainCanvas')).setSize(800, 600);
 neuralNetGraphics.font = '20px arial';
 neuralNetGraphics.textBaseline = 'top';
 const desired = TrainingValues.XOR;

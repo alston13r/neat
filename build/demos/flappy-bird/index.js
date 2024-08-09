@@ -1,4 +1,4 @@
-const flappyBirdGraphics = new Graphics().setSize(400, 600).appendTo(document.body);
+const flappyBirdGraphics = new Graphics(document.getElementById('mainCanvas')).setSize(400, 600);
 const sliderDiv = document.createElement('div');
 const slider = document.createElement('input');
 slider.type = 'range';

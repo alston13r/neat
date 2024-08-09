@@ -1,4 +1,4 @@
-const xorGraphics = new Graphics().setSize(800, 550).appendTo(document.body);
+const xorGraphics = new Graphics(document.getElementById('mainCanvas')).setSize(800, 550);
 const xorTrainingValues = TrainingValues.XOR;
 const xorPopSize = 1000;
 const xorPopulation = new Population(xorPopSize, 2, 0, 1);
