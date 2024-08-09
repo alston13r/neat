@@ -35,10 +35,12 @@ class Brain {
   outputNodes: NNode[] = []
   /** An array of the brain's connections */
   connections: Connection[] = []
-  /** Helper array that has connections sorted by innovation ID */
+  /** Array of enabled connections sorted by innovation ID */
   #connectionsSorted: Connection[] = []
   /** Boolean indicating if the brain is an elite from the prior generation */
   isElite = false
+  /** Array of the output values for all nodes */
+  outputValues: number[] = []
 
   /**
    * Initializes the brain's topology to contain the specified number of input nodes,
@@ -175,14 +177,11 @@ class Brain {
   }
 
   /**
-   * Helper method to add a new connection to the brain's topology during the mutation process.
-   * This method takes two random nodes, does some sanity checks, and creates a connection between
-   * them. A maximum of 20 iterations are used to find a valid pair of nodes. A valid pair of nodes
-   * are nodes not on the same layer and the nodes are not the same. If the first node's layer is
-   * less than the second node's, aka the first comes before the second, no additional checks are
-   * needed. If the first node comes after the second node, the recurrent connections flag needs
-   * to be enabled for the connection to be made. If the nodes are valid, the connection has a
-   * random weight, is enabled, and recurrent when appropriate.
+   * Attempts to add a new random connection in the topology, called during the mutation
+   * process. A new connection will be added between any two valid nodes. The checks for
+   * valid nodes are: they are not the same node; they are not on the same layer; they are
+   * not recurrent when recurrent connections are disabled. When they are valid, a new
+   * connection is made with a random weight.
    */
   addAConnection() {
     attempt: for (let i = 0; i < 20; i++) {
@@ -286,6 +285,43 @@ class Brain {
       }
     }
   }
+
+  // hasBundle = false
+  // bundle: number[] = []
+
+  // createBundle() {
+  //   if (this.hasBundle) return
+  //   this.hasBundle = true
+  //   // input nodes
+  //   //   activated
+  //   // hidden / output nodes
+  //   //   weighted sum values
+  //   //   activated
+
+  //   // for (let i = 0; i <= this.outputNodes[0].layer; i++) {
+  //   //   const currentLayer = this.nodes.filter(n => n.layer == i)
+  //   //   for (const node of currentLayer) {
+  //   //     if (i > 0) {
+  //   //       node.sumInput = 0
+  //   //       for (const connectionInId of node.connectionsIn) {
+  //   //         const connectionIn = this.connections[connectionInId]
+  //   //         if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
+  //   //       }
+  //   //     }
+  //   //     node.activate()
+  //   //   }
+  //   // }
+  // }
+
+  // op codes
+  // op code, arg / value
+  // 0 = computing sum input, incoming node id, weight
+  // 1 = end sum input, node to put sum input to, blank
+  // runQuick() {
+  //   if (!this.hasBundle) this.createBundle()
+
+  //   // actually run the network
+  // }
 
   /**
    * Returns an array of the output node layer's values. This is meant to
