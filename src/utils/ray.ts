@@ -3,19 +3,16 @@ type CastableObject = Line | Circle
 class Ray2 {
   pos: Vec2
   dir: Vec2
-  posPlusDir: Vec2 = vec2.create()
   length: number
 
   constructor(pos: Vec2, angle = 0, length = 1) {
     this.pos = pos
     this.dir = FastVec2FromRadian(angle)
-    vec2.add(this.posPlusDir, pos, this.dir)
     this.length = length
   }
 
   setAngle(angle: number): Ray2 {
     vec2.copy(this.dir, FastVec2FromRadian(angle))
-    vec2.add(this.posPlusDir, this.pos, this.dir)
     return this
   }
 
@@ -101,7 +98,7 @@ class Ray2 {
     const y2 = y1 + dy
 
     const det = x1 * y2 - x2 * y1
-    const disc = circle.radius - det ** 2
+    const disc = circle.radius ** 2 - det ** 2
 
     if (disc < 0) return
     const discSqrt = Math.sqrt(disc)
@@ -116,10 +113,12 @@ class Ray2 {
     const p1 = vec2.fromValues(P, Q)
     const p2 = vec2.fromValues(R, S)
 
+    const posAddDir = vec2.add(vec2.create(), this.pos, this.dir)
+
     const d1 = vec2.squaredDistance(this.pos, p1)
-    const d2 = vec2.squaredDistance(this.posPlusDir, p1)
+    const d2 = vec2.squaredDistance(posAddDir, p1)
     const d3 = vec2.squaredDistance(this.pos, p2)
-    const d4 = vec2.squaredDistance(this.posPlusDir, p2)
+    const d4 = vec2.squaredDistance(posAddDir, p2)
 
     const p1Forward = d2 < d1
     const p2Forward = d4 < d3

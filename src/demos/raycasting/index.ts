@@ -101,24 +101,24 @@ const walls: Line[] = []
 const circles: Circle[] = []
 
 for (let i = 0; i < 5; i++) {
-  const x1: number = Math.random() * raycastingGraphics.width
-  const y1: number = Math.random() * raycastingGraphics.height
-  const x2: number = Math.random() * raycastingGraphics.width
-  const y2: number = Math.random() * raycastingGraphics.height
+  const x1 = Math.random() * raycastingGraphics.width
+  const y1 = Math.random() * raycastingGraphics.height
+  const x2 = Math.random() * raycastingGraphics.width
+  const y2 = Math.random() * raycastingGraphics.height
   walls[i] = new Line(x1, y1, x2, y2)
 }
 
 for (let i = 0; i < 5; i++) {
-  const x: number = Math.random() * raycastingGraphics.width
-  const y: number = Math.random() * raycastingGraphics.height
-  const r: number = Math.random() * 20 + 5
+  const x = Math.random() * raycastingGraphics.width
+  const y = Math.random() * raycastingGraphics.height
+  const r = Math.random() * 20 + 5
   circles[i] = new Circle(x, y, r)
 }
 
 const objects: (Line | Circle)[] = (walls as any[]).concat(circles)
 
-let mouseX: number = 400
-let mouseY: number = 300
+let mouseX = 400
+let mouseY = 300
 
 raycastingGraphics.canvas.addEventListener('mousemove', e => {
   mouseX = e.offsetX
