@@ -22,7 +22,7 @@ class Species {
   static DynamicThresholdStepSize = 0.5
 
   /** An array of this species' members */
-  members: Brain[] = []
+  members: BrainOOP[] = []
   /** The number of allowed offspring this species can produce */
   allowedOffspring = 0
   /** The number of generations since this species has improved */
@@ -44,7 +44,7 @@ class Species {
    * @param brainB the second topology
    * @returns compatibility of the topologies
    */
-  static Compare(brainA: Brain, brainB: Brain) {
+  static Compare(brainA: BrainOOP, brainB: BrainOOP) {
     const enabledA = brainA.getSortedConnections()
     const enabledB = brainB.getSortedConnections()
     const lenA = enabledA.length
@@ -153,13 +153,13 @@ class Species {
   static Speciate(population: Population) {
     const list = population.speciesList
     const champions = list.map(species => {
-      const champion = Brain.TakeRandomMember(species.members)
+      const champion = BrainOOP.TakeRandomMember(species.members)
       species.members.forEach(member => member.species = null)
       species.members = [champion]
       return champion
     })
 
-    let unspeciated: Brain[]
+    let unspeciated: BrainOOP[]
 
     champions.forEach(champion => {
       unspeciated = population.members.filter(member => member.species == null)
@@ -175,7 +175,7 @@ class Species {
 
     unspeciated = population.members.filter(member => member.species == null)
     while (unspeciated.length > 0) {
-      const champion = Brain.TakeRandomMember(unspeciated)
+      const champion = BrainOOP.TakeRandomMember(unspeciated)
       champion.species = new Species()
       champion.species.members.push(champion)
       population.speciesList.push(champion.species)
@@ -199,18 +199,18 @@ class Species {
    * any remaining spots are produced by crossover between two parents rolled
    * by a roulette wheel.
    */
-  produceOffspring(): Brain[] {
+  produceOffspring(): BrainOOP[] {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       this.members.length = 0
       return []
     }
-    const offspring: Brain[] = []
+    const offspring: BrainOOP[] = []
     if (Population.Elitism) Population.GetElites(offspring, this.members, this.allowedOffspring)
 
-    const parents: Brain[] = []
+    const parents: BrainOOP[] = []
     Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length)
     for (let i = 0; i < parents.length; i += 2) {
-      offspring.push(Brain.Crossover(parents[i], parents[i + 1]))
+      offspring.push(BrainOOP.Crossover(parents[i], parents[i + 1]))
     }
 
     return offspring

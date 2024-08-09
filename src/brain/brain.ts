@@ -5,7 +5,7 @@
  * houses the necessary methods and fields needed to augment its topology and process
  * data.
  */
-class Brain {
+class BrainOOP {
   /** Toggle for new connections */
   static AllowNewConnections = true
   /** Toggle for connection disabling */
@@ -39,8 +39,6 @@ class Brain {
   #connectionsSorted: Connection[] = []
   /** Boolean indicating if the brain is an elite from the prior generation */
   isElite = false
-  /** Array of the output values for all nodes */
-  outputValues: number[] = []
 
   /**
    * Initializes the brain's topology to contain the specified number of input nodes,
@@ -134,7 +132,7 @@ class Brain {
    * recurrent flag if it's no longer recurrent.
    */
   fixRecurrent() {
-    if (!Brain.AllowRecurrent) return
+    if (!BrainOOP.AllowRecurrent) return
     const recurrent = this.connections.filter(c => c.recurrent)
     if (recurrent.length == 0) return
     for (const connection of recurrent) {
@@ -191,12 +189,12 @@ class Brain {
       const nodeB = this.nodes[B]
 
       if (A == B || nodeA.layer == nodeB.layer
-        || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer) continue
+        || !BrainOOP.AllowRecurrent && nodeA.layer > nodeB.layer) continue
 
       for (const connection of this.connections) {
         if (connection.inNode.id == A && connection.outNode.id == B) { // connection already exists
           if (connection.enabled) continue attempt // next attempt
-          if (Math.random() < Brain.ReenableConnectionChance) { // reenable connection
+          if (Math.random() < BrainOOP.ReenableConnectionChance) { // reenable connection
             connection.enabled = true
             break attempt
           } else continue attempt // failed to reenable
@@ -238,11 +236,11 @@ class Brain {
       connection.mutate()
     }
 
-    if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
+    if (BrainOOP.AllowNewConnections && Math.random() < BrainOOP.AddConnectionChance) {
       this.addAConnection() // add a connection
-    } else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
+    } else if (BrainOOP.AllowDisablingConnections && Math.random() < BrainOOP.DisableConnectionChance) {
       this.disableAConnection() // disable a connection
-    } else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
+    } else if (BrainOOP.AllowNewNodes && Math.random() < BrainOOP.AddANodeChance) {
       this.addANode() // add a node
     }
 
@@ -286,43 +284,6 @@ class Brain {
     }
   }
 
-  // hasBundle = false
-  // bundle: number[] = []
-
-  // createBundle() {
-  //   if (this.hasBundle) return
-  //   this.hasBundle = true
-  //   // input nodes
-  //   //   activated
-  //   // hidden / output nodes
-  //   //   weighted sum values
-  //   //   activated
-
-  //   // for (let i = 0; i <= this.outputNodes[0].layer; i++) {
-  //   //   const currentLayer = this.nodes.filter(n => n.layer == i)
-  //   //   for (const node of currentLayer) {
-  //   //     if (i > 0) {
-  //   //       node.sumInput = 0
-  //   //       for (const connectionInId of node.connectionsIn) {
-  //   //         const connectionIn = this.connections[connectionInId]
-  //   //         if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
-  //   //       }
-  //   //     }
-  //   //     node.activate()
-  //   //   }
-  //   // }
-  // }
-
-  // op codes
-  // op code, arg / value
-  // 0 = computing sum input, incoming node id, weight
-  // 1 = end sum input, node to put sum input to, blank
-  // runQuick() {
-  //   if (!this.hasBundle) this.createBundle()
-
-  //   // actually run the network
-  // }
-
   /**
    * Returns an array of the output node layer's values. This is meant to
    * be run after the brain's has propagated values through it.
@@ -349,7 +310,7 @@ class Brain {
    * @param brainA the first brain
    * @param brainB the second brain
    */
-  static GetFitter(brainA: Brain, brainB: Brain) {
+  static GetFitter(brainA: BrainOOP, brainB: BrainOOP) {
     return (brainA.fitness > brainB.fitness ? brainA : brainB)
   }
 
@@ -358,7 +319,7 @@ class Brain {
    * @returns the clone
    */
   clone() {
-    const clone = new Brain()
+    const clone = new BrainOOP()
 
     // nodes
     clone.nodes = this.nodes.map(node => node.clone())
@@ -387,11 +348,11 @@ class Brain {
    * @param brainB the second parent
    * @returns the offspring
    */
-  static Crossover(brainA: Brain, brainB: Brain) {
+  static Crossover(brainA: BrainOOP, brainB: BrainOOP) {
     if (brainA == brainB) return brainA.clone()
     else {
-      let offspring: Brain
-      let other: Brain
+      let offspring: BrainOOP
+      let other: BrainOOP
       if (brainA.fitness >= brainB.fitness) {
         offspring = brainA.clone()
         other = brainB
@@ -421,7 +382,7 @@ class Brain {
    * @param members the list of members to select from
    * @returns the random member
    */
-  static TakeRandomMember(members: Brain[]) {
+  static TakeRandomMember(members: BrainOOP[]) {
     return members.splice(Math.floor(Math.random() * members.length), 1)[0]
   }
 
