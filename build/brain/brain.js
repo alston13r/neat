@@ -15,6 +15,7 @@ class Brain {
     connections = [];
     #connectionsSorted = [];
     isElite = false;
+    outputValues = [];
     initialize(inputN, hiddenN, outputN, enabledChance = 1) {
         this.nodes.length = 0;
         this.inputNodes.length = 0;
@@ -155,12 +156,15 @@ class Brain {
         }
         if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
             this.addAConnection();
+            this.bundled = false;
         }
         else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
             this.disableAConnection();
+            this.bundled = false;
         }
         else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
             this.addANode();
+            this.bundled = false;
         }
         for (let node of this.nodes) {
             node.mutate();
@@ -187,12 +191,48 @@ class Brain {
             }
         }
     }
+    bundled = false;
+    connectionsSortedByLayer = [];
+    runQuick() {
+        if (!this.bundled) {
+            this.connectionsSortedByLayer.length = 0;
+            const nodesSortedByLayer = this.nodes.slice().sort((a, b) => a.layer - b.layer);
+            for (const node of nodesSortedByLayer) {
+                for (const connection of this.connections) {
+                    if (connection.enabled && node == connection.outNode)
+                        this.connectionsSortedByLayer.push(connection);
+                }
+            }
+            this.bundled = true;
+        }
+        for (const node of this.inputNodes)
+            node.activate();
+        const lastConnection = this.connectionsSortedByLayer[this.connectionsSortedByLayer.length - 1];
+        let lastNode;
+        for (const connection of this.connectionsSortedByLayer) {
+            if (lastNode == null)
+                lastNode = connection.outNode;
+            if (lastNode != connection.outNode) {
+                lastNode.activate();
+                lastNode = connection.outNode;
+                lastNode.sumInput = 0;
+            }
+            lastNode.sumInput += connection.inNode.sumOutput * connection.weight;
+            if (connection == lastConnection)
+                lastNode.activate();
+        }
+    }
     getOutput() {
         return this.outputNodes.map(node => node.sumOutput);
     }
     think(inputs) {
         this.loadInputs(inputs);
         this.runTheNetwork();
+        return this.getOutput();
+    }
+    thinkQuick(inputs) {
+        this.loadInputs(inputs);
+        this.runQuick();
         return this.getOutput();
     }
     static GetFitter(brainA, brainB) {
