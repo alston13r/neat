@@ -15,6 +15,7 @@ class Brain {
     connections = [];
     #connectionsSorted = [];
     isElite = false;
+    outputValues = [];
     initialize(inputN, hiddenN, outputN, enabledChance = 1) {
         this.nodes.length = 0;
         this.inputNodes.length = 0;
@@ -167,8 +168,8 @@ class Brain {
         }
     }
     loadInputs(inputs) {
-        inputs.forEach((value, i) => {
-            this.inputNodes[i].sumInput = value;
+        this.inputNodes.forEach((node, index) => {
+            this.outputValues[node.id] = node.activate(inputs[index]);
         });
     }
     runTheNetwork() {
@@ -176,19 +177,19 @@ class Brain {
             const currentLayer = this.nodes.filter(n => n.layer == i);
             for (const node of currentLayer) {
                 if (i > 0) {
-                    node.sumInput = 0;
+                    let sumInput = 0;
                     for (const connectionInId of node.connectionsIn) {
                         const connectionIn = this.connections[connectionInId];
                         if (connectionIn.enabled)
-                            node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight;
+                            sumInput += this.outputValues[connectionIn.inNode.id] * connectionIn.weight;
                     }
+                    this.outputValues[node.id] = node.activate(sumInput);
                 }
-                node.activate();
             }
         }
     }
     getOutput() {
-        return this.outputNodes.map(node => node.sumOutput);
+        return this.outputNodes.map(node => this.outputValues[node.id]);
     }
     think(inputs) {
         this.loadInputs(inputs);

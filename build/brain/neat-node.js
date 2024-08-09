@@ -24,8 +24,6 @@ class NNode {
     id;
     type;
     layer;
-    sumInput = 0;
-    sumOutput = 0;
     bias = 0;
     connectionsIn = [];
     connectionsOut = [];
@@ -47,9 +45,8 @@ class NNode {
     static GenerateRandomBias() {
         return Math.random() * (this.MaximumBiasValue - this.MinimumBiasValue) + this.MinimumBiasValue;
     }
-    activate() {
-        this.sumOutput = this.activationFunction.fn(this.sumInput + this.bias);
-        return this.sumOutput;
+    activate(input) {
+        return this.activationFunction.fn(input + this.bias);
     }
     clone() {
         const copy = new NNode(this.id, this.type, this.layer, this.bias);
