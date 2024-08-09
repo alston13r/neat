@@ -159,5 +159,14 @@ class Ship {
       this.shootTimer <= 0 ? 1 : 0,
       ...this.getRayInfo()
     ])
+    // return b.thinkQuick([
+    //   this.pos[0] / this.game.width,
+    //   this.pos[1] / this.game.height,
+    //   this.velocity[0] / Ship.MaxSpeed,
+    //   this.velocity[1] / Ship.MaxSpeed,
+    //   this.heading / TwoPi,
+    //   this.shootTimer <= 0 ? 1 : 0,
+    //   ...this.getRayInfo()
+    // ])
   }
 }

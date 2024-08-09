@@ -240,10 +240,13 @@ class Brain {
 
     if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
       this.addAConnection() // add a connection
+      this.bundled = false
     } else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
       this.disableAConnection() // disable a connection
+      this.bundled = false
     } else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
       this.addANode() // add a node
+      this.bundled = false
     }
 
     // mutate activation functions and bias
@@ -286,42 +289,33 @@ class Brain {
     }
   }
 
-  // hasBundle = false
-  // bundle: number[] = []
-
-  // createBundle() {
-  //   if (this.hasBundle) return
-  //   this.hasBundle = true
-  //   // input nodes
-  //   //   activated
-  //   // hidden / output nodes
-  //   //   weighted sum values
-  //   //   activated
-
-  //   // for (let i = 0; i <= this.outputNodes[0].layer; i++) {
-  //   //   const currentLayer = this.nodes.filter(n => n.layer == i)
-  //   //   for (const node of currentLayer) {
-  //   //     if (i > 0) {
-  //   //       node.sumInput = 0
-  //   //       for (const connectionInId of node.connectionsIn) {
-  //   //         const connectionIn = this.connections[connectionInId]
-  //   //         if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
-  //   //       }
-  //   //     }
-  //   //     node.activate()
-  //   //   }
-  //   // }
-  // }
-
-  // op codes
-  // op code, arg / value
-  // 0 = computing sum input, incoming node id, weight
-  // 1 = end sum input, node to put sum input to, blank
-  // runQuick() {
-  //   if (!this.hasBundle) this.createBundle()
-
-  //   // actually run the network
-  // }
+  bundled = false
+  connectionsSortedByLayer: Connection[] = []
+  runQuick() {
+    if (!this.bundled) {
+      this.connectionsSortedByLayer.length = 0
+      const nodesSortedByLayer = this.nodes.slice().sort((a, b) => a.layer - b.layer)
+      for (const node of nodesSortedByLayer) {
+        for (const connection of this.connections) {
+          if (connection.enabled && node == connection.outNode) this.connectionsSortedByLayer.push(connection)
+        }
+      }
+      this.bundled = true
+    }
+    for (const node of this.inputNodes) node.activate()
+    const lastConnection = this.connectionsSortedByLayer[this.connectionsSortedByLayer.length - 1]
+    let lastNode: NNode
+    for (const connection of this.connectionsSortedByLayer) {
+      if (lastNode == null) lastNode = connection.outNode
+      if (lastNode != connection.outNode) {
+        lastNode.activate()
+        lastNode = connection.outNode
+        lastNode.sumInput = 0
+      }
+      lastNode.sumInput += connection.inNode.sumOutput * connection.weight
+      if (connection == lastConnection) lastNode.activate()
+    }
+  }
 
   /**
    * Returns an array of the output node layer's values. This is meant to
@@ -341,6 +335,12 @@ class Brain {
   think(inputs: number[]) {
     this.loadInputs(inputs)
     this.runTheNetwork()
+    return this.getOutput()
+  }
+
+  thinkQuick(inputs: number[]) {
+    this.loadInputs(inputs)
+    this.runQuick()
     return this.getOutput()
   }
 
