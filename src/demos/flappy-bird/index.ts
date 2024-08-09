@@ -10,7 +10,7 @@
 // let counter: number = 0
 // let cycles: number = 1
 
-const flappyBirdGraphics: Graphics = new Graphics().setSize(400, 600).appendTo(document.body)
+const flappyBirdGraphics = new Graphics(document.getElementById('mainCanvas') as HTMLCanvasElement).setSize(400, 600)
 const sliderDiv = document.createElement('div')
 const slider = document.createElement('input')
 slider.type = 'range'

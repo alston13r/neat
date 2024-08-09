@@ -1,6 +1,6 @@
 /// <reference path="../../neural-network/neural-network.ts" />
 
-const neuralNetGraphics = new Graphics().setSize(800, 600).appendToBody()
+const neuralNetGraphics = new Graphics(document.getElementById('mainCanvas') as HTMLCanvasElement).setSize(800, 600)
 neuralNetGraphics.font = '20px arial'
 neuralNetGraphics.textBaseline = 'top'
 
