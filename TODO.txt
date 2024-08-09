@@ -1,6 +1,7 @@
 Specify reference paths for every file
 Improve creation of population with an options object
 Improve raycasting
+  posAddDir as a field
 Add workers
 Add more shapes for intersection testing with raycasting
 Make navigator site a little more cool looking
