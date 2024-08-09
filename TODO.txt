@@ -1,3 +1,6 @@
+Bundle Brain
+  Create an array of easy-to-do operations since runTheNetwork gets
+  called pretty often for the same network
 Specify reference paths for every file
 Improve creation of population with an options object
 Improve raycasting
