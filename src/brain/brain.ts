@@ -257,8 +257,8 @@ class Brain {
    * @param inputs the array of inputs
    */
   loadInputs(inputs: number[]) {
-    inputs.forEach((value, i) => {
-      this.inputNodes[i].sumInput = value
+    this.inputNodes.forEach((node, index) => {
+      this.outputValues[node.id] = node.activate(inputs[index])
     })
   }
 
@@ -275,43 +275,56 @@ class Brain {
       const currentLayer = this.nodes.filter(n => n.layer == i)
       for (const node of currentLayer) {
         if (i > 0) {
-          node.sumInput = 0
+          let sumInput = 0
           for (const connectionInId of node.connectionsIn) {
             const connectionIn = this.connections[connectionInId]
-            if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
+            if (connectionIn.enabled) sumInput += this.outputValues[connectionIn.inNode.id] * connectionIn.weight
           }
+          this.outputValues[node.id] = node.activate(sumInput)
         }
-        node.activate()
       }
     }
   }
 
   // hasBundle = false
-  // bundle: number[] = []
+  bundle: number[]
 
-  // createBundle() {
-  //   if (this.hasBundle) return
-  //   this.hasBundle = true
-  //   // input nodes
-  //   //   activated
-  //   // hidden / output nodes
-  //   //   weighted sum values
-  //   //   activated
+  createBundle() {
+    this.bundle = []
+    const maxLayer = this.outputNodes[0].layer
+    for (let i = 0; i <= maxLayer; i++) {
+      const currentLayer = this.nodes.filter(n => n.layer == i)
+      for (const node of currentLayer) {
+        if (i > 0) {
 
-  //   // for (let i = 0; i <= this.outputNodes[0].layer; i++) {
-  //   //   const currentLayer = this.nodes.filter(n => n.layer == i)
-  //   //   for (const node of currentLayer) {
-  //   //     if (i > 0) {
-  //   //       node.sumInput = 0
-  //   //       for (const connectionInId of node.connectionsIn) {
-  //   //         const connectionIn = this.connections[connectionInId]
-  //   //         if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
-  //   //       }
-  //   //     }
-  //   //     node.activate()
-  //   //   }
-  //   // }
-  // }
+        } else {
+
+        }
+      }
+    }
+
+    //   if (this.hasBundle) return
+    //   this.hasBundle = true
+    //   // input nodes
+    //   //   activated
+    //   // hidden / output nodes
+    //   //   weighted sum values
+    //   //   activated
+
+    //   // for (let i = 0; i <= this.outputNodes[0].layer; i++) {
+    //   //   const currentLayer = this.nodes.filter(n => n.layer == i)
+    //   //   for (const node of currentLayer) {
+    //   //     if (i > 0) {
+    //   //       node.sumInput = 0
+    //   //       for (const connectionInId of node.connectionsIn) {
+    //   //         const connectionIn = this.connections[connectionInId]
+    //   //         if (connectionIn.enabled) node.sumInput += connectionIn.inNode.sumOutput * connectionIn.weight
+    //   //       }
+    //   //     }
+    //   //     node.activate()
+    //   //   }
+    //   // }
+  }
 
   // op codes
   // op code, arg / value
@@ -329,7 +342,7 @@ class Brain {
    * @returns the output node layer's values
    */
   getOutput() {
-    return this.outputNodes.map(node => node.sumOutput)
+    return this.outputNodes.map(node => this.outputValues[node.id])
   }
 
   /**

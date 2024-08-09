@@ -50,10 +50,6 @@ class NNode {
   type: NNodeType
   /** The node's layer within the Brain's topology */
   layer: number
-  /** The weighted sum of the node's incoming connection values */
-  sumInput = 0
-  /** The activated sum input */
-  sumOutput = 0
   /** The node's bias weight, this gets added in before activation but is not represented in the sum input value */
   bias = 0
   /** An array of incoming connections */
@@ -104,9 +100,8 @@ class NNode {
    * 
    * @returns the sum output
    */
-  activate() {
-    this.sumOutput = this.activationFunction.fn(this.sumInput + this.bias)
-    return this.sumOutput
+  activate(input: number) {
+    return this.activationFunction.fn(input + this.bias)
   }
 
   /**
