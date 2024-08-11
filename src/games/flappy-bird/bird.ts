@@ -8,11 +8,11 @@ class Bird {
   velocity = vec2.create()
   score = 0
   fitness = 0
-  brain: Brain
+  brain: BrainOOP
   alive = true
 
-  constructor(brain?: Brain) {
-    this.brain = brain || new Brain().initialize(6, 0, 1)
+  constructor(brain?: BrainOOP) {
+    this.brain = brain || new BrainOOP().initialize(6, 0, 1)
     this.pos = vec2.fromValues(64, flappyBirdGraphics.height / 2)
   }
 

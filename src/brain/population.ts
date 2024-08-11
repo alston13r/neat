@@ -15,7 +15,7 @@ class Population {
   /** A counter for the current generation */
   generationCounter = 0
   /** An array of the population's members */
-  members: Brain[] = []
+  members: BrainOOP[] = []
   /** The number of members the population will always have */
   popSize: number
   /** The number of input nodes that members will be initialized with */
@@ -27,7 +27,7 @@ class Population {
   /** The enabled connections percent that members will be initialized with */
   enabledChance: number
   /** A reference to the population's fittest member ever */
-  fittestEver: Brain
+  fittestEver: BrainOOP
   /** Array of all current species */
   speciesList: Species[] = []
 
@@ -61,7 +61,7 @@ class Population {
    * @returns the fittest member
    */
   getFittest() {
-    return this.members.reduce((best, curr) => Brain.GetFitter(best, curr))
+    return this.members.reduce((best, curr) => BrainOOP.GetFitter(best, curr))
   }
 
   /**
@@ -73,7 +73,7 @@ class Population {
   updateFittestEver() {
     const genFittest = this.getFittest()
     if (this.fittestEver == null) this.fittestEver = genFittest
-    else this.fittestEver = Brain.GetFitter(this.fittestEver, genFittest)
+    else this.fittestEver = BrainOOP.GetFitter(this.fittestEver, genFittest)
     return this.fittestEver
   }
 
@@ -141,17 +141,17 @@ class Population {
       if (this.members.length < this.popSize) {
         const difference = this.popSize - this.members.length
         for (let i = 0; i < difference; i++) {
-          this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
+          this.members.push(new BrainOOP().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
         }
       }
     } else {
       const copyOfMembers = [...this.members]
       if (Population.Elitism) Population.GetElites(this.members, copyOfMembers, this.popSize)
       else this.members.length = 0
-      const parents: Brain[] = []
+      const parents: BrainOOP[] = []
       Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length)
       for (let i = 0; i < parents.length; i += 2) {
-        this.members.push(Brain.Crossover(parents[i], parents[i + 1]))
+        this.members.push(BrainOOP.Crossover(parents[i], parents[i + 1]))
       }
     }
   }
@@ -171,7 +171,7 @@ class Population {
   nextGeneration() {
     if (this.members.length == 0) {
       this.members = new Array(this.popSize).fill(0)
-        .map(() => new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
+        .map(() => new BrainOOP().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
     } else {
       this.produceOffspring()
       this.generationCounter++
@@ -206,7 +206,7 @@ class Population {
    * @param count the number of brains to select
    * @returns the selections
    */
-  static RouletteWheel(out: Brain[], list: Brain[], count: number) {
+  static RouletteWheel(out: BrainOOP[], list: BrainOOP[], count: number) {
     if (count == 0 || list.length == 0) {
       out.length = 0
       return out
@@ -245,7 +245,7 @@ class Population {
    * @param count the number of pairs to select
    * @returns the array of pairings
    */
-  static GeneratePairings(out: Brain[], list: Brain[], count: number) {
+  static GeneratePairings(out: BrainOOP[], list: BrainOOP[], count: number) {
     if (count == 0) {
       out.length = 0
       return out
@@ -261,7 +261,7 @@ class Population {
    * @param limit the limit for the number of elites
    * @returns the elites
    */
-  static GetElites(out: Brain[], list: Brain[], limit: number) {
+  static GetElites(out: BrainOOP[], list: BrainOOP[], limit: number) {
     out.length = 0
     if (limit == 0) return out
     list.sort((a, b) => b.fitness - a.fitness)
@@ -283,7 +283,7 @@ class Population {
     g.font = '20px arial'
     g.fillText(`Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5)
 
-    const getMemberText = (brain: Brain, i: number) => {
+    const getMemberText = (brain: BrainOOP, i: number) => {
       const a = brain.fitness.toPrecision(6)
       const b = (brain.fitness / brain.species.members.length).toPrecision(6)
       return `${i + 1}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`

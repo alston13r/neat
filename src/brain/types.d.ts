@@ -1,5 +1,5 @@
 declare interface RouletteWheelItem {
-  brain: Brain
+  brain: BrainOOP
   value: number
   sum: number
 }

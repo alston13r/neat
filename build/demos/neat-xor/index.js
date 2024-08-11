@@ -4,7 +4,7 @@ const xorPopSize = 1000;
 const xorPopulation = new Population(xorPopSize, 2, 0, 1);
 const xorDesiredFitness = 3.95;
 const xorMaxGenerations = 1000;
-Brain.AllowRecurrent = false;
+BrainOOP.AllowRecurrent = false;
 let xorSolution;
 function calculateFitness(brain) {
     brain.fitness = 0;

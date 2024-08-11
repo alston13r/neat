@@ -1,4 +1,4 @@
-class Brain {
+class BrainOOP {
     static AllowNewConnections = true;
     static AllowDisablingConnections = false;
     static AllowRecurrent = false;
@@ -15,7 +15,6 @@ class Brain {
     connections = [];
     #connectionsSorted = [];
     isElite = false;
-    outputValues = [];
     initialize(inputN, hiddenN, outputN, enabledChance = 1) {
         this.nodes.length = 0;
         this.inputNodes.length = 0;
@@ -70,7 +69,7 @@ class Brain {
         return connection;
     }
     fixRecurrent() {
-        if (!Brain.AllowRecurrent)
+        if (!BrainOOP.AllowRecurrent)
             return;
         const recurrent = this.connections.filter(c => c.recurrent);
         if (recurrent.length == 0)
@@ -119,13 +118,13 @@ class Brain {
             const nodeA = this.nodes[A];
             const nodeB = this.nodes[B];
             if (A == B || nodeA.layer == nodeB.layer
-                || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer)
+                || !BrainOOP.AllowRecurrent && nodeA.layer > nodeB.layer)
                 continue;
             for (const connection of this.connections) {
                 if (connection.inNode.id == A && connection.outNode.id == B) {
                     if (connection.enabled)
                         continue attempt;
-                    if (Math.random() < Brain.ReenableConnectionChance) {
+                    if (Math.random() < BrainOOP.ReenableConnectionChance) {
                         connection.enabled = true;
                         break attempt;
                     }
@@ -154,17 +153,14 @@ class Brain {
         for (let connection of this.connections) {
             connection.mutate();
         }
-        if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
+        if (BrainOOP.AllowNewConnections && Math.random() < BrainOOP.AddConnectionChance) {
             this.addAConnection();
-            this.bundled = false;
         }
-        else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
+        else if (BrainOOP.AllowDisablingConnections && Math.random() < BrainOOP.DisableConnectionChance) {
             this.disableAConnection();
-            this.bundled = false;
         }
-        else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
+        else if (BrainOOP.AllowNewNodes && Math.random() < BrainOOP.AddANodeChance) {
             this.addANode();
-            this.bundled = false;
         }
         for (let node of this.nodes) {
             node.mutate();
@@ -191,37 +187,6 @@ class Brain {
             }
         }
     }
-    bundled = false;
-    connectionsSortedByLayer = [];
-    runQuick() {
-        if (!this.bundled) {
-            this.connectionsSortedByLayer.length = 0;
-            const nodesSortedByLayer = this.nodes.slice().sort((a, b) => a.layer - b.layer);
-            for (const node of nodesSortedByLayer) {
-                for (const connection of this.connections) {
-                    if (connection.enabled && node == connection.outNode)
-                        this.connectionsSortedByLayer.push(connection);
-                }
-            }
-            this.bundled = true;
-        }
-        for (const node of this.inputNodes)
-            node.activate();
-        const lastConnection = this.connectionsSortedByLayer[this.connectionsSortedByLayer.length - 1];
-        let lastNode;
-        for (const connection of this.connectionsSortedByLayer) {
-            if (lastNode == null)
-                lastNode = connection.outNode;
-            if (lastNode != connection.outNode) {
-                lastNode.activate();
-                lastNode = connection.outNode;
-                lastNode.sumInput = 0;
-            }
-            lastNode.sumInput += connection.inNode.sumOutput * connection.weight;
-            if (connection == lastConnection)
-                lastNode.activate();
-        }
-    }
     getOutput() {
         return this.outputNodes.map(node => node.sumOutput);
     }
@@ -230,16 +195,11 @@ class Brain {
         this.runTheNetwork();
         return this.getOutput();
     }
-    thinkQuick(inputs) {
-        this.loadInputs(inputs);
-        this.runQuick();
-        return this.getOutput();
-    }
     static GetFitter(brainA, brainB) {
         return (brainA.fitness > brainB.fitness ? brainA : brainB);
     }
     clone() {
-        const clone = new Brain();
+        const clone = new BrainOOP();
         clone.nodes = this.nodes.map(node => node.clone());
         clone.inputNodes = clone.nodes.filter(node => node.type == NNodeType.Input);
         clone.outputNodes = clone.nodes.filter(node => node.type == NNodeType.Output);

@@ -89,7 +89,7 @@ class Species {
     static Speciate(population) {
         const list = population.speciesList;
         const champions = list.map(species => {
-            const champion = Brain.TakeRandomMember(species.members);
+            const champion = BrainOOP.TakeRandomMember(species.members);
             species.members.forEach(member => member.species = null);
             species.members = [champion];
             return champion;
@@ -109,7 +109,7 @@ class Species {
         });
         unspeciated = population.members.filter(member => member.species == null);
         while (unspeciated.length > 0) {
-            const champion = Brain.TakeRandomMember(unspeciated);
+            const champion = BrainOOP.TakeRandomMember(unspeciated);
             champion.species = new Species();
             champion.species.members.push(champion);
             population.speciesList.push(champion.species);
@@ -134,7 +134,7 @@ class Species {
         const parents = [];
         Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length);
         for (let i = 0; i < parents.length; i += 2) {
-            offspring.push(Brain.Crossover(parents[i], parents[i + 1]));
+            offspring.push(BrainOOP.Crossover(parents[i], parents[i + 1]));
         }
         return offspring;
     }
