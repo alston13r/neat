@@ -1,3 +1,5 @@
+Allow saving and loading of Brain and NeuralNetwork
+
 Bundle Brain
   Create an array of easy-to-do operations since runTheNetwork gets
   called pretty often for the same network
@@ -10,7 +12,6 @@ Add more shapes for intersection testing with raycasting
 Make navigator site a little more cool looking
   Add some gifs of them working and individual
   tiles for each demo page
-Allow saving and loading of Brain and NeuralNetwork
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
 Add games
