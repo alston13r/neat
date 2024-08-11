@@ -242,6 +242,59 @@ class BrainOOP {
     static TakeRandomMember(members) {
         return members.splice(Math.floor(Math.random() * members.length), 1)[0];
     }
+    static FromSerial(str) {
+        const serial = JSON.parse(str);
+        const brain = new BrainOOP();
+        const maxLayer = (() => {
+            let t = 0;
+            for (let i = 0; i < serial.nodes.length; i += 4) {
+                if (serial.nodes[i + 3] > t)
+                    t = serial.nodes[i + 3];
+            }
+            return t;
+        })();
+        for (let i = 0; i < serial.nodes.length; i += 4) {
+            const id = serial.nodes[i];
+            const bias = serial.nodes[i + 1];
+            const fn = serial.nodes[i + 2];
+            const layer = serial.nodes[i + 3];
+            let type = NNodeType.Hidden;
+            if (layer == 0)
+                type = NNodeType.Input;
+            else if (layer == maxLayer)
+                type = NNodeType.Output;
+            const node = new NNode(id, type, layer, bias);
+            node.activationFunction = ActivationFunction.Arr[fn];
+            brain.nodes.push(node);
+        }
+        brain.nodes.sort((a, b) => a.id - b.id);
+        brain.inputNodes = brain.nodes.filter(node => node.type == NNodeType.Input);
+        brain.outputNodes = brain.nodes.filter(node => node.type == NNodeType.Output);
+        for (let i = 0; i < serial.connections.length; i += 5) {
+            const input = serial.connections[i];
+            const output = serial.connections[i + 1];
+            const enabled = serial.connections[i + 2] == 1;
+            const weight = serial.connections[i + 3];
+            const inputNode = brain.nodes[input];
+            const outputNode = brain.nodes[output];
+            const recurrent = inputNode.layer > outputNode.layer;
+            brain.constructConnection(inputNode, outputNode, weight, enabled, recurrent);
+        }
+    }
+    serialize() {
+        const nodes = [];
+        for (const node of this.nodes) {
+            nodes.push(node.id, node.bias, ActivationFunction.Arr.indexOf(node.activationFunction), node.layer);
+        }
+        const connections = [];
+        for (const connection of this.connections) {
+            connections.push(connection.inNode.id, connection.outNode.id, connection.enabled ? 1 : 0, connection.weight, connection.innovationID);
+        }
+        return {
+            nodes,
+            connections
+        };
+    }
     draw(g, maxWidth = 800, maxHeight = 600, xOffset = 0, yOffset = 0) {
         const nodePositions = new Map();
         const maxLayer = this.outputNodes[0].layer;
