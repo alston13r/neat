@@ -1,4 +1,4 @@
-function calcFitness(brain: BrainOOP) {
+function calcFitness(brain: Brain) {
   brain.fitness = 0
   for (const value of TrainingValues.XOR.random()) {
     const actual = brain.think(value.inputs)

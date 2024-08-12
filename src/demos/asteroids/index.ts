@@ -53,14 +53,14 @@ let currentGenerationTimeAlive = 0
 
 type GameBrainPair = {
   game: Asteroids
-  brain: BrainOOP
+  brain: Brain
 }
 
-function thinkBrain(brain: BrainOOP, game: Asteroids): number[] {
+function thinkBrain(brain: Brain, game: Asteroids): number[] {
   return game.ship.loadIntoBrain(brain)
 }
 
-const fittestRecords: BrainOOP[] = []
+const fittestRecords: Brain[] = []
 
 let pairings: GameBrainPair[] = []
 

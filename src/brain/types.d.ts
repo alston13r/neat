@@ -6,7 +6,7 @@ declare interface BrainSerial {
 }
 
 declare interface RouletteWheelItem {
-  brain: BrainOOP
+  brain: Brain
   value: number
   sum: number
 }

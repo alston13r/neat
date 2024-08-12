@@ -32,7 +32,7 @@ const ReenableConnectionChance = 0.25
 declare type NodeLike = [number, number, number, number]
 declare type ConnectionLike = [number, number, number, number, number]
 
-class BrainQuick {
+class TensorBrain {
   nodeN: number = 0
   nodes: number[] = [] // [id, bias, activation function, layer]
   connections: number[] = [] // [id in, id out, enabled, weight, innovation]

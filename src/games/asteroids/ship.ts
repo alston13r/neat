@@ -149,7 +149,7 @@ class Ship {
     ]
   }
 
-  loadIntoBrain(b: BrainOOP) {
+  loadIntoBrain(b: Brain) {
     return b.think([
       this.pos[0] / this.game.width,
       this.pos[1] / this.game.height,

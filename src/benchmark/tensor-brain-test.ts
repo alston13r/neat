@@ -1,12 +1,12 @@
 const brainQuickGraphics = new Graphics(document.getElementById('mainCanvas') as HTMLCanvasElement).setSize(800, 600)
 
-const brainQuick = new BrainQuick()
+const brainQuick = new TensorBrain()
 brainQuick.initialize(2, 1, 1)
 
 brainQuickGraphics.bg()
 drawBrain(brainQuick, brainQuickGraphics)
 
-function drawBrain(b: BrainQuick, g: Graphics) {
+function drawBrain(b: TensorBrain, g: Graphics) {
   const positions: Map<NodeLike, Vec2> = new Map<NodeLike, Vec2>()
 
   const brainNodes = (() => {

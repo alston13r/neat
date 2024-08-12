@@ -9,11 +9,11 @@ const xorPopulation = new Population(xorPopSize, 2, 0, 1)
 const xorDesiredFitness = 3.95
 const xorMaxGenerations = 1000
 
-BrainOOP.AllowRecurrent = false
+Brain.AllowRecurrent = false
 
-let xorSolution: BrainOOP
+let xorSolution: Brain
 
-function calculateFitness(brain: BrainOOP) {
+function calculateFitness(brain: Brain) {
   brain.fitness = 0
   for (const value of xorTrainingValues.random()) {
     const actual = brain.think(value.inputs)
