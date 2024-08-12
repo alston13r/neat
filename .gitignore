@@ -207,3 +207,9 @@ build/utils/drawing/shapes/rectangle.js
 build/utils/drawing/shapes/rectangle.js.map
 build/utils/drawing/shapes/triangle.js
 build/utils/drawing/shapes/triangle.js.map
+build/benchmark/tensor-brain-test.js
+build/benchmark/tensor-brain-test.js.map
+build/brain/tensor-brain.js
+build/brain/tensor-brain.js.map
+build/brain/tensor-brain.js
+build/brain/tensor-brain.js.map
