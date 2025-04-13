@@ -10,6 +10,51 @@ const vec4 = glMatrix.vec4
 
 glMatrix.ARRAY_TYPE = Array
 
+/**
+ * Filters an array of items by performing swap-pop remove. This will
+ * iterate through all elements in an array and any that don't match
+ * the predicate function will be: swapped with an item at the end of
+ * the array and then popped from the array.
+ * 
+ * @param array the array to filter according to the predicate function
+ * @param predicate a filter function that takes an item and returns a boolean
+ *                  indicating whether or not the item belongs in the array
+ * @param onRemove a callback function that gets called with an item that gets
+ *                 removed or doesn't pass the predicate function
+ */
+function swapPopRemove<T>(array: T[], predicate: (value: T) => boolean, onRemove?: (value: T) => void) {
+  for (let i = array.length - 1; i >= 0; i--) {
+    if (!predicate(array[i])) {
+      if (onRemove) onRemove(array[i])
+      array[i] = array[array.length - 1]
+      array.pop()
+    }
+  }
+}
+
+/**
+ * Filters an array of items in place. This will iterate through
+ * all elements in an array and any items that match the predicate
+ * function will be moved into the array.
+ * 
+ * @param array the array to filter according to the predicate function
+ * @param predicate a filter function that takes an item and returns a boolean
+ *                  indicating whether or not the item belongs in the array
+ * @param onRemove a callback function that gets called with an item that gets
+ *                 removed or doesn't pass the predicate function
+ */
+function filterInPlace<T>(array: T[], predicate: (value: T) => boolean, onRemove?: (value: T) => void) {
+  let i = 0
+  for (let j = 0; j < array.length; j++) {
+    if (predicate(array[j])) {
+      array[i++] = array[j]
+    } else if (onRemove) {
+      onRemove(array[j])
+    }
+  }
+  array.length = i
+}
+
 /** Constant for 2 PI */
 const TwoPi = Math.PI * 2
 /** Constant for converting a radian value to the degree lookup value for the fast trig table */

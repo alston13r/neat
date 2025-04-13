@@ -67,17 +67,7 @@ class Asteroids implements Drawable {
       this.checkAsteroidCount()
 
       // update list of lasers
-      for (let i = this.ship.lasers.length - 1; i >= 0; i--) {
-        const laser = this.ship.lasers[i]
-        if (!laser.active) {
-          // swap with end
-          this.ship.lasers[i] = this.ship.lasers[this.ship.lasers.length - 1]
-          // pop
-          this.ship.lasers.pop()
-          // release
-          LaserPool.release(laser)
-        }
-      }
+      swapPopRemove(this.ship.lasers, l => l.active, l => LaserPool.release(l))
     }
 
     // check for asteroid collisions with ship
@@ -91,17 +81,7 @@ class Asteroids implements Drawable {
 
   checkAsteroidCount() {
     // remove any deactivated asteroids
-    for (let i = this.asteroids.length - 1; i >= 0; i--) {
-      const asteroid = this.asteroids[i]
-      if (!asteroid.active) {
-        // swap with end
-        this.asteroids[i] = this.asteroids[this.asteroids.length - 1]
-        // pop
-        this.asteroids.pop()
-        // release
-        AsteroidPool.release(asteroid)
-      }
-    }
+    swapPopRemove(this.asteroids, a => a.active, a => AsteroidPool.release(a))
 
     if (this.asteroids.length < Asteroids.MinAsteroids) {
       for (let i = Asteroids.MinAsteroids - this.asteroids.length; i > 0; i--) {
