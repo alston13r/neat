@@ -2,8 +2,8 @@ class LaserPool {
   private static pool: Laser[] = []
 
   static acquire(ship: Ship): Laser {
-    if (this.pool.length > 0) {
-      const laser = this.pool.pop()
+    if (LaserPool.pool.length > 0) {
+      const laser = LaserPool.pool.pop()
       laser.reset(ship)
       return laser
     }
@@ -11,11 +11,11 @@ class LaserPool {
   }
 
   static release(laser: Laser) {
-    this.pool.push(laser)
+    LaserPool.pool.push(laser)
   }
 
   static clearPool() {
-    this.pool.length = 0
+    LaserPool.pool.length = 0
   }
 }
 

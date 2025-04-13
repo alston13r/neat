@@ -2,8 +2,8 @@ class AsteroidPool {
   private static pool: Asteroid[] = []
 
   static acquire(game: Asteroids, pos?: Vec2, radius?: number): Asteroid {
-    if (this.pool.length > 0) {
-      const asteroid = this.pool.pop()
+    if (AsteroidPool.pool.length > 0) {
+      const asteroid = AsteroidPool.pool.pop()
       asteroid.reset(game, pos, radius)
       return asteroid
     }
@@ -11,11 +11,11 @@ class AsteroidPool {
   }
 
   static release(asteroid: Asteroid) {
-    this.pool.push(asteroid)
+    AsteroidPool.pool.push(asteroid)
   }
 
   static clearPool() {
-    this.pool.length = 0
+    AsteroidPool.pool.length = 0
   }
 }
 
