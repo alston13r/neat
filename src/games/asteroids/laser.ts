@@ -53,7 +53,7 @@ class Laser {
       || this.pos[1] < 0
       || this.pos[0] > this.ship.game.width
       || this.pos[1] > this.ship.game.height
-    ) this.ship.lasers.splice(this.ship.lasers.indexOf(this), 1)
+    ) this.active = false
   }
 
   deactivate() {

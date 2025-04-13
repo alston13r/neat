@@ -80,9 +80,8 @@ class Ship {
     vec2.scale(this.velocity, this.velocity, 0.999)
     this.wrap()
     this.updateTopLeftRight()
-    for (const laser of this.lasers) {
-      laser.update()
-    }
+    for (const laser of this.lasers) laser.update()
+    swapPopRemove(this.lasers, l => l.active, l => LaserPool.release(l))
     this.updateRays()
   }
 
