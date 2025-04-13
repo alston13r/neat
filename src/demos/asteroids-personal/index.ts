@@ -1,5 +1,7 @@
 /// <reference path="../../utils/drawing/graphics.ts" />
 
+let temp
+
 {
   const asteroidsGraphics = new Graphics(document.getElementById('mainCanvas') as HTMLCanvasElement)
   asteroidsGraphics.setSize(800, 600)
@@ -22,6 +24,11 @@
   window.addEventListener('keyup', e => keysPressed[e.key] = 0)
 
   const game = new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
+
+  Asteroids.DebugDrawShipRays = true
+  Asteroids.DebugDrawAsteroidCollisionCircles = true
+
+  temp = game
 
   function asteroidsLoop(): void {
     asteroidsGraphics.bg()
