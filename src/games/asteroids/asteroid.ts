@@ -1,3 +1,20 @@
+class AsteroidPool {
+  private pool: Asteroid[] = []
+
+  acquire(game: Asteroids, pos?: Vec2, radius?: number): Asteroid {
+    if (this.pool.length > 0) {
+      const asteroid = this.pool.pop()
+      asteroid.reset(game, pos, radius)
+      return asteroid
+    }
+    return new Asteroid(game, pos, radius)
+  }
+
+  release(asteroid: Asteroid) {
+    this.pool.push(asteroid)
+  }
+}
+
 class Asteroid {
   static SizeCutoff = 10
 
@@ -36,6 +53,7 @@ class Asteroid {
   collisionRadius: number
   points: Vec2[] = []
   collisionCircle: Circle
+  active: boolean
 
   constructor(game: Asteroids, pos?: Vec2, radius?: number) {
     this.game = game
@@ -43,6 +61,17 @@ class Asteroid {
     this.radius = radius || Math.random() * 25 + 25
     this.velocity = vec2.random(vec2.create(), Math.random() * 0.5 + 1)
     Asteroid.GenerateRandomPoints(this)
+    this.active = true
+  }
+
+  reset(game: Asteroids, pos?: Vec2, radius?: number) {
+    this.game = game
+    if (pos) vec2.copy(this.pos, pos)
+    else vec2.zero(this.pos)
+    this.radius = radius || Math.random() * 25 + 25
+    vec2.random(this.velocity, Math.random() * 0.5 + 1)
+    Asteroid.GenerateRandomPoints(this)
+    this.active = true
   }
 
   static GenerateRandomPoints(asteroid: Asteroid) {
@@ -59,7 +88,6 @@ class Asteroid {
     asteroid.points = offsetArray.map((offset, index) => {
       return vec2.scale([], offset, radiusOffsets[index])
     })
-    return asteroid
   }
 
   update() {
@@ -67,20 +95,26 @@ class Asteroid {
     this.wrap()
   }
 
+  deactive() {
+    this.active = false
+  }
+
   split() {
-    for (let i = this.game.asteroids.length - 1; i >= 0; i--) {
-      if (this.game.asteroids[i] === this) {
-        this.game.asteroids.splice(i, 1)
-        break
-      }
-    }
-    const half = this.radius / 2
-    if (half < Asteroid.SizeCutoff) return
-    this.game.asteroids.push(
-      new Asteroid(this.game, this.pos, half),
-      new Asteroid(this.game, vec2.clone(this.pos), half)
-    )
+    // increment the number of asteroids destroyed
     this.game.asteroidCounter++
+
+    // get the split radius
+    const half = this.radius / 2
+
+    // free this asteroid if needed
+    if (half < Asteroid.SizeCutoff) {
+      this.deactive()
+      return
+    }
+
+    // otherwise, split this asteroid and create 2 new ones
+    this.game.asteroids.push(Asteroids.asteroidPool.acquire(this.game, vec2.clone(this.pos), half))
+    this.reset(this.game, this.pos, half)
   }
 
   wrap() {

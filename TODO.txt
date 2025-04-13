@@ -2,8 +2,8 @@
     [ ] Create a list of preallocated objects
         that you can request an object for and
         release to
-[ ] Optimize Asteroids
-    [ ] Same list of objects
+[x] Optimize Asteroids
+    [x] Same list of objects
 
 Implement different aggregation functions
 Allow saving and loading of Brain and NeuralNetwork

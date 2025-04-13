@@ -5,15 +5,19 @@ class Laser {
   ship: Ship
   pos = vec2.create()
   velocity = vec2.create()
+  active: boolean
 
   constructor(ship: Ship) {
     this.ship = ship
     ship.lasers.push(this)
     vec2.copy(this.pos, ship.top)
     vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
+    this.active = true
   }
 
   update() {
+    if (!this.active) return
+
     vec2.add(this.pos, this.pos, this.velocity)
     if (
       this.pos[0] < 0
@@ -21,5 +25,9 @@ class Laser {
       || this.pos[0] > this.ship.game.width
       || this.pos[1] > this.ship.game.height
     ) this.ship.lasers.splice(this.ship.lasers.indexOf(this), 1)
+  }
+
+  deactivate() {
+    this.active = false
   }
 }
