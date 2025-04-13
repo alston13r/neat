@@ -20,35 +20,15 @@ class AsteroidPool {
 }
 
 class Asteroid {
+  static AsteroidMinPoints = 10
+  static AsteroidMaxPoints = 14
+
   static SizeCutoff = 10
 
-  static OffsetArray1 = new Array(10).fill(0).map((_, i) => {
-    const index = i * 360
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray2 = new Array(11).fill(0).map((_, i) => {
-    const index = i * 327
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray3 = new Array(12).fill(0).map((_, i) => {
-    const index = i * 300
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray4 = new Array(13).fill(0).map((_, i) => {
-    const index = i * 276
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray5 = new Array(14).fill(0).map((_, i) => {
-    const index = i * 257
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArrays = [
-    this.OffsetArray1,
-    this.OffsetArray2,
-    this.OffsetArray3,
-    this.OffsetArray4,
-    this.OffsetArray5
-  ]
+  static MaxInitialRadius = 50
+  static MinInitialRadius = 25
+  static MaxInitialVelocity = 1.5
+  static MinInitialVelocity = 1
 
   game: Asteroids
   pos: Vec2
@@ -59,11 +39,19 @@ class Asteroid {
   collisionCircle: Circle
   active: boolean
 
+  static GenerateInitialRadius(): number {
+    return Math.random() * (Asteroid.MaxInitialRadius - Asteroid.MinInitialRadius) + Asteroid.MinInitialRadius
+  }
+
+  static GenerateInitialVelocity(): number {
+    return Math.random() * (Asteroid.MaxInitialVelocity - Asteroid.MinInitialVelocity) + Asteroid.MinInitialVelocity
+  }
+
   constructor(game: Asteroids, pos?: Vec2, radius?: number) {
     this.game = game
     this.pos = pos || vec2.create()
-    this.radius = radius || Math.random() * 25 + 25
-    this.velocity = vec2.random(vec2.create(), Math.random() * 0.5 + 1)
+    this.radius = radius || Asteroid.GenerateInitialRadius()
+    this.velocity = vec2.random(vec2.create(), Asteroid.GenerateInitialVelocity())
     Asteroid.GenerateRandomPoints(this)
     this.active = true
   }
@@ -72,26 +60,30 @@ class Asteroid {
     this.game = game
     if (pos) vec2.copy(this.pos, pos)
     else vec2.zero(this.pos)
-    this.radius = radius || Math.random() * 25 + 25
-    vec2.random(this.velocity, Math.random() * 0.5 + 1)
+    this.radius = radius || Asteroid.GenerateInitialRadius()
+    vec2.random(this.velocity, Asteroid.GenerateInitialVelocity())
     Asteroid.GenerateRandomPoints(this)
     this.active = true
   }
 
   static GenerateRandomPoints(asteroid: Asteroid) {
-    const offsetArray = Asteroid.OffsetArrays[Math.floor(Math.random() * 5)]
-    const radiusOffsets = new Array(offsetArray.length).fill(0).map(() => Math.random() * 20 - 8 + asteroid.radius)
+    const numberOfPoints = Math.floor(Math.random() * (Asteroid.AsteroidMaxPoints - this.AsteroidMinPoints + 1) + Asteroid.AsteroidMinPoints)
+    asteroid.points = new Array(numberOfPoints)
+
     let max = -Infinity
     let min = Infinity
-    for (const o of radiusOffsets) {
-      if (o > max) max = o
-      if (o < min) min = o
+    for (let i = 0; i < numberOfPoints; i++) {
+      const offset = Math.random() * 20 - 8 + asteroid.radius
+      if (offset < min) min = offset
+      if (offset > max) max = offset
+
+      asteroid.points[i] = vec2.create()
+      setVec2FromRadian(asteroid.points[i], lerp(i, 0, numberOfPoints, 0, Math.PI * 2))
+      vec2.scale(asteroid.points[i], asteroid.points[i], offset)
     }
+
     asteroid.collisionRadius = (min + max) ** 2 / 4
     asteroid.collisionCircle = Circle.FromPointAndRadius(asteroid.pos, Math.sqrt(asteroid.collisionRadius))
-    asteroid.points = offsetArray.map((offset, index) => {
-      return vec2.scale([], offset, radiusOffsets[index])
-    })
   }
 
   update() {
