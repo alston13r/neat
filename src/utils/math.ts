@@ -91,6 +91,11 @@ function FastVec2FromRadian(angle: number) {
   return TrigLookup[angle]
 }
 
+function setVec2FromRadian(out: Vec2, rad: number) {
+  out[0] = Math.cos(rad)
+  out[1] = Math.sin(rad)
+}
+
 /**
  * Returns a random normally distributed gaussian number.
  * @returns the number
