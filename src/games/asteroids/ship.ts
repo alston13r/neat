@@ -18,8 +18,6 @@ class Ship {
   static NumRays = 5
   static RayDeltaTheta = 0.3
   static RayLength = 300
-  static UpdateRaysConstantA = 0.5 * (Ship.NumRays - 1) * Ship.RayDeltaTheta
-  static UpdateRaysConstantB = (Ship.NumRays - 1) * Ship.RayDeltaTheta / Ship.NumRays
 
   pos = vec2.create()
   game: Asteroids
@@ -86,26 +84,25 @@ class Ship {
   }
 
   updateTopLeftRight(): void {
-    vec2.scale(this.top, FastVec2FromRadian(this.heading + Ship.TopAngle), Ship.TopDistance)
-    vec2.scale(this.left, FastVec2FromRadian(this.heading + Ship.SideAngle), Ship.SideDistance)
-    vec2.scale(this.right, FastVec2FromRadian(this.heading - Ship.SideAngle), Ship.SideDistance)
+    setVec2FromRadian(this.top, this.heading + Ship.TopAngle)
+    setVec2FromRadian(this.left, this.heading + Ship.SideAngle)
+    setVec2FromRadian(this.right, this.heading - Ship.SideAngle)
 
-    vec2.add(this.top, this.top, this.pos)
-    vec2.add(this.left, this.left, this.pos)
-    vec2.add(this.right, this.right, this.pos)
+    vec2.scaleAndAdd(this.top, this.pos, this.top, Ship.TopDistance)
+    vec2.scaleAndAdd(this.left, this.pos, this.left, Ship.SideDistance)
+    vec2.scaleAndAdd(this.right, this.pos, this.right, Ship.SideDistance)
   }
 
   updateRays(): void {
     for (let i = 0; i < Ship.NumRays; i++) {
-      const angle = i * Ship.UpdateRaysConstantB + (this.heading - Ship.UpdateRaysConstantA)
-      const ray = this.rays[i]
-      vec2.copy(ray.dir, FastVec2FromRadian(angle))
+      const angle = lerp(i, 0, Ship.NumRays - 1, 1 - Ship.NumRays, Ship.NumRays - 1) * Ship.RayDeltaTheta / 2
+      this.rays[i].setAngle(this.heading + angle)
     }
   }
 
   push(direction: number): void {
     if (direction == 0) return
-    const dir = FastVec2FromRadian(this.heading)
+    const dir = vec2.fromValues(Math.cos(this.heading), Math.sin(this.heading))
     vec2.scaleAndAdd(this.velocity, this.velocity, dir, direction * 0.1)
     if (vec2.length(this.velocity) > Ship.MaxSpeed) {
       vec2.normalize(this.velocity, this.velocity)
