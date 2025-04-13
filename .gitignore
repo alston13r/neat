@@ -213,3 +213,6 @@ build/brain/tensor-brain.js
 build/brain/tensor-brain.js.map
 build/brain/tensor-brain.js
 build/brain/tensor-brain.js.map
+build/demos/asteroids-personal/index.js
+build/demos/asteroids-personal/index.js.map
+build

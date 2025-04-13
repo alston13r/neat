@@ -68,8 +68,15 @@ class Asteroids implements Drawable {
 
       // update list of lasers
       for (let i = this.ship.lasers.length - 1; i >= 0; i--) {
-        if (!this.ship.lasers[i].active)
-          this.ship.lasers.splice(i, 1)
+        const laser = this.ship.lasers[i]
+        if (!laser.active) {
+          // swap with end
+          this.ship.lasers[i] = this.ship.lasers[this.ship.lasers.length - 1]
+          // pop
+          this.ship.lasers.pop()
+          // release
+          LaserPool.release(laser)
+        }
       }
     }
 

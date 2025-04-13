@@ -53,12 +53,18 @@ class Ship {
     vec2.set(this.pos, this.game.width / 2, this.game.height / 2)
     this.heading = -Math.PI / 2
     vec2.zero(this.velocity)
-    this.lasers.length = 0
+    this.freeLasers()
     this.alive = true
     vec2.set(this.top, 0, -20)
     vec2.set(this.left, 13.511804342269897, 14.745546579360962)
     vec2.set(this.right, -13.486047983169556, 14.769107103347778)
     this.updateRays()
+  }
+
+  freeLasers() {
+    while (this.lasers.length > 0) {
+      LaserPool.release(this.lasers.pop())
+    }
   }
 
   loadInputs(straight = 0, turn = 0, shoot = 0): void {
@@ -123,7 +129,7 @@ class Ship {
 
   shoot(): void {
     if (this.shootTimer <= 0) {
-      new Laser(this)
+      LaserPool.acquire(this)
       this.shootTimer = Ship.ShootDelay
     }
   }

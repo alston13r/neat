@@ -13,6 +13,10 @@ class AsteroidPool {
   static release(asteroid: Asteroid) {
     this.pool.push(asteroid)
   }
+
+  static clearPool() {
+    this.pool.length = 0
+  }
 }
 
 class Asteroid {

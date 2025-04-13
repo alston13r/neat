@@ -1,3 +1,24 @@
+class LaserPool {
+  private static pool: Laser[] = []
+
+  static acquire(ship: Ship): Laser {
+    if (this.pool.length > 0) {
+      const laser = this.pool.pop()
+      laser.reset(ship)
+      return laser
+    }
+    return new Laser(ship)
+  }
+
+  static release(laser: Laser) {
+    this.pool.push(laser)
+  }
+
+  static clearPool() {
+    this.pool.length = 0
+  }
+}
+
 class Laser {
   static Speed = 5
   static Radius = 5
@@ -8,6 +29,14 @@ class Laser {
   active: boolean
 
   constructor(ship: Ship) {
+    this.ship = ship
+    ship.lasers.push(this)
+    vec2.copy(this.pos, ship.top)
+    vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
+    this.active = true
+  }
+
+  reset(ship: Ship) {
     this.ship = ship
     ship.lasers.push(this)
     vec2.copy(this.pos, ship.top)
