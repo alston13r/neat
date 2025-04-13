@@ -1,4 +1,7 @@
 class Asteroids implements Drawable {
+  static DebugDrawAsteroidCollisionCircles = false
+  static DebugDrawShipRays = false
+
   static MinAsteroids = 5
 
   asteroids: Asteroid[] = []
@@ -110,6 +113,15 @@ class Asteroids implements Drawable {
       this.ship.right[0], this.ship.right[1]
     )
 
+    // ship rays
+    if (Asteroids.DebugDrawShipRays) {
+      const t = vec2.create()
+      for (const ray of this.ship.rays) {
+        vec2.scaleAndAdd(t, ray.pos, ray.dir, ray.length)
+        g.line(ray.pos[0], ray.pos[1], t[0], t[1])
+      }
+    }
+
     // lasers
     for (const laser of this.ship.lasers) {
       g.strokeCircle(laser.pos[0], laser.pos[1], Laser.Radius)
@@ -120,11 +132,13 @@ class Asteroids implements Drawable {
       g.strokePolygon(asteroid.points.map(point => vec2.add([], point, asteroid.pos)))
 
       // collision circles
-      // const circle = asteroid.getCollisionCircle()
-      // let temp = g.strokeStyle
-      // g.strokeStyle = '#f00'
-      // g.strokeCircle(circle.x, circle.y, circle.radius)
-      // g.strokeStyle = temp
+      if (Asteroids.DebugDrawAsteroidCollisionCircles) {
+        const circle = asteroid.getCollisionCircle()
+        let temp = g.strokeStyle
+        g.strokeStyle = '#f00'
+        g.strokeCircle(circle.x, circle.y, circle.radius)
+        g.strokeStyle = temp
+      }
     }
   }
 }
