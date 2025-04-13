@@ -1,7 +1,7 @@
 class AsteroidPool {
-  private pool: Asteroid[] = []
+  private static pool: Asteroid[] = []
 
-  acquire(game: Asteroids, pos?: Vec2, radius?: number): Asteroid {
+  static acquire(game: Asteroids, pos?: Vec2, radius?: number): Asteroid {
     if (this.pool.length > 0) {
       const asteroid = this.pool.pop()
       asteroid.reset(game, pos, radius)
@@ -10,7 +10,7 @@ class AsteroidPool {
     return new Asteroid(game, pos, radius)
   }
 
-  release(asteroid: Asteroid) {
+  static release(asteroid: Asteroid) {
     this.pool.push(asteroid)
   }
 }
@@ -113,7 +113,7 @@ class Asteroid {
     }
 
     // otherwise, split this asteroid and create 2 new ones
-    this.game.asteroids.push(Asteroids.asteroidPool.acquire(this.game, vec2.clone(this.pos), half))
+    this.game.asteroids.push(AsteroidPool.acquire(this.game, vec2.clone(this.pos), half))
     this.reset(this.game, this.pos, half)
   }
 

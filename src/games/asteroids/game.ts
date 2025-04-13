@@ -1,8 +1,6 @@
 class Asteroids implements Drawable {
   static MinAsteroids = 5
 
-  static asteroidPool: AsteroidPool = new AsteroidPool()
-
   asteroids: Asteroid[] = []
   asteroidCounter = 0
   frameCounter = 0
@@ -15,7 +13,7 @@ class Asteroids implements Drawable {
     this.height = height
     this.createShip()
     for (let i = 0; i < Asteroids.MinAsteroids; i++)
-      this.asteroids.push(Asteroids.asteroidPool.acquire(this))
+      this.asteroids.push(AsteroidPool.acquire(this))
   }
 
   createShip() {
@@ -28,12 +26,12 @@ class Asteroids implements Drawable {
 
     // release all asteroids
     while (this.asteroids.length > 0) {
-      Asteroids.asteroidPool.release(this.asteroids.pop())
+      AsteroidPool.release(this.asteroids.pop())
     }
 
     // fill asteroids
     for (let i = 0; i < Asteroids.MinAsteroids; i++) {
-      this.asteroids.push(Asteroids.asteroidPool.acquire(this))
+      this.asteroids.push(AsteroidPool.acquire(this))
     }
 
     this.ship.reset()
@@ -94,13 +92,13 @@ class Asteroids implements Drawable {
         // pop
         this.asteroids.pop()
         // release
-        Asteroids.asteroidPool.release(asteroid)
+        AsteroidPool.release(asteroid)
       }
     }
 
     if (this.asteroids.length < Asteroids.MinAsteroids) {
       for (let i = Asteroids.MinAsteroids - this.asteroids.length; i > 0; i--) {
-        this.asteroids.push(Asteroids.asteroidPool.acquire(this))
+        this.asteroids.push(AsteroidPool.acquire(this))
       }
     }
   }
