@@ -7,12 +7,12 @@ class Ray2 {
 
   constructor(pos: Vec2, angle = 0, length = 1) {
     this.pos = pos
-    this.dir = FastVec2FromRadian(angle)
+    this.dir = vec2.fromValues(Math.cos(angle), Math.sin(angle))
     this.length = length
   }
 
   setAngle(angle: number): Ray2 {
-    vec2.copy(this.dir, FastVec2FromRadian(angle))
+    vec2.set(this.dir, Math.cos(angle), Math.sin(angle))
     return this
   }
 
