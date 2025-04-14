@@ -1,3 +1,10 @@
+/**
+ * Type definition for the control input for a ship in Asteroids.
+ * @prop {number} [ArrowUp] a value of 0 or 1 indicating the ArrowUp key is pressed
+ * @prop {number} [ArrowDown] a value of 0 or 1 indicating the ArrowUp key is pressed
+ * @prop {number} [ArrowLeft] a value of 0 or 1 indicating the ArrowUp key is pressed
+ * @prop {number} [ArrowRight] a value of 0 or 1 indicating the ArrowUp key is pressed
+ */
 type AsteroidsShipControls = {
   'ArrowUp'?: number,
   'ArrowDown'?: number,
@@ -6,30 +13,57 @@ type AsteroidsShipControls = {
   ' '?: number
 }
 
+/**
+ * A Ship is the player's character in the game of Asteroids. The Ship
+ * has forwards and backwards propulsion as well as steering. This class
+ * provides a method, {@link Ship.loadInputs}, which can take 3 number
+ * inputs for controlling the Ship. This allows for the NEAT algorithm to
+ * take control of a Ship using the outputs directly from the AI.
+ */
 class Ship {
+  /** The maximum speed of a Ship */
   static MaxSpeed = 3
+  /** The delay between shots that a Ship can take */
   static ShootDelay = 33
 
+  /** The angle of the top point of a Ship */
   static TopAngle = 0
+  /** The angle of the two side points of a Ship */
   static SideAngle = 2.4
+  /** The distance of the top point of a Ship to its center */
   static TopDistance = 20
+  /** The distance of the side points of a Ship to its center */
   static SideDistance = 20
 
+  /** The number of rays that a Ship casts out */
   static NumRays = 5
+  /** The angle between each ray */
   static RayDeltaTheta = 0.3
+  /** The length of each ray */
   static RayLength = 300
 
+  /** The position vector of this Ship */
   pos = vec2.create()
+  /** A reference to the Asteroids game that this Ship is a part of */
   game: Asteroids
+  /** The current heading of this Ship */
   heading = -Math.PI / 2
+  /** The velocity vector of this Ship */
   velocity = vec2.create()
+  /** An array of all Lasers currently in existence from this Ship */
   lasers: Laser[] = []
+  /** Boolean flag indicating whether or not this Ship is alive */
   alive = true
+  /** The vector for the Ship's top point */
   top = vec2.fromValues(0, -20)
+  /** The vector for the Ship's left point */
   left = vec2.fromValues(13.511804342269897, 14.745546579360962)
+  /** The vector for the Ship's right point */
   right = vec2.fromValues(-13.486047983169556, 14.769107103347778)
+  /** An array of the rays that the Ship casts out */
   rays: Ray2[]
 
+  /** The current remaining time until the Ship can shoot again */
   shootTimer = 0
 
   constructor(game: Asteroids) {
