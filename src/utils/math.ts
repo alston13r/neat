@@ -57,39 +57,6 @@ function filterInPlace<T>(array: T[], predicate: (value: T) => boolean, onRemove
 
 /** Constant for 2 PI */
 const TwoPi = Math.PI * 2
-/** Constant for converting a radian value to the degree lookup value for the fast trig table */
-const RadToLookupDegConstant = 1800 / Math.PI
-
-/** Lookup table for sine and cosine within a tenth of a degree */
-const TrigLookup: ReadonlyVec2[] = new Array(3600).fill(0)
-  .map((_, i) => {
-    const radian = i * Math.PI / 1800
-    return vec2.fromValues(Math.cos(radian), Math.sin(radian))
-  })
-
-/**
- * Uses the TrigLookup table for a precomputed sine value for the specified degree.
- * @param angle the degree to lookup, scaled by 10
- * @returns sine of the angle
- */
-function FastSin(angle: number) {
-  return TrigLookup[angle][0]
-}
-
-/**
- * Uses the TrigLookup table for a precomputed cosine value for the specified degree.
- * @param angle the degree to lookup, scaled by 10
- * @returns cosine of the angle
- */
-function FastCos(angle: number) {
-  return TrigLookup[angle][1]
-}
-
-function FastVec2FromRadian(angle: number) {
-  angle = Math.floor(angle * RadToLookupDegConstant)
-  angle = ((angle % 3600) + 3600) % 3600
-  return TrigLookup[angle]
-}
 
 function setVec2FromRadian(out: Vec2, rad: number) {
   out[0] = Math.cos(rad)
