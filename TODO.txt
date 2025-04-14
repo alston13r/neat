@@ -9,7 +9,7 @@
     [ ] utils
         [ ] math.ts
             [ ] roundNicely
-            [ ] setVec2FromRadian
+            [x] setVec2FromRadian
         [ ] matrix.ts
         [ ] ray.ts
         [ ] drawing
