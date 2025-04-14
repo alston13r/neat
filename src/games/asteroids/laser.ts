@@ -32,7 +32,8 @@ class Laser {
     this.ship = ship
     ship.lasers.push(this)
     vec2.copy(this.pos, ship.top)
-    vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
+    setVec2FromRadian(this.velocity, ship.heading)
+    vec2.scale(this.velocity, this.velocity, Laser.Speed)
     this.active = true
   }
 
@@ -40,7 +41,8 @@ class Laser {
     this.ship = ship
     ship.lasers.push(this)
     vec2.copy(this.pos, ship.top)
-    vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
+    setVec2FromRadian(this.velocity, ship.heading)
+    vec2.scale(this.velocity, this.velocity, Laser.Speed)
     this.active = true
   }
 
