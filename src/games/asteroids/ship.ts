@@ -38,7 +38,7 @@ class Ship {
   /** The number of rays that a Ship casts out */
   static NumRays = 5
   /** The angle between each ray */
-  static RayDeltaTheta = 0.3
+  static RayDeltaTheta = toRadian(17)
   /** The length of each ray */
   static RayLength = 300
 
@@ -55,11 +55,11 @@ class Ship {
   /** Boolean flag indicating whether or not this Ship is alive */
   alive = true
   /** The vector for the Ship's top point */
-  top = vec2.fromValues(0, -20)
+  top = vec2.create()
   /** The vector for the Ship's left point */
-  left = vec2.fromValues(13.511804342269897, 14.745546579360962)
+  left = vec2.create()
   /** The vector for the Ship's right point */
-  right = vec2.fromValues(-13.486047983169556, 14.769107103347778)
+  right = vec2.create()
   /** An array of the rays that the Ship casts out */
   rays: Ray2[]
 
@@ -70,9 +70,10 @@ class Ship {
     this.game = game
     vec2.set(this.pos, game.width / 2, game.height / 2)
 
-    vec2.add(this.top, this.top, this.pos)
-    vec2.add(this.left, this.left, this.pos)
-    vec2.add(this.right, this.right, this.pos)
+    this.updateTopLeftRight()
+    // vec2.add(this.top, this.top, this.pos)
+    // vec2.add(this.left, this.left, this.pos)
+    // vec2.add(this.right, this.right, this.pos)
 
     this.rays = []
     for (let i = 0; i < Ship.NumRays; i++) {
@@ -87,10 +88,25 @@ class Ship {
     vec2.zero(this.velocity)
     this.freeLasers()
     this.alive = true
-    vec2.set(this.top, 0, -20)
-    vec2.set(this.left, 13.511804342269897, 14.745546579360962)
-    vec2.set(this.right, -13.486047983169556, 14.769107103347778)
+    this.updateTopLeftRight()
+    this.fixRays()
     this.updateRays()
+  }
+
+  fixRays() {
+    // fix the length of rays
+    for (const ray of this.rays) ray.setLength(Ship.RayLength)
+
+    // fix the number of rays
+    if (this.rays.length != Ship.NumRays) {
+      if (this.rays.length < Ship.NumRays) {
+        while (this.rays.length < Ship.NumRays) {
+          this.rays.push(new Ray2(this.pos).setLength(Ship.RayLength))
+        }
+      } else {
+        this.rays.length = Ship.NumRays
+      }
+    }
   }
 
   freeLasers() {
@@ -128,9 +144,13 @@ class Ship {
   }
 
   updateRays(): void {
-    for (let i = 0; i < Ship.NumRays; i++) {
-      const angle = lerp(i, 0, Ship.NumRays - 1, 1 - Ship.NumRays, Ship.NumRays - 1) * Ship.RayDeltaTheta / 2
-      this.rays[i].setAngle(this.heading + angle)
+    if (Ship.NumRays == 1) {
+      this.rays[0].setAngle(this.heading)
+    } else {
+      for (let i = 0; i < Ship.NumRays; i++) {
+        const angle = lerp(i, 0, Ship.NumRays - 1, 1 - Ship.NumRays, Ship.NumRays - 1) * Ship.RayDeltaTheta / 2
+        this.rays[i].setAngle(this.heading + angle)
+      }
     }
   }
 

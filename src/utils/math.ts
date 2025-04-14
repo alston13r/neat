@@ -58,6 +58,30 @@ function filterInPlace<T>(array: T[], predicate: (value: T) => boolean, onRemove
 /** Constant for 2 PI */
 const TwoPi = Math.PI * 2
 
+/**
+ * Converts degrees to radians.
+ * @param degree the degree to convert
+ * @returns radians
+ */
+function toRadian(degree: number): number {
+  return degree / 180 * Math.PI
+}
+
+/**
+ * Converts radians to degrees
+ * @param radian the radian to convert
+ * @returns degrees
+ */
+function toDegree(radian: number): number {
+  return radian / Math.PI * 180
+}
+
+/**
+ * Sets the x and y values of a Vec2 from the provided radian.
+ * The values of x and y are set to cosine and sine of the radian.
+ * @param out the Vec2 to write to
+ * @param rad the radian
+ */
 function setVec2FromRadian(out: Vec2, rad: number) {
   out[0] = Math.cos(rad)
   out[1] = Math.sin(rad)

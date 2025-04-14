@@ -115,11 +115,35 @@ class Asteroids implements Drawable {
 
     // ship rays
     if (Asteroids.DebugDrawShipRays) {
+      // get the collision circles from each asteroid
+      const asteroidCollisionCircles = this.asteroids.map(a => a.getCollisionCircle())
+      // perform raycasts
+      const rayCasts = this.ship.rays.map(ray => {
+        const point = ray.castOntoCircles(asteroidCollisionCircles)
+        if (point) return vec2.distance(this.ship.pos, point)
+        return -1
+      })
+
+      let tempFillStyle = g.fillStyle
+      g.fillStyle = '#fff'
+
+      // temporary vec2
       const t = vec2.create()
-      for (const ray of this.ship.rays) {
+      for (let i = 0; i < this.ship.rays.length; i++) {
+        // draw the ray
+        const ray = this.ship.rays[i]
         vec2.scaleAndAdd(t, ray.pos, ray.dir, ray.length)
         g.line(ray.pos[0], ray.pos[1], t[0], t[1])
+
+        // this ray hit an asteroid
+        if (rayCasts[i] >= 0 && rayCasts[i] <= Ship.RayLength) {
+          // draw a circle at the ray's point of intersection
+          vec2.scaleAndAdd(t, ray.pos, ray.dir, rayCasts[i])
+          g.fillCircle(t[0], t[1], 5)
+        }
       }
+
+      g.fillStyle = tempFillStyle
     }
 
     // lasers

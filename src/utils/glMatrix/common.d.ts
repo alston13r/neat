@@ -30,6 +30,5 @@ declare namespace glMatrix {
   let ARRAY_TYPE: Float32ArrayConstructor | ArrayConstructor
   const RANDOM: () => number
   function setMatrixArrayType(type: Float32ArrayConstructor | ArrayConstructor): void
-  function toRadian(a: number): number
   function equals(a: number, b: number): boolean
 }

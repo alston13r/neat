@@ -18,15 +18,45 @@ let temp
     'ArrowRight': 0,
     ' ': 0
   }
-  window.addEventListener('keydown', e => keysPressed[e.key] = 1)
+  window.addEventListener('keydown', e => {
+    if (e.key.indexOf('Arrow') != -1) e.preventDefault()
+    else if (e.key == ' ') e.preventDefault()
+    keysPressed[e.key] = 1
+  })
   window.addEventListener('keyup', e => keysPressed[e.key] = 0)
 
   const game = new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
-
-  Asteroids.DebugDrawShipRays = true
-  Asteroids.DebugDrawAsteroidCollisionCircles = true
-
   temp = game
+
+  const optionsWindow = new Options()
+  optionsWindow.appendAfter(asteroidsGraphics.canvas)
+
+  optionsWindow
+    .appendButton('Refresh', () => {
+      game.reset()
+    })
+
+    .appendCheckbox('Debug ship rays', v => {
+      Asteroids.DebugDrawShipRays = v
+    }, Asteroids.DebugDrawShipRays)
+
+    .appendCheckbox('Debug asteroid collisions', v => {
+      Asteroids.DebugDrawAsteroidCollisionCircles = v
+    }, Asteroids.DebugDrawAsteroidCollisionCircles)
+
+    .appendSlider('Number of ship rays', v => {
+      Ship.NumRays = v
+      game.ship.fixRays()
+    }, 1, 15, Ship.NumRays)
+
+    .appendSlider('Angle between ship rays', v => {
+      Ship.RayDeltaTheta = toRadian(v)
+    }, 1, 90, toDegree(Ship.RayDeltaTheta))
+
+    .appendSlider('Ship ray length', v => {
+      Ship.RayLength = v
+      game.ship.fixRays()
+    }, 1, 1000, Ship.RayLength)
 
   function asteroidsLoop(): void {
     asteroidsGraphics.bg()
