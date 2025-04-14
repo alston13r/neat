@@ -183,14 +183,20 @@ class Brain {
    */
   addAConnection() {
     attempt: for (let i = 0; i < 20; i++) {
+      // index of the connection's input node
       const A = Math.floor(Math.random() * this.nodes.length)
+      // index of the connection's output node
       const B = Math.floor(Math.random() * this.nodes.length)
       const nodeA = this.nodes[A]
       const nodeB = this.nodes[B]
 
+      // the nodes cannot be the same, their layers cannot be the same
+      // and the input node cannot be on a greater layer if recurrent
+      // connections are not enabled
       if (A == B || nodeA.layer == nodeB.layer
         || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer) continue
 
+      // iterate over all connections
       for (const connection of this.connections) {
         if (connection.inNode.id == A && connection.outNode.id == B) { // connection already exists
           if (connection.enabled) continue attempt // next attempt
@@ -199,8 +205,9 @@ class Brain {
             break attempt
           } else continue attempt // failed to reenable
         }
-      } // outside of connection search loop
-      // therefore connection does not exist yet
+      } // outside of connection search loop, connection does not exist
+
+      // construct a new connection
       this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(), true, nodeA.layer > nodeB.layer)
       if (Population.Speciation) this.#updateSortedConnections()
       break attempt
@@ -229,22 +236,23 @@ class Brain {
    * and bias weights nudged or randomized.
    */
   mutate() {
+    // do not mutate elite members
     if (this.isElite) return
 
-    // mutate weights
+    // mutate connection weights
     for (let connection of this.connections) {
       connection.mutate()
     }
 
     if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
-      this.addAConnection() // add a connection
+      this.addAConnection()
     } else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
-      this.disableAConnection() // disable a connection
+      this.disableAConnection()
     } else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
-      this.addANode() // add a node
+      this.addANode()
     }
 
-    // mutate activation functions and bias
+    // mutate activation functions and biases
     for (let node of this.nodes) {
       node.mutate()
     }
