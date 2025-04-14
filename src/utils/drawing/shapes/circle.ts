@@ -7,6 +7,12 @@ class Circle implements Drawable, HasPath {
     this.radius = radius
   }
 
+  static FromPointAndRadius(pos: Vec2, radius: number) {
+    const circle = new Circle(0, 0, radius)
+    circle.pos = pos
+    return circle
+  }
+
   get x() {
     return this.pos[0]
   }

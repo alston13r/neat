@@ -1,47 +1,62 @@
-class Laser implements Drawable, HasPath {
+class LaserPool {
+  private static pool: Laser[] = []
+
+  static acquire(ship: Ship): Laser {
+    if (LaserPool.pool.length > 0) {
+      const laser = LaserPool.pool.pop()
+      laser.reset(ship)
+      return laser
+    }
+    return new Laser(ship)
+  }
+
+  static release(laser: Laser) {
+    LaserPool.pool.push(laser)
+  }
+
+  static clearPool() {
+    LaserPool.pool.length = 0
+  }
+}
+
+class Laser {
   static Speed = 5
   static Radius = 5
 
   ship: Ship
   pos = vec2.create()
   velocity = vec2.create()
+  active: boolean
 
   constructor(ship: Ship) {
     this.ship = ship
     ship.lasers.push(this)
     vec2.copy(this.pos, ship.top)
     vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
+    this.active = true
+  }
+
+  reset(ship: Ship) {
+    this.ship = ship
+    ship.lasers.push(this)
+    vec2.copy(this.pos, ship.top)
+    vec2.scale(this.velocity, FastVec2FromRadian(ship.heading), Laser.Speed)
+    this.active = true
   }
 
   update() {
+    if (!this.active) return
+
     vec2.add(this.pos, this.pos, this.velocity)
-    this.wrap()
+    if (
+      this.pos[0] < 0
+      || this.pos[1] < 0
+      || this.pos[0] > this.ship.game.width
+      || this.pos[1] > this.ship.game.height
+    ) this.active = false
   }
 
-  draw(g: Graphics) {
-    g.strokeCircle(this.pos[0], this.pos[1], Laser.Radius)
-  }
-
-  createPath(): Path2D {
-    return new Circle(this.pos[0], this.pos[1], Laser.Radius).createPath()
-  }
-
-  appendToPath(path: Path2D): Path2D {
-    return new Circle(this.pos[0], this.pos[1], Laser.Radius).appendToPath(path)
-  }
-
-  terminate() {
-    this.ship.lasers.splice(this.ship.lasers.indexOf(this), 1)
-  }
-
-  wrap() {
-    const x = this.pos[0]
-    const y = this.pos[1]
-    const w = this.ship.game.width
-    const h = this.ship.game.height
-    if (x > w) this.terminate()
-    else if (x < 0) this.terminate()
-    else if (y > h) this.terminate()
-    else if (y < 0) this.terminate()
+  deactivate() {
+    this.active = false
   }
 }

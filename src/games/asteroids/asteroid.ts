@@ -1,33 +1,34 @@
-class Asteroid implements Drawable, HasPath {
+class AsteroidPool {
+  private static pool: Asteroid[] = []
+
+  static acquire(game: Asteroids, pos?: Vec2, radius?: number): Asteroid {
+    if (AsteroidPool.pool.length > 0) {
+      const asteroid = AsteroidPool.pool.pop()
+      asteroid.reset(game, pos, radius)
+      return asteroid
+    }
+    return new Asteroid(game, pos, radius)
+  }
+
+  static release(asteroid: Asteroid) {
+    AsteroidPool.pool.push(asteroid)
+  }
+
+  static clearPool() {
+    AsteroidPool.pool.length = 0
+  }
+}
+
+class Asteroid {
+  static AsteroidMinPoints = 10
+  static AsteroidMaxPoints = 14
+
   static SizeCutoff = 10
 
-  static OffsetArray1 = new Array(10).fill(0).map((_, i) => {
-    const index = i * 360
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray2 = new Array(11).fill(0).map((_, i) => {
-    const index = i * 327
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray3 = new Array(12).fill(0).map((_, i) => {
-    const index = i * 300
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray4 = new Array(13).fill(0).map((_, i) => {
-    const index = i * 276
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArray5 = new Array(14).fill(0).map((_, i) => {
-    const index = i * 257
-    return vec2.fromValues(FastCos(index), FastSin(index))
-  })
-  static OffsetArrays = [
-    this.OffsetArray1,
-    this.OffsetArray2,
-    this.OffsetArray3,
-    this.OffsetArray4,
-    this.OffsetArray5
-  ]
+  static MaxInitialRadius = 50
+  static MinInitialRadius = 25
+  static MaxInitialVelocity = 1.5
+  static MinInitialVelocity = 1
 
   game: Asteroids
   pos: Vec2
@@ -35,29 +36,54 @@ class Asteroid implements Drawable, HasPath {
   velocity: Vec2
   collisionRadius: number
   points: Vec2[] = []
+  collisionCircle: Circle
+  active: boolean
+
+  static GenerateInitialRadius(): number {
+    return Math.random() * (Asteroid.MaxInitialRadius - Asteroid.MinInitialRadius) + Asteroid.MinInitialRadius
+  }
+
+  static GenerateInitialVelocity(): number {
+    return Math.random() * (Asteroid.MaxInitialVelocity - Asteroid.MinInitialVelocity) + Asteroid.MinInitialVelocity
+  }
 
   constructor(game: Asteroids, pos?: Vec2, radius?: number) {
     this.game = game
     this.pos = pos || vec2.create()
-    this.radius = radius || Math.random() * 25 + 25
-    this.velocity = vec2.random(vec2.create(), Math.random() * 0.5 + 1)
+    this.radius = radius || Asteroid.GenerateInitialRadius()
+    this.velocity = vec2.random(vec2.create(), Asteroid.GenerateInitialVelocity())
     Asteroid.GenerateRandomPoints(this)
+    this.active = true
+  }
+
+  reset(game: Asteroids, pos?: Vec2, radius?: number) {
+    this.game = game
+    if (pos) vec2.copy(this.pos, pos)
+    else vec2.zero(this.pos)
+    this.radius = radius || Asteroid.GenerateInitialRadius()
+    vec2.random(this.velocity, Asteroid.GenerateInitialVelocity())
+    Asteroid.GenerateRandomPoints(this)
+    this.active = true
   }
 
   static GenerateRandomPoints(asteroid: Asteroid) {
-    const offsetArray = Asteroid.OffsetArrays[Math.floor(Math.random() * 5)]
-    const radiusOffsets = new Array(offsetArray.length).fill(0).map(() => Math.random() * 20 - 8 + asteroid.radius)
+    const numberOfPoints = Math.floor(Math.random() * (Asteroid.AsteroidMaxPoints - this.AsteroidMinPoints + 1) + Asteroid.AsteroidMinPoints)
+    asteroid.points = new Array(numberOfPoints)
+
     let max = -Infinity
     let min = Infinity
-    for (const o of radiusOffsets) {
-      if (o > max) max = o
-      if (o < min) min = o
+    for (let i = 0; i < numberOfPoints; i++) {
+      const offset = Math.random() * 20 - 8 + asteroid.radius
+      if (offset < min) min = offset
+      if (offset > max) max = offset
+
+      asteroid.points[i] = vec2.create()
+      setVec2FromRadian(asteroid.points[i], lerp(i, 0, numberOfPoints, 0, Math.PI * 2))
+      vec2.scale(asteroid.points[i], asteroid.points[i], offset)
     }
-    asteroid.collisionRadius = (min + max) / 2
-    asteroid.points = offsetArray.map((offset, index) => {
-      return vec2.scale([], offset, radiusOffsets[index])
-    })
-    return asteroid
+
+    asteroid.collisionRadius = (min + max) ** 2 / 4
+    asteroid.collisionCircle = Circle.FromPointAndRadius(asteroid.pos, Math.sqrt(asteroid.collisionRadius))
   }
 
   update() {
@@ -65,35 +91,26 @@ class Asteroid implements Drawable, HasPath {
     this.wrap()
   }
 
+  deactive() {
+    this.active = false
+  }
+
   split() {
-    for (let i = this.game.asteroids.length; i >= 0; i--) {
-      if (this.game.asteroids[i] === this) {
-        this.game.asteroids.splice(i, 1)
-        break
-      }
-    }
+    // increment the number of asteroids destroyed
+    this.game.asteroidCounter++
+
+    // get the split radius
     const half = this.radius / 2
-    if (half < Asteroid.SizeCutoff) return
-    this.game.asteroids.push(
-      new Asteroid(this.game, this.pos, half),
-      new Asteroid(this.game, vec2.copy([], this.pos), half)
-    )
-    this.game.dispatchEvent(new CustomEvent('asteroiddestroyed'))
-  }
 
-  draw(g: Graphics) {
-    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    g.strokePolygon(points)
-  }
+    // free this asteroid if needed
+    if (half < Asteroid.SizeCutoff) {
+      this.deactive()
+      return
+    }
 
-  createPath(): Path2D {
-    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    return new Polygon(points).createPath()
-  }
-
-  appendToPath(path: Path2D): Path2D {
-    const points = this.points.map(point => vec2.add(vec2.create(), point, this.pos))
-    return new Polygon(points).appendToPath(path)
+    // otherwise, split this asteroid and create 2 new ones
+    this.game.asteroids.push(AsteroidPool.acquire(this.game, vec2.clone(this.pos), half))
+    this.reset(this.game, this.pos, half)
   }
 
   wrap() {
@@ -108,19 +125,18 @@ class Asteroid implements Drawable, HasPath {
   }
 
   collisionWithShip() {
-    const ship = this.game.ship
     return (
-      vec2.distance(this.pos, ship.top) <= this.collisionRadius
-      || vec2.distance(this.pos, ship.left) <= this.collisionRadius
-      || vec2.distance(this.pos, ship.right) <= this.collisionRadius
+      vec2.squaredDistance(this.pos, this.game.ship.top) <= this.collisionRadius
+      || vec2.squaredDistance(this.pos, this.game.ship.left) <= this.collisionRadius
+      || vec2.squaredDistance(this.pos, this.game.ship.right) <= this.collisionRadius
     )
   }
 
   collisionWithLaser(laser: Laser) {
-    return vec2.distance(this.pos, laser.pos) <= this.collisionRadius
+    return vec2.squaredDistance(this.pos, laser.pos) <= this.collisionRadius
   }
 
   getCollisionCircle() {
-    return new Circle(this.pos[0], this.pos[1], this.collisionRadius)
+    return this.collisionCircle
   }
 }

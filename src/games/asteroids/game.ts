@@ -1,8 +1,10 @@
-class Asteroids extends EventTarget implements Drawable {
+class Asteroids implements Drawable {
+  static DebugDrawAsteroidCollisionCircles = false
+  static DebugDrawShipRays = false
+
   static MinAsteroids = 5
 
-  asteroids: Asteroid[]
-  spawningAsteroids = true
+  asteroids: Asteroid[] = []
   asteroidCounter = 0
   frameCounter = 0
   width: number
@@ -10,60 +12,89 @@ class Asteroids extends EventTarget implements Drawable {
   ship: Ship
 
   constructor(width: number, height: number) {
-    super()
-
     this.width = width
     this.height = height
     this.createShip()
-    this.asteroids = new Array(Asteroids.MinAsteroids).fill(0).map(() => new Asteroid(this))
-
-    this.addEventListener('asteroiddestroyed', () => this.asteroidCounter++)
+    for (let i = 0; i < Asteroids.MinAsteroids; i++)
+      this.asteroids.push(AsteroidPool.acquire(this))
   }
 
   createShip() {
-    this.ship = new Ship(this, this.width / 2, this.height / 2)
+    this.ship = new Ship(this)
+  }
+
+  reset() {
+    this.asteroidCounter = 0
+    this.frameCounter = 0
+
+    // release all asteroids
+    while (this.asteroids.length > 0) {
+      AsteroidPool.release(this.asteroids.pop())
+    }
+
+    // fill asteroids
+    for (let i = 0; i < Asteroids.MinAsteroids; i++) {
+      this.asteroids.push(AsteroidPool.acquire(this))
+    }
+
+    this.ship.reset()
   }
 
   loadInputs(keys: AsteroidsShipControls) {
-    const straight = (keys['ArrowUp'] ? 1 : 0) + (keys['ArrowDown'] ? -1 : 0)
-    const turn = (keys['ArrowLeft'] ? -1 : 0) + (keys['ArrowRight'] ? 1 : 0)
-    const shoot = (keys[' '] ? 1 : 0)
-    this.ship.loadInputs(straight, turn, shoot)
+    this.ship.loadInputs(
+      keys['ArrowUp'] - keys['ArrowDown'],
+      keys['ArrowRight'] - keys['ArrowLeft'],
+      keys[' ']
+    )
   }
 
   collisions(): void {
     if (this.ship.lasers.length > 0) {
-      laserLoop: for (let laser of [...this.ship.lasers].reverse()) {
-        for (let asteroid of [...this.asteroids].reverse()) {
-          if (asteroid.collisionWithLaser(laser)) {
-            asteroid.split()
-            laser.terminate()
-            this.checkAsteroidCount()
+      laserLoop: for (let i = this.ship.lasers.length - 1; i >= 0; i--) {
+        // continue if laser already collided with an asteroid
+        if (!this.ship.lasers[i].active) continue
+
+        for (let j = this.asteroids.length - 1; j >= 0; j--) {
+          // continue if asteroid was already marked as deactivated
+          if (!this.asteroids[j].active) continue
+
+          if (this.asteroids[j].collisionWithLaser(this.ship.lasers[i])) {
+            this.asteroids[j].split()
+            this.ship.lasers[i].deactivate()
             continue laserLoop
           }
         }
       }
+
+      // update list of asteroids
+      this.checkAsteroidCount()
+
+      // update list of lasers
+      swapPopRemove(this.ship.lasers, l => l.active, l => LaserPool.release(l))
     }
 
+    // check for asteroid collisions with ship
     for (let asteroid of this.asteroids) {
       if (asteroid.collisionWithShip()) {
-        this.ship.kill()
+        this.ship.alive = false
         break
       }
     }
   }
 
-  checkAsteroidCount(): void {
-    if (this.spawningAsteroids && this.asteroids.length < Asteroids.MinAsteroids) {
-      for (let i = 0; i < Asteroids.MinAsteroids - this.asteroids.length; i++) {
-        this.asteroids.push(new Asteroid(this))
+  checkAsteroidCount() {
+    // remove any deactivated asteroids
+    swapPopRemove(this.asteroids, a => a.active, a => AsteroidPool.release(a))
+
+    if (this.asteroids.length < Asteroids.MinAsteroids) {
+      for (let i = Asteroids.MinAsteroids - this.asteroids.length; i > 0; i--) {
+        this.asteroids.push(AsteroidPool.acquire(this))
       }
     }
   }
 
-  update(keysPressed?: AsteroidsShipControls) {
+  update() {
     this.frameCounter++
-    if (keysPressed) this.loadInputs(keysPressed)
     this.ship.update()
     for (let asteroid of this.asteroids) {
       asteroid.update()
@@ -72,10 +103,42 @@ class Asteroids extends EventTarget implements Drawable {
   }
 
   draw(g: Graphics) {
-    const drawQueue = g.drawQueues[0]
-    const path = drawQueue.path
-    this.ship.appendToPath(path)
-    this.asteroids.forEach(asteroid => asteroid.appendToPath(path))
-    drawQueue.dispatch()
+    g.strokeStyle = '#fff'
+    g.lineWidth = 1
+
+    // ship
+    g.strokeTriangle(
+      this.ship.top[0], this.ship.top[1],
+      this.ship.left[0], this.ship.left[1],
+      this.ship.right[0], this.ship.right[1]
+    )
+
+    // ship rays
+    if (Asteroids.DebugDrawShipRays) {
+      const t = vec2.create()
+      for (const ray of this.ship.rays) {
+        vec2.scaleAndAdd(t, ray.pos, ray.dir, ray.length)
+        g.line(ray.pos[0], ray.pos[1], t[0], t[1])
+      }
+    }
+
+    // lasers
+    for (const laser of this.ship.lasers) {
+      g.strokeCircle(laser.pos[0], laser.pos[1], Laser.Radius)
+    }
+
+    // asteroids
+    for (const asteroid of this.asteroids) {
+      g.strokePolygon(asteroid.points.map(point => vec2.add([], point, asteroid.pos)))
+
+      // collision circles
+      if (Asteroids.DebugDrawAsteroidCollisionCircles) {
+        const circle = asteroid.getCollisionCircle()
+        let temp = g.strokeStyle
+        g.strokeStyle = '#f00'
+        g.strokeCircle(circle.x, circle.y, circle.radius)
+        g.strokeStyle = temp
+      }
+    }
   }
 }

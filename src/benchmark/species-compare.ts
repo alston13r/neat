@@ -1,6 +1,6 @@
-declare type BrainLike = ConnectionLike[]
+declare type BrainBenchmark = ConnectionBenchmark[]
 
-class ConnectionLike {
+class ConnectionBenchmark {
   innovationID: number
   weight: number
 
@@ -9,8 +9,8 @@ class ConnectionLike {
     this.innovationID = innovationID
   }
 
-  static FromValues(arr: number[]): BrainLike {
-    return arr.map(x => new ConnectionLike(x))
+  static FromValues(arr: number[]): BrainBenchmark {
+    return arr.map(x => new ConnectionBenchmark(x))
   }
 }
 
@@ -42,8 +42,8 @@ function ConstructTest(fn: Function, args: Object[], name: string, amount = 1) {
   }
 }
 
-const brainALike = ConnectionLike.FromValues([0, 1, 2, 4, 6, 7, 9])
-const brainBLike = ConnectionLike.FromValues([0, 1, 3, 4, 5, 7, 8, 10, 12])
+const brainALike = ConnectionBenchmark.FromValues([0, 1, 2, 4, 6, 7, 9])
+const brainBLike = ConnectionBenchmark.FromValues([0, 1, 3, 4, 5, 7, 8, 10, 12])
 
 const testAmount = 10000000
 
@@ -70,7 +70,7 @@ tests.forEach(test => {
   )
 })
 
-function CompareMethod1(brainA: BrainLike, brainB: BrainLike) {
+function CompareMethod1(brainA: BrainBenchmark, brainB: BrainBenchmark) {
   const enabledA = brainA
   const enabledB = brainB
 
@@ -119,7 +119,7 @@ function CompareMethod1(brainA: BrainLike, brainB: BrainLike) {
  * through the power of binary and truth tables,
  * this is the better algorithm (probably)
  */
-function CompareMethod2(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod2(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   let A = false // incremented i
   let B = false // incremented j
   let C = false // i is at max
@@ -194,7 +194,7 @@ function CompareMethod2(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
   return [disjoint, excess, overlap]
 }
 
-function CompareMethod3(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod3(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   {
     let A = false // incremented i
     let B = false // incremented j
@@ -250,7 +250,7 @@ function CompareMethod3(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
   }
 }
 
-function CompareMethod4(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod4(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   let A = false // incremented i
   let B = false // incremented j
   let C = false // i is at max
@@ -302,7 +302,7 @@ function CompareMethod4(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
 /**
  * Second attempt at boolean hell, hopefully this one is better
  */
-function CompareMethod5(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod5(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   // console.log('Brain A: [' + brainA.map(x => x.innovationID).join(', ') + ']')
   // console.log('Brain B: [' + brainB.map(x => x.innovationID).join(', ') + ']')
 
@@ -383,7 +383,7 @@ function CompareMethod5(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
 /**
  * FINALLY, the boolean hell works and it works nicely
  */
-function CompareMethod6(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod6(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   let disjoint = 0
   let excess = 0
   let overlap = 0
@@ -442,7 +442,7 @@ function CompareMethod6(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
 /**
  * Explores possible improvements to the final compare method
  */
-function CompareMethod7(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod7(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   let disjoint = 0
   let excess = 0
   let overlap = 0
@@ -501,7 +501,7 @@ function CompareMethod7(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
   return [disjoint, excess, overlap]
 }
 
-function CompareMethod8(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod8(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   let disjoint = 0
   let excess = 0
   let overlap = 0
@@ -563,7 +563,7 @@ function CompareMethod8(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
   return [disjoint, excess, overlap]
 }
 
-function CompareMethod9(brainA: ConnectionLike[], brainB: ConnectionLike[]) {
+function CompareMethod9(brainA: ConnectionBenchmark[], brainB: ConnectionBenchmark[]) {
   let disjoint = 0
   let excess = 0
   let overlap = 0

@@ -1,20 +1,28 @@
-Optimize Species.Speciate()
-  Create reference to current species, similar to array of connections
-  in Brain where species have an index specifying where they are in
-  the array
+[ ] Optimize Brain
+    [ ] Create a list of preallocated objects
+        that you can request an object for and
+        release to
+[x] Optimize Asteroids
+    [x] Same list of objects
+
+Implement different aggregation functions
+Allow saving and loading of Brain and NeuralNetwork
+  Test Brain
+Bundle Brain
+  Create an array of easy-to-do operations since runTheNetwork gets
+  called pretty often for the same network
+Specify reference paths for every file
 Improve creation of population with an options object
 Improve raycasting
+  posAddDir as a field
 Add workers
 Add more shapes for intersection testing with raycasting
 Make navigator site a little more cool looking
   Add some gifs of them working and individual
   tiles for each demo page
-Allow saving of neural networks
 Make drawing the population better
 Add 3D graphing engine for 3D games and stuff
-Debug NeuralNetwork
-Convert Neat's findSolution to a static method
-Use Neat instead of a regular NeuralNetwork for Flappy Bird
 Add games
   car racing
   pendulum balancing
+  flappy bird
