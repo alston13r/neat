@@ -454,6 +454,14 @@ class Brain {
    * Draws this brain to the local graphics.
    * @param options the options to draw the brain with
    */
+  /**
+   * Draws this brain to the local graphics.
+   * @param g the Graphics object to use
+   * @param maxWidth the maximum width of the drawing, defaults to 800
+   * @param maxHeight the maximum height of the drawing, defaults to 600
+   * @param xOffset the x offset into the Graphics object, defaults to 0
+   * @param yOffset the y offset into the Graphics object, defaults to 0
+   */
   draw(g: Graphics, maxWidth = 800, maxHeight = 600, xOffset = 0, yOffset = 0) {
     const nodePositions = new Map<NNode, Vec2>()
 
