@@ -10,17 +10,17 @@
         [ ] math.ts
             [ ] roundNicely
             [ ] setVec2FromRadian
-    [ ] matrix.ts
-    [ ] ray.ts
-    [ ] drawing
-        [ ] graphics.ts
-        [ ] types.d.ts
-        [ ] shapes
-            [ ] circle.ts
-            [ ] line.ts
-            [ ] polygon.ts
-            [ ] rectangle.ts
-            [ ] triangle.ts
+        [ ] matrix.ts
+        [ ] ray.ts
+        [ ] drawing
+            [ ] graphics.ts
+            [ ] types.d.ts
+            [ ] shapes
+                [ ] circle.ts
+                [ ] line.ts
+                [ ] polygon.ts
+                [ ] rectangle.ts
+                [ ] triangle.ts
 
 Implement different aggregation functions
 Allow saving and loading of Brain and NeuralNetwork
