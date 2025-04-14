@@ -71,8 +71,11 @@ class TrainingValues {
     }
   ])
 
+  /** The training values */
   values: { inputs: number[], outputs: number[] }[]
+  /** The number of inputs */
   inputSize = 0
+  /** The number of outputs */
   outputSize = 0
 
   /**
