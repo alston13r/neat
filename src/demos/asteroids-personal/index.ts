@@ -11,8 +11,6 @@ let temp
   asteroidsGraphics.fillStyle = '#fff'
   asteroidsGraphics.context.font = 'arial 10px'
 
-  // code for individual play
-
   const keysPressed: Record<string, number> = {
     'ArrowUp': 0,
     'ArrowDown': 0,
