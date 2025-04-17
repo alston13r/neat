@@ -10,44 +10,6 @@ asteroidsGraphics.context.font = 'arial 10px'
 
 const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
 
-// const asteroidsSlider = document.createElement('input')
-// asteroidsSlider.type = 'range'
-// asteroidsSlider.min = '1'
-// asteroidsSlider.max = '20'
-// asteroidsSlider.value = '1'
-// asteroidsSlider.style.display = 'block'
-
-// document.body.appendChild(asteroidsSlider)
-
-// let gameScale = 1
-// asteroidsSlider.oninput = () => gameScale = parseInt(asteroidsSlider.value)
-
-// code for individual play
-
-// const keysPressed: Record<string, number> = {
-//   'ArrowUp': 0,
-//   'ArrowDown': 0,
-//   'ArrowLeft': 0,
-//   'ArrowRight': 0,
-//   ' ': 0
-// }
-// window.addEventListener('keydown', e => keysPressed[e.key] = 1)
-// window.addEventListener('keyup', e => keysPressed[e.key] = 0)
-
-// const game = new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
-// const brain = new Brain().initialize(11, 0, 3, 0.5)
-
-// function asteroidsLoop(): void {
-//   asteroidsGraphics.bg()
-//   game.loadInputs(keysPressed)
-//   game.update()
-//   game.draw(asteroidsGraphics)
-//   window.requestAnimationFrame(asteroidsLoop)
-// }
-// window.requestAnimationFrame(asteroidsLoop)
-
-
-
 const maxTimeAlive = 30
 let currentGenerationTimeAlive = 0
 
