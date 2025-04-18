@@ -6,14 +6,6 @@
  * and the desired number.
  */
 class Species {
-  /** The weight that excess connections have in the compatibility difference */
-  static ExcessFactor = 1
-  /** The weight that disjoint connections have in the compatibility difference */
-  static DisjointFactor = 1
-  /** The weight that the average of weight difference have in the compatibility difference  */
-  static WeightFactor = 0.4
-  /** The number of generations that a species can run for simultaneously without improvement without being penalized */
-  static GenerationPenalization = 15
   /** The current target number of species */
   static TargetSpecies = 10
   /** The current compatibility threshold used for comparisons */
@@ -160,9 +152,9 @@ class Species {
 
     let unspeciated: Brain[]
 
-    const excessFactor = population.neat.getExcessFactor()
-    const disjointFactor = population.neat.getDisjointFactor()
-    const weightFactor = population.neat.getWeightFactor()
+    const excessFactor = population.neat.speciesConfig.excessFactor
+    const disjointFactor = population.neat.speciesConfig.disjointFactor
+    const weightFactor = population.neat.speciesConfig.weightFactor
 
     champions.forEach(champion => {
       unspeciated = population.members.filter(member => member.species == null)
@@ -202,13 +194,13 @@ class Species {
    * any remaining spots are produced by crossover between two parents rolled
    * by a roulette wheel.
    */
-  produceOffspring(elitism: boolean, elitePercentage: number): Brain[] {
-    if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
+  produceOffspring(config: SpeciesConfig): Brain[] {
+    if (this.allowedOffspring == 0 || this.gensSinceImproved > config.generationPenalization) {
       this.members.length = 0
       return []
     }
     const offspring: Brain[] = []
-    if (elitism) Population.GetElites(offspring, this.members, this.allowedOffspring, elitePercentage)
+    if (config.elitism) Population.GetElites(offspring, this.members, this.allowedOffspring, config.elitePercentage)
 
     const parents: Brain[] = []
     Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length)

@@ -124,13 +124,10 @@ class Population {
    * otherwise its the percentage of members that gets preserved.
    */
   produceOffspring(): void {
-    if (this.neat.getSpeciationEnabled()) {
-      const elitism = this.neat.getElitismEnabled()
-      const elitePercentage = this.neat.getElitismPercentage()
-
+    if (this.neat.speciesConfig.enabled) {
       this.members = []
       this.speciesList.forEach(species => {
-        const speciesOffspring = species.produceOffspring(elitism, elitePercentage)
+        const speciesOffspring = species.produceOffspring(this.neat.speciesConfig)
         this.members.push(...speciesOffspring)
         speciesOffspring.forEach(offspring => offspring.species = species)
         species.members = speciesOffspring
@@ -146,7 +143,7 @@ class Population {
       }
     } else {
       const copyOfMembers = [...this.members]
-      if (this.neat.getElitismEnabled()) Population.GetElites(this.members, copyOfMembers, this.popSize, this.neat.getElitismPercentage())
+      if (this.neat.speciesConfig.elitism) Population.GetElites(this.members, copyOfMembers, this.popSize, this.neat.speciesConfig.elitePercentage)
       else this.members.length = 0
       const parents: Brain[] = []
       Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length)
@@ -186,7 +183,7 @@ class Population {
    * adjusts the fitness of all members, and calculates the allowed offspring for each species.
    */
   speciate() {
-    if (this.neat.getSpeciationEnabled()) {
+    if (this.neat.speciesConfig.enabled) {
       Species.Speciate(this)
       this.updateGensSinceImproved()
       this.adjustDynamicThreshold()
@@ -283,12 +280,10 @@ class Population {
     g.font = '20px arial'
     g.fillText(`Generation: ${this.generationCounter} <${this.members.length}>`, 5, 5)
 
-    const speciationEnabled = this.neat.getSpeciationEnabled()
-
     const getMemberText = (brain: Brain, i: number) => {
       const a = brain.fitness.toPrecision(6)
       const b = (brain.fitness / brain.species.members.length).toPrecision(6)
-      return `${i + 1}: ${a} ${speciationEnabled ? ' -> ' + b : ''}`
+      return `${i + 1}: ${a} ${this.neat.speciesConfig.enabled ? ' -> ' + b : ''}`
     }
     g.font = '10px arial'
     this.members.slice()
@@ -298,7 +293,7 @@ class Population {
         g.fillText(getMemberText(brain, i), 5, 25 + i * 10)
       })
 
-    if (speciationEnabled) {
+    if (this.neat.speciesConfig.enabled) {
       g.font = '20px arial'
       g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 240, 5)
 
