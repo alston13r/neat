@@ -37,7 +37,7 @@ type MutationConfig = {
   /** The chance for a connection's weight to be mutated */
   mutateWeightChance?: number,
   /** The chance for a connection's weight mutation to just nudge the value, as opposed to complete randomization */
-  nudgeWeightChange?: number
+  nudgeWeightChance?: number
 }
 
 /**
@@ -91,7 +91,7 @@ class Neat {
 
     allowWeightMutations: true,
     mutateWeightChance: 0.8,
-    nudgeWeightChange: 0.9
+    nudgeWeightChance: 0.9
   }
 
   connectionConfig: ConnectionConfig = {
