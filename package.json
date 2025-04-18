@@ -4,14 +4,15 @@
   "description": "This project is a JavaScript and TypeScript implementation of the NEAT algorithm.",
   "main": "",
   "scripts": {
-    "generateDocs": "typedoc src --entryPointStrategy expand",
+    "generateDocs": "typedoc src --entryPointStrategy expand --plugin typedoc-github-theme",
     "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.6.0-dev.20240801",
-    "typedoc": "^0.28.2"
+    "typedoc": "^0.28.2",
+    "typedoc-github-theme": "^0.3.0",
+    "typescript": "^5.6.0-dev.20240801"
   },
   "repository": {
     "type": "git",

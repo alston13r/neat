@@ -6,22 +6,11 @@
  * in the brain's topology to a node in an earlier layer.
  */
 class Connection {
-  /** Toggle for weight mutations */
-  static AllowWeightMutations = true
-  /** The minimum value that a weight can be */
-  static MinimumWeightValue = -10
-  /** The maximum value that a weight can be */
-  static MaximumWeightValue = 10
-  /** The chance for the weight to get mutated */
-  static MutateWeightChance = 0.8
-  /** The chance for the weight to be nudged rather than randomized when mutated */
-  static NudgeWeightChance = 0.9
-
   /**
    * Helper method to generate a random weight value between the minimum and maximum values.
    */
-  static GenerateRandomWeight() {
-    return lerp(Math.random(), 0, 1, this.MinimumWeightValue, this.MaximumWeightValue)
+  static GenerateRandomWeight(config: ConnectionConfig) {
+    return lerp(Math.random(), 0, 1, config.minimumWeightValue, config.maximumWeightValue)
   }
 
   /** This connection's incoming node */
@@ -72,22 +61,18 @@ class Connection {
    * yields a value less than the predefined static values. A connection's weight, when mutated,
    * can either be nudged or completely randomized.
    */
-  mutate() {
-    if (Connection.AllowWeightMutations
-      && Math.random() < Connection.MutateWeightChance) { // connection weight will be mutated
-      if (Math.random() < Connection.NudgeWeightChance) { // weight will only be nudged by 20%
+  mutate(neat: Neat) {
+    if (neat.mutationConfig.allowWeightMutations
+      && Math.random() < neat.mutationConfig.mutateWeightChance) { // connection weight will be mutated
+
+      if (Math.random() < neat.mutationConfig.nudgeWeightChance) { // weight will only be nudged by 20%
         this.weight += 0.2 * this.weight * (Math.random() > 0.5 ? 1 : -1)
       } else { // weight will be randomized
-        this.weight = Connection.GenerateRandomWeight()
-      } // ensure weight is within acceptable bounds
-      this.clamp()
-    }
-  }
+        this.weight = lerp(Math.random(), 0, 1, neat.connectionConfig.minimumWeightValue, neat.connectionConfig.maximumWeightValue)
+      }
 
-  /**
-   * Clamps this connection's weight to be within predefined bounds.
-   */
-  clamp() {
-    this.weight = clamp(this.weight, Connection.MinimumWeightValue, Connection.MaximumWeightValue)
+      // ensure weight is within acceptable bounds
+      this.weight = clamp(this.weight, neat.connectionConfig.minimumWeightValue, neat.connectionConfig.maximumWeightValue)
+    }
   }
 }

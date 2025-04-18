@@ -5,12 +5,7 @@
  * offspring for the next generation.
  */
 class Population {
-  /** Toggle for speciation between generations */
-  static Speciation = true
-  /** Toggle for elitism */
-  static Elitism = true
-  /** The percent of members who get carried over as elites */
-  static ElitePercent = 0.3
+  neat: Neat
 
   /** A counter for the current generation */
   generationCounter = 0
@@ -40,12 +35,14 @@ class Population {
    * @param outputN the number of output nodes
    * @param enabledChance the chance for connections to start enabled
    */
-  constructor(popSize: number, inputN: number, hiddenN: number, outputN: number, enabledChance = 1) {
-    this.popSize = popSize
-    this.inputN = inputN
-    this.hiddenN = hiddenN
-    this.outputN = outputN
-    this.enabledChance = enabledChance
+  constructor(neat: Neat) {
+    this.neat = neat
+
+    this.popSize = neat.size
+    this.inputN = neat.topology.inputSize
+    this.hiddenN = neat.topology.hiddenSize
+    this.outputN = neat.topology.outputSize
+    this.enabledChance = neat.topology.enableChance
   }
 
   /**
@@ -127,10 +124,10 @@ class Population {
    * otherwise its the percentage of members that gets preserved.
    */
   produceOffspring(): void {
-    if (Population.Speciation) {
+    if (this.neat.speciesConfig.enabled) {
       this.members = []
       this.speciesList.forEach(species => {
-        const speciesOffspring = species.produceOffspring()
+        const speciesOffspring = species.produceOffspring(this.neat.speciesConfig)
         this.members.push(...speciesOffspring)
         speciesOffspring.forEach(offspring => offspring.species = species)
         species.members = speciesOffspring
@@ -141,12 +138,12 @@ class Population {
       if (this.members.length < this.popSize) {
         const difference = this.popSize - this.members.length
         for (let i = 0; i < difference; i++) {
-          this.members.push(new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
+          this.members.push(new Brain().initialize(this.neat))
         }
       }
     } else {
       const copyOfMembers = [...this.members]
-      if (Population.Elitism) Population.GetElites(this.members, copyOfMembers, this.popSize)
+      if (this.neat.speciesConfig.elitism) Population.GetElites(this.members, copyOfMembers, this.popSize, this.neat.speciesConfig.elitePercentage)
       else this.members.length = 0
       const parents: Brain[] = []
       Population.GeneratePairings(parents, copyOfMembers, this.popSize - this.members.length)
@@ -171,7 +168,7 @@ class Population {
   nextGeneration() {
     if (this.members.length == 0) {
       this.members = new Array(this.popSize).fill(0)
-        .map(() => new Brain().initialize(this.inputN, this.hiddenN, this.outputN, this.enabledChance))
+        .map(() => new Brain().initialize(this.neat))
     } else {
       this.produceOffspring()
       this.generationCounter++
@@ -186,7 +183,7 @@ class Population {
    * adjusts the fitness of all members, and calculates the allowed offspring for each species.
    */
   speciate() {
-    if (Population.Speciation) {
+    if (this.neat.speciesConfig.enabled) {
       Species.Speciate(this)
       this.updateGensSinceImproved()
       this.adjustDynamicThreshold()
@@ -261,11 +258,11 @@ class Population {
    * @param limit the limit for the number of elites
    * @returns the elites
    */
-  static GetElites(out: Brain[], list: Brain[], limit: number) {
+  static GetElites(out: Brain[], list: Brain[], limit: number, elitePercent: number) {
     out.length = 0
     if (limit == 0) return out
     list.sort((a, b) => b.fitness - a.fitness)
-    const N = Math.min(limit, Math.round(Population.ElitePercent * list.length))
+    const N = Math.min(limit, Math.round(elitePercent * list.length))
     for (let i = 0; i < N; i++) {
       out[i] = list[i]
       out[i].isElite = true
@@ -286,7 +283,7 @@ class Population {
     const getMemberText = (brain: Brain, i: number) => {
       const a = brain.fitness.toPrecision(6)
       const b = (brain.fitness / brain.species.members.length).toPrecision(6)
-      return `${i + 1}: ${a} ${Population.Speciation ? ' -> ' + b : ''}`
+      return `${i + 1}: ${a} ${this.neat.speciesConfig.enabled ? ' -> ' + b : ''}`
     }
     g.font = '10px arial'
     this.members.slice()
@@ -296,7 +293,7 @@ class Population {
         g.fillText(getMemberText(brain, i), 5, 25 + i * 10)
       })
 
-    if (Population.Speciation) {
+    if (this.neat.speciesConfig.enabled) {
       g.font = '20px arial'
       g.fillText(`Species (Threshold: ${Species.DynamicThreshold})`, 240, 5)
 

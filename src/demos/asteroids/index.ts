@@ -8,7 +8,8 @@ asteroidsGraphics.textAlign = 'left'
 asteroidsGraphics.fillStyle = '#fff'
 asteroidsGraphics.context.font = 'arial 10px'
 
-const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
+// const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
+const neat = new Neat(500, { inputSize: 11, outputSize: 3, enableChance: 0.5 })
 
 const maxTimeAlive = 30
 let currentGenerationTimeAlive = 0
@@ -22,7 +23,7 @@ function thinkBrain(brain: Brain, game: Asteroids): number[] {
   return game.ship.loadIntoBrain(brain)
 }
 
-const fittestRecords: Brain[] = []
+// const fittestRecords: Brain[] = []
 
 let pairings: GameBrainPair[] = []
 
@@ -54,23 +55,27 @@ function loop(timestamp: number) {
     fittest.game.draw(asteroidsGraphics)
 
     asteroidsGraphics.fillStyle = '#fff'
-    asteroidsGraphics.fillText(`Generation: ${asteroidsPopulation.generationCounter}`, 5, asteroidsGraphics.height - 5)
-    asteroidsGraphics.fillText(`Alive: ${stillAlive.length} / ${asteroidsPopulation.popSize}`, 5, asteroidsGraphics.height - 15)
+    asteroidsGraphics.fillText(`Generation: ${neat.getCurrentGeneration()}`, 5, asteroidsGraphics.height - 5)
+    asteroidsGraphics.fillText(`Alive: ${stillAlive.length} / ${neat.getPopulationSize()}`, 5, asteroidsGraphics.height - 15)
     asteroidsGraphics.fillText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, asteroidsGraphics.height - 25)
     asteroidsGraphics.fillText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, asteroidsGraphics.height - 35)
     // asteroidsGraphics.fillText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45)
   } else {
     currentGenerationTimeAlive = 0
-    asteroidsPopulation.nextGeneration()
-    if (asteroidsPopulation.generationCounter > 0) {
-      asteroidsPopulation.speciate()
-      fittestRecords.push(asteroidsPopulation.getFittest())
+    // asteroidsPopulation.nextGeneration()
+    neat.nextGeneration()
+    // if (asteroidsPopulation.generationCounter > 0) {
+    if (neat.getCurrentGeneration() > 0) {
+      // asteroidsPopulation.speciate()
+      neat.speciateMembers() // speciation depends on member fitness, we need to wait for the first generation to have ran
+      // fittestRecords.push(asteroidsPopulation.getFittest())
+      const members = neat.getMembers()
       pairings.forEach((pair, index) => {
-        pair.brain = asteroidsPopulation.members[index]
+        pair.brain = members[index]
         pair.game.reset()
       })
     }
-    pairings = asteroidsPopulation.members.map(member => {
+    pairings = neat.getMembers().map(member => {
       return {
         brain: member,
         game: new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)

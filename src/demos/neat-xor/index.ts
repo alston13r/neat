@@ -4,12 +4,13 @@
 const xorGraphics = new Graphics(document.getElementById('mainCanvas') as HTMLCanvasElement).setSize(800, 550)
 const xorTrainingValues = TrainingValues.XOR
 const xorPopSize = 1000
-const xorPopulation = new Population(xorPopSize, 2, 0, 1)
+const xorNeat = new Neat(xorPopSize, { inputSize: 2, outputSize: 1 }, { mutations: { allowRecurrentConnections: false } })
+// const xorPopulation = new Population(xorPopSize, 2, 0, 1)
 
 const xorDesiredFitness = 3.95
 const xorMaxGenerations = 1000
 
-Brain.AllowRecurrent = false
+// Brain.AllowRecurrent = false
 
 let xorSolution: Brain
 
@@ -23,18 +24,22 @@ function calculateFitness(brain: Brain) {
 }
 
 function xorLoop() {
-  xorPopulation.nextGeneration()
-  xorPopulation.members.forEach(calculateFitness)
+  xorNeat.nextGeneration()
+  xorNeat.runFitnessFunction(calculateFitness)
+  // xorPopulation.members.forEach(calculateFitness)
 
-  xorPopulation.updateFittestEver()
-  xorPopulation.speciate()
+  xorNeat.updateFittest()
+  // xorPopulation.updateFittestEver()
+  xorNeat.speciateMembers()
+  // xorPopulation.speciate()
 
   xorGraphics.bg()
-  xorPopulation.draw(xorGraphics)
-  xorPopulation.fittestEver.draw(xorGraphics, 320, 550, 480)
+  xorNeat.population.draw(xorGraphics)
+  // xorPopulation.draw(xorGraphics)
+  xorNeat.population.fittestEver.draw(xorGraphics, 320, 550, 480)
 
-  if (xorPopulation.fittestEver.fitness >= xorDesiredFitness) {
-    xorSolution = xorPopulation.fittestEver
+  if (xorNeat.population.fittestEver.fitness >= xorDesiredFitness) {
+    xorSolution = xorNeat.population.fittestEver
     console.log('Solution found, storing to var<xorSolution>', xorSolution.fitness)
     xorTrainingValues.values.forEach(io => {
       console.log('[' + io.inputs.join(', ') + '] -> ['
@@ -43,8 +48,8 @@ function xorLoop() {
     return
   }
 
-  if (xorPopulation.generationCounter >= xorMaxGenerations) {
-    xorSolution = xorPopulation.fittestEver
+  if (xorNeat.getCurrentGeneration() >= xorMaxGenerations) {
+    xorSolution = xorNeat.population.fittestEver
     console.log('Solution not found, storing best ever to var<xorSolution>', xorSolution.fitness)
     xorTrainingValues.values.forEach(io => {
       console.log('[' + io.inputs.join(', ') + '] -> ['
