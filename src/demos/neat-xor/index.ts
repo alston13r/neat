@@ -28,7 +28,7 @@ function xorLoop() {
   xorNeat.runFitnessFunction(calculateFitness)
   // xorPopulation.members.forEach(calculateFitness)
 
-  xorNeat.updateFittest()
+  xorNeat.updateFittestEver()
   // xorPopulation.updateFittestEver()
   xorNeat.speciateMembers()
   // xorPopulation.speciate()
