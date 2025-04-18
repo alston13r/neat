@@ -8,7 +8,6 @@ asteroidsGraphics.textAlign = 'left'
 asteroidsGraphics.fillStyle = '#fff'
 asteroidsGraphics.context.font = 'arial 10px'
 
-// const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
 const neat = new Neat(500, { inputSize: 11, outputSize: 3, enableChance: 0.5 }).initializePopulation()
 
 const maxTimeAlive = 30
@@ -23,7 +22,7 @@ function thinkBrain(brain: Brain, game: Asteroids): number[] {
   return game.ship.loadIntoBrain(brain)
 }
 
-// const fittestRecords: Brain[] = []
+const fittestRecords: Brain[] = []
 
 let pairings: GameBrainPair[] = []
 
@@ -62,13 +61,10 @@ function loop(timestamp: number) {
     // asteroidsGraphics.fillText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45)
   } else {
     currentGenerationTimeAlive = 0
-    // asteroidsPopulation.nextGeneration()
+    if (neat.getCurrentGeneration() > 0) fittestRecords.push(neat.updateFittestEver())
     neat.nextGeneration()
-    // if (asteroidsPopulation.generationCounter > 0) {
     if (neat.getCurrentGeneration() > 0) {
-      // asteroidsPopulation.speciate()
       neat.speciateMembers() // speciation depends on member fitness, we need to wait for the first generation to have ran
-      // fittestRecords.push(asteroidsPopulation.getFittest())
       const members = neat.getMembers()
       pairings.forEach((pair, index) => {
         pair.brain = members[index]
@@ -82,7 +78,6 @@ function loop(timestamp: number) {
       }
     })
   }
-  // }
 
   window.requestAnimationFrame(loop)
 }
