@@ -113,6 +113,7 @@ class Neat {
   }
 
   size: number
+  population: Population
 
   constructor(size: number, topology: BrainTopologyConfig, configs?: { mutations?: MutationConfig, connections?: ConnectionConfig, species?: SpeciesConfig }) {
     this.topology = {
@@ -129,6 +130,8 @@ class Neat {
       if (configs.connections) this.setConnectionConfig(configs.connections)
       if (configs.species) this.setSpeciesConfig(configs.species)
     }
+
+    this.population = new Population(this)
   }
 
   setMutationConfig(config: MutationConfig): Neat {
@@ -150,6 +153,22 @@ class Neat {
       this.speciesConfig[k] = config[k]
 
     return this
+  }
+
+  getCurrentGeneration(): number {
+    return 0
+  }
+
+  getPopulationSize(): number {
+    return this.size
+  }
+
+  nextGeneration() {
+    this.population.nextGeneration()
+  }
+
+  getMembers(): Brain[] {
+    return this.population.members
   }
 }
 
