@@ -9,14 +9,19 @@ function calcFitness(brain: Brain) {
 
 function oneTest() {
   const results: number[] = new Array(1000)
-  const stressPop = new Population(1000, 2, 0, 1)
+  const neat = new Neat(1000, { inputSize: 2, outputSize: 1 })
+  // const stressPop = new Population(1000, 2, 0, 1)
   for (let i = 0; i < 1000; i++) {
     console.log(i)
-    stressPop.nextGeneration()
-    stressPop.members.forEach(calcFitness)
-    stressPop.updateFittestEver()
+    // stressPop.nextGeneration()
+    neat.nextGeneration()
+    // stressPop.members.forEach(calcFitness)
+    neat.runFitnessFunction(calcFitness)
+    // stressPop.updateFittestEver()
+    neat.updateFittest()
     const start = performance.now()
-    stressPop.speciate()
+    // stressPop.speciate()
+    neat.speciateMembers()
     const end = performance.now()
     results[i] = end - start
   }
@@ -34,14 +39,19 @@ function fullTest() {
   const totalResults: number[] = []
   for (let iteration = 0; iteration < 16; iteration++) {
     const results: number[] = new Array(1000)
-    const stressPop = new Population(1000, 2, 0, 1)
+    // const stressPop = new Population(1000, 2, 0, 1)
+    const neat = new Neat(1000, { inputSize: 2, outputSize: 1 })
     for (let i = 0; i < 1000; i++) {
       console.log(iteration + ': ' + i)
-      stressPop.nextGeneration()
-      stressPop.members.forEach(calcFitness)
-      stressPop.updateFittestEver()
+      // stressPop.nextGeneration()
+      neat.nextGeneration()
+      // stressPop.members.forEach(calcFitness)
+      neat.runFitnessFunction(calcFitness)
+      // stressPop.updateFittestEver()
+      neat.updateFittest()
       const start = performance.now()
-      stressPop.speciate()
+      // stressPop.speciate()
+      neat.speciateMembers()
       const end = performance.now()
       results[i] = end - start
     }
