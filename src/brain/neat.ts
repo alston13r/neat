@@ -114,7 +114,7 @@ class Neat {
 
   size: number
 
-  constructor(size: number, topology: BrainTopologyConfig) {
+  constructor(size: number, topology: BrainTopologyConfig, configs?: { mutations?: MutationConfig, connections?: ConnectionConfig, species?: SpeciesConfig }) {
     this.topology = {
       inputSize: topology.inputSize,
       hiddenSize: topology.hiddenSize ?? 0,
@@ -123,6 +123,12 @@ class Neat {
     }
 
     this.size = size
+
+    if (configs) {
+      if (configs.mutations) this.setMutationConfig(configs.mutations)
+      if (configs.connections) this.setConnectionConfig(configs.connections)
+      if (configs.species) this.setSpeciesConfig(configs.species)
+    }
   }
 
   setMutationConfig(config: MutationConfig): Neat {
