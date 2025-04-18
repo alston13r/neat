@@ -62,18 +62,20 @@ function loop(timestamp: number) {
     // asteroidsGraphics.fillText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45)
   } else {
     currentGenerationTimeAlive = 0
-    neat.nextGeneration()
     // asteroidsPopulation.nextGeneration()
+    neat.nextGeneration()
     // if (asteroidsPopulation.generationCounter > 0) {
-    // asteroidsPopulation.speciate()
-    // fittestRecords.push(asteroidsPopulation.getFittest())
-    const members = neat.getMembers()
-    pairings.forEach((pair, index) => {
-      pair.brain = members[index]
-      pair.game.reset()
-    })
-    // }
-    pairings = members.map(member => {
+    if (neat.getCurrentGeneration() > 0) {
+      // asteroidsPopulation.speciate()
+      neat.speciateMembers() // speciation depends on member fitness, we need to wait for the first generation to have ran
+      // fittestRecords.push(asteroidsPopulation.getFittest())
+      const members = neat.getMembers()
+      pairings.forEach((pair, index) => {
+        pair.brain = members[index]
+        pair.game.reset()
+      })
+    }
+    pairings = neat.getMembers().map(member => {
       return {
         brain: member,
         game: new Asteroids(asteroidsGraphics.width, asteroidsGraphics.height)
