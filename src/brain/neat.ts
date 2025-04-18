@@ -183,8 +183,12 @@ class Neat {
     this.getMembers().forEach(fn)
   }
 
-  updateFittest() {
-    this.population.updateFittestEver()
+  updateFittestEver(): Brain {
+    return this.population.updateFittestEver()
+  }
+
+  getFittestOfGeneration(): Brain {
+    return this.population.getFittest()
   }
 }
 
