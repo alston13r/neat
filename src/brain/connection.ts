@@ -64,19 +64,15 @@ class Connection {
   mutate(neat: Neat) {
     if (neat.mutationConfig.allowWeightMutations
       && Math.random() < neat.mutationConfig.mutateWeightChance) { // connection weight will be mutated
+
       if (Math.random() < neat.mutationConfig.nudgeWeightChance) { // weight will only be nudged by 20%
         this.weight += 0.2 * this.weight * (Math.random() > 0.5 ? 1 : -1)
       } else { // weight will be randomized
-        this.weight = Connection.GenerateRandomWeight()
-      } // ensure weight is within acceptable bounds
-      this.clamp()
-    }
-  }
+        this.weight = lerp(Math.random(), 0, 1, neat.connectionConfig.minimumWeightValue, neat.connectionConfig.maximumWeightValue)
+      }
 
-  /**
-   * Clamps this connection's weight to be within predefined bounds.
-   */
-  clamp() {
-    this.weight = clamp(this.weight, Connection.MinimumWeightValue, Connection.MaximumWeightValue)
+      // ensure weight is within acceptable bounds
+      this.weight = clamp(this.weight, neat.connectionConfig.minimumWeightValue, neat.connectionConfig.maximumWeightValue)
+    }
   }
 }
