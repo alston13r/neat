@@ -174,7 +174,6 @@ class Population {
       this.generationCounter++
       this.mutate()
     }
-    this.speciate()
   }
 
   /**
