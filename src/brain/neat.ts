@@ -1,46 +1,114 @@
-// initialize
-//   population size
-//   brain input size
-//   brain hidden size
-//   brain output size
+type BrainTopology = {
+  inputSize: number,
+  hiddenSize?: number,
+  outputSize: number
+  enableChance?: number
+}
 
-//   settings?
+type MutationConfig = {
+  allowNewConnections?: boolean,
+  allowDisablingConnections?: boolean,
+  allowRecurrentConnections?: boolean,
 
-//     brain
-//       initialization
-//         input size
-//         hidden size
-//         output size
-//         enabled chance
-//       mutations
-//         allow new connections
-//         allow disabling connections
-//         allow recurrent connections
-//         add connection chance
-//         disable connection chance
-//         reenable connection chance
-//         allow new nodes
-//         add node chance
+  addConnectionChance?: number,
+  disableConnectionChance?: number,
+  reenableConnectionChance?: number
 
-//     connection
-//       allow weight mutations
-//       minimum weight value
-//       maximum weight value
-//       mutate weight chance
-//       nudge weight chance
+  allowNewNodes?: boolean,
+  addNodeChance?: number
 
-//     population
-//       speciation
-//       elitism
-//       elite percent
+  allowWeightMutations?: boolean
+  mutateWeightChance?: number,
+  nudgeWeightChange?: number
+}
 
-//       population size
+type ConnectionConfig = {
+  minimumWeightValue?: number,
+  maximumWeightValue?: number
+}
 
-//     species
-//       excess factor
-//       disjoint factor
-//       weight factor
+type SpeciesConfig = {
+  enabled?: boolean,
+  elitism?: boolean,
+  elitePercentage?: number
 
-//       generations penalization
-//       target number of species
-//       dynamic threshold step size
+  excessFactor?: number,
+  disjointFactor?: number,
+  weightFactor?: number,
+  generationPenalization?: number,
+  targetSpecies?: number
+  dynamicThresholdStepSize?: number
+}
+
+class Neat {
+  topology: BrainTopology
+
+  mutationConfig: MutationConfig = {
+    allowNewConnections: true,
+    allowDisablingConnections: false,
+    allowRecurrentConnections: false,
+
+    addConnectionChance: 0.4,
+    disableConnectionChance: 0.05,
+    reenableConnectionChance: 0.25,
+
+    allowNewNodes: true,
+    addNodeChance: 0.01,
+
+    allowWeightMutations: true,
+    mutateWeightChance: 0.8,
+    nudgeWeightChange: 0.9
+  }
+
+  connectionConfig: ConnectionConfig = {
+    minimumWeightValue: -10,
+    maximumWeightValue: 10
+  }
+
+  speciesConfig: SpeciesConfig = {
+    enabled: true,
+    elitism: true,
+    elitePercentage: 0.3,
+
+    excessFactor: 1,
+    disjointFactor: 1,
+    weightFactor: 0.4,
+    generationPenalization: 15,
+    targetSpecies: 10,
+    dynamicThresholdStepSize: 0.5
+  }
+
+  size: number
+
+  constructor(topology: BrainTopology, size: number) {
+    this.topology = {
+      inputSize: topology.inputSize,
+      hiddenSize: topology.hiddenSize ?? 0,
+      outputSize: topology.outputSize,
+      enableChance: topology.enableChance ?? 1,
+    }
+
+    this.size = size
+  }
+
+  setMutationConfig(config: MutationConfig): Neat {
+    for (const k in config)
+      this.mutationConfig[k] = config[k]
+
+    return this
+  }
+
+  setConnectionConfig(config: ConnectionConfig): Neat {
+    for (const k in config)
+      this.connectionConfig[k] = config[k]
+
+    return this
+  }
+
+  setSpeciesConfig(config: SpeciesConfig): Neat {
+    for (const k in config)
+      this.speciesConfig[k] = config[k]
+
+    return this
+  }
+}
