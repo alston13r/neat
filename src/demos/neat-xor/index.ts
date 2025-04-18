@@ -4,7 +4,7 @@
 const xorGraphics = new Graphics(document.getElementById('mainCanvas') as HTMLCanvasElement).setSize(800, 550)
 const xorTrainingValues = TrainingValues.XOR
 const xorPopSize = 1000
-const xorNeat = new Neat(xorPopSize, { inputSize: 2, outputSize: 1 }, { mutations: { allowRecurrentConnections: false } })
+const xorNeat = new Neat(xorPopSize, { inputSize: 2, outputSize: 1 }, { mutations: { allowRecurrentConnections: false } }).initializePopulation()
 // const xorPopulation = new Population(xorPopSize, 2, 0, 1)
 
 const xorDesiredFitness = 3.95

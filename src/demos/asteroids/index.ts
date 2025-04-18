@@ -9,7 +9,7 @@ asteroidsGraphics.fillStyle = '#fff'
 asteroidsGraphics.context.font = 'arial 10px'
 
 // const asteroidsPopulation = new Population(500, 11, 0, 3, 0.5)
-const neat = new Neat(500, { inputSize: 11, outputSize: 3, enableChance: 0.5 })
+const neat = new Neat(500, { inputSize: 11, outputSize: 3, enableChance: 0.5 }).initializePopulation()
 
 const maxTimeAlive = 30
 let currentGenerationTimeAlive = 0

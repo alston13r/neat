@@ -130,8 +130,12 @@ class Neat {
       if (configs.connections) this.setConnectionConfig(configs.connections)
       if (configs.species) this.setSpeciesConfig(configs.species)
     }
+  }
 
+  initializePopulation(): Neat {
     this.population = new Population(this)
+
+    return this
   }
 
   setMutationConfig(config: MutationConfig): Neat {
