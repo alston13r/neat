@@ -145,6 +145,60 @@ class Neat {
 
     return this
   }
+
+  //   allowNewConnections: true,
+  //   allowDisablingConnections: false,
+  //   allowRecurrentConnections: false,
+
+  //   addConnectionChance: 0.4,
+  //   disableConnectionChance: 0.05,
+  //   reenableConnectionChance: 0.25,
+
+  //   allowNewNodes: true,
+  //   addNodeChance: 0.01,
+
+  //   allowWeightMutations: true,
+  //   mutateWeightChance: 0.8,
+  //   nudgeWeightChange: 0.9
+  // }
+
+  // #connectionConfig: ConnectionConfig = {
+  //   minimumWeightValue: -10,
+  //   maximumWeightValue: 10
+  // }
+
+  getSpeciationEnabled(): boolean {
+    return this.#speciesConfig.enabled
+  }
+
+  getElitismEnabled(): boolean {
+    return this.#speciesConfig.elitism
+  }
+
+  getElitismPercentage(): number {
+    return this.#speciesConfig.elitePercentage
+  }
+
+  getExcessFactor(): number {
+    return this.#speciesConfig.excessFactor
+  }
+
+  getDisjointFactor(): number {
+    return this.#speciesConfig.disjointFactor
+  }
+
+  getWeightFactor(): number {
+    return this.#speciesConfig.weightFactor
+  }
+
+  //   generationPenalization: 15,
+  //   targetSpecies: 10,
+  //   dynamicThresholdStepSize: 0.5
+
+
+
+
+
 }
 
 new Neat(100, { inputSize: 2, outputSize: 1 })

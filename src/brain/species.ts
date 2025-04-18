@@ -38,13 +38,12 @@ class Species {
    * The overlapping connections are combined into an average difference of weights.
    * The more similar two topologies are, the closer to 0 this method returns. If
    * the value falls below the compatibility threshold, they belong to the same
-   * species. This was derived from a big truth table and a lot of boolean algebra, see
-   * {@link https://docs.google.com/spreadsheets/d/1vLFl3Y7DDsnzVoI0IpjJZIh0uJcby4OsPjn-gxxWptY/edit?usp=sharing | Google Sheets}.
+   * species.
    * @param brainA the first topology
    * @param brainB the second topology
    * @returns compatibility of the topologies
    */
-  static Compare(brainA: Brain, brainB: Brain) {
+  static Compare(brainA: Brain, brainB: Brain, excessFactor: number, disjointFactor: number, weightFactor: number) {
     const enabledA = brainA.getSortedConnections()
     const enabledB = brainB.getSortedConnections()
     const lenA = enabledA.length
@@ -105,7 +104,7 @@ class Species {
       if (B) j++
     }
 
-    return disjoint * Species.DisjointFactor / N + excess * Species.ExcessFactor / N + weights * Species.WeightFactor
+    return disjoint * disjointFactor / N + excess * excessFactor / N + weights * weightFactor
   }
 
   /**
@@ -161,12 +160,16 @@ class Species {
 
     let unspeciated: Brain[]
 
+    const excessFactor = population.neat.getExcessFactor()
+    const disjointFactor = population.neat.getDisjointFactor()
+    const weightFactor = population.neat.getWeightFactor()
+
     champions.forEach(champion => {
       unspeciated = population.members.filter(member => member.species == null)
       if (unspeciated.length == 0) return
       for (let i = 0; i < unspeciated.length; i++) {
         const brain = unspeciated[i]
-        if (this.Compare(champion, brain) <= this.DynamicThreshold) {
+        if (Species.Compare(champion, brain, excessFactor, disjointFactor, weightFactor) <= this.DynamicThreshold) {
           brain.species = champion.species
           brain.species.members.push(brain)
         }
@@ -182,7 +185,7 @@ class Species {
 
       for (let i = 0; i < unspeciated.length; i++) {
         const brain = unspeciated[i]
-        if (this.Compare(champion, brain) <= this.DynamicThreshold) {
+        if (this.Compare(champion, brain, excessFactor, disjointFactor, weightFactor) <= this.DynamicThreshold) {
           brain.species = champion.species
           brain.species.members.push(brain)
         }
@@ -199,13 +202,13 @@ class Species {
    * any remaining spots are produced by crossover between two parents rolled
    * by a roulette wheel.
    */
-  produceOffspring(): Brain[] {
+  produceOffspring(elitism: boolean, elitePercentage: number): Brain[] {
     if (this.allowedOffspring == 0 || this.gensSinceImproved > Species.GenerationPenalization) {
       this.members.length = 0
       return []
     }
     const offspring: Brain[] = []
-    if (Population.Elitism) Population.GetElites(offspring, this.members, this.allowedOffspring)
+    if (elitism) Population.GetElites(offspring, this.members, this.allowedOffspring, elitePercentage)
 
     const parents: Brain[] = []
     Population.GeneratePairings(parents, this.members, this.allowedOffspring - offspring.length)
