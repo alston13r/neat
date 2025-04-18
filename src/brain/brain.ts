@@ -6,23 +6,7 @@
  * data.
  */
 class Brain {
-  /** Toggle for new connections */
-  static AllowNewConnections = true
-  /** Toggle for connection disabling */
-  static AllowDisablingConnections = false
-  /** Toggle for allowing recurrent connections */
-  static AllowRecurrent = false
-  /** The chance for a new connection to be made */
-  static AddConnectionChance = 0.4
-  /** The chance for a connection to be disabled */
-  static DisableConnectionChance = 0.05
-  /** The chance for a connection to be reenabled */
-  static ReenableConnectionChance = 0.25
-  /** Toggle for new nodes */
-  static AllowNewNodes = true
-  /** The chance for a new node to be made */
-  static AddANodeChance = 0.01
-
+  neat: Neat
   /** The current fitness of the brain */
   fitness = 0
   /** The current species this brain belongs to, null if none assigned */
@@ -49,43 +33,44 @@ class Brain {
    * @param enabledChance the chance for connections to start enabled, defaults to 100%
    * @returns a reference to this Brain
    */
-  initialize(inputN: number, hiddenN: number, outputN: number, enabledChance = 1) {
+  initialize(neat: Neat) {
+    this.neat = neat
     this.nodes.length = 0
     this.inputNodes.length = 0
     this.outputNodes.length = 0
     this.connections.length = 0
 
-    for (let i = 0; i < inputN; i++) {
+    for (let i = 0; i < neat.topology.inputSize; i++) {
       const node = new NNode(this.nodes.length, NNodeType.Input, 0)
       this.nodes.push(node)
       this.inputNodes.push(node)
     }
-    const outputLayer = hiddenN > 0 ? 2 : 1
-    for (let i = 0; i < outputN; i++) {
+    const outputLayer = neat.topology.hiddenSize > 0 ? 2 : 1
+    for (let i = 0; i < neat.topology.outputSize; i++) {
       const node = new NNode(this.nodes.length, NNodeType.Output, outputLayer)
       this.nodes.push(node)
       this.outputNodes.push(node)
     }
-    if (hiddenN > 0) {
-      for (let i = 0; i < hiddenN; i++) {
+    if (neat.topology.hiddenSize > 0) {
+      for (let i = 0; i < neat.topology.hiddenSize; i++) {
         const node = new NNode(this.nodes.length, NNodeType.Hidden, 1)
         this.nodes.push(node)
         for (const inputNode of this.inputNodes) {
-          this.constructConnection(inputNode, node, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
+          this.constructConnection(inputNode, node, Connection.GenerateRandomWeight(neat.connectionConfig), Math.random() < neat.topology.enableChance)
         }
         for (const outputNode of this.outputNodes) {
-          this.constructConnection(node, outputNode, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
+          this.constructConnection(node, outputNode, Connection.GenerateRandomWeight(neat.connectionConfig), Math.random() < neat.topology.enableChance)
         }
       }
     } else {
       for (const inputNode of this.inputNodes) {
         for (const outputNode of this.outputNodes) {
-          this.constructConnection(inputNode, outputNode, Connection.GenerateRandomWeight(), Math.random() < enabledChance)
+          this.constructConnection(inputNode, outputNode, Connection.GenerateRandomWeight(neat.connectionConfig), Math.random() < neat.topology.enableChance)
         }
       }
     }
 
-    if (Population.Speciation) this.#updateSortedConnections()
+    this.#updateSortedConnections()
     return this
   }
 
@@ -94,6 +79,7 @@ class Brain {
    * This does not run if speciation is not enabled.
    */
   #updateSortedConnections() {
+    if (!this.neat.speciesConfig.enabled) return
     this.#connectionsSorted = this.connections.filter(c => c.enabled).sort((a, b) => a.innovationID - b.innovationID)
   }
 
@@ -132,7 +118,7 @@ class Brain {
    * recurrent flag if it's no longer recurrent.
    */
   fixRecurrent() {
-    if (!Brain.AllowRecurrent) return
+    if (!this.neat.mutationConfig.allowRecurrentConnections) return
     const recurrent = this.connections.filter(c => c.recurrent)
     if (recurrent.length == 0) return
     for (const connection of recurrent) {
@@ -159,7 +145,7 @@ class Brain {
     const newNode = new NNode(this.nodes.length, NNodeType.Hidden, inputNode.layer + 1)
     this.nodes.push(newNode)
     this.constructConnection(inputNode, newNode, forwardIntercept.weight)
-    this.constructConnection(newNode, outputNode, Connection.GenerateRandomWeight())
+    this.constructConnection(newNode, outputNode, Connection.GenerateRandomWeight(this.neat.connectionConfig))
     if (outputNode.layer > newNode.layer) return
     outputNode.layer++
     const potentialConflicts = outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent)
@@ -171,7 +157,7 @@ class Brain {
       potentialConflicts.push(...outputNode.connectionsOut.map(i => this.connections[i]).filter(c => !c.recurrent))
     }
     this.fixRecurrent()
-    if (Population.Speciation) this.#updateSortedConnections()
+    this.#updateSortedConnections()
   }
 
   /**
@@ -194,13 +180,13 @@ class Brain {
       // and the input node cannot be on a greater layer if recurrent
       // connections are not enabled
       if (A == B || nodeA.layer == nodeB.layer
-        || !Brain.AllowRecurrent && nodeA.layer > nodeB.layer) continue
+        || !this.neat.mutationConfig.allowRecurrentConnections && nodeA.layer > nodeB.layer) continue
 
       // iterate over all connections
       for (const connection of this.connections) {
         if (connection.inNode.id == A && connection.outNode.id == B) { // connection already exists
           if (connection.enabled) continue attempt // next attempt
-          if (Math.random() < Brain.ReenableConnectionChance) { // reenable connection
+          if (Math.random() < neat.mutationConfig.reenableConnectionChance) { // reenable connection
             connection.enabled = true
             break attempt
           } else continue attempt // failed to reenable
@@ -208,8 +194,8 @@ class Brain {
       } // outside of connection search loop, connection does not exist
 
       // construct a new connection
-      this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(), true, nodeA.layer > nodeB.layer)
-      if (Population.Speciation) this.#updateSortedConnections()
+      this.constructConnection(nodeA, nodeB, Connection.GenerateRandomWeight(this.neat.connectionConfig), true, nodeA.layer > nodeB.layer)
+      this.#updateSortedConnections()
       break attempt
     }
   }
@@ -241,14 +227,14 @@ class Brain {
 
     // mutate connection weights
     for (let connection of this.connections) {
-      connection.mutate()
+      connection.mutate(this.neat)
     }
 
-    if (Brain.AllowNewConnections && Math.random() < Brain.AddConnectionChance) {
+    if (this.neat.mutationConfig.allowNewConnections && Math.random() < this.neat.mutationConfig.addConnectionChance) {
       this.addAConnection()
-    } else if (Brain.AllowDisablingConnections && Math.random() < Brain.DisableConnectionChance) {
+    } else if (this.neat.mutationConfig.allowDisablingConnections && Math.random() < this.neat.mutationConfig.disableConnectionChance) {
       this.disableAConnection()
-    } else if (Brain.AllowNewNodes && Math.random() < Brain.AddANodeChance) {
+    } else if (this.neat.mutationConfig.allowNewNodes && Math.random() < this.neat.mutationConfig.addNodeChance) {
       this.addANode()
     }
 
@@ -343,8 +329,7 @@ class Brain {
       )
     })
 
-    if (Population.Speciation) clone.#updateSortedConnections()
-
+    clone.#updateSortedConnections()
     return clone
   }
 
