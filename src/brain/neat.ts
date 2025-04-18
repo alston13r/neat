@@ -167,8 +167,20 @@ class Neat {
     this.population.nextGeneration()
   }
 
+  speciateMembers() {
+    this.population.speciate()
+  }
+
   getMembers(): Brain[] {
     return this.population.members
+  }
+
+  runFitnessFunction(fn: (brain: Brain) => void) {
+    this.getMembers().forEach(fn)
+  }
+
+  updateFittest() {
+    this.population.updateFittestEver()
   }
 }
 
