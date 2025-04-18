@@ -35,14 +35,14 @@ class Population {
    * @param outputN the number of output nodes
    * @param enabledChance the chance for connections to start enabled
    */
-  constructor(neat: Neat, popSize: number, inputN: number, hiddenN: number, outputN: number, enabledChance = 1) {
+  constructor(neat: Neat) {
     this.neat = neat
 
-    this.popSize = popSize
-    this.inputN = inputN
-    this.hiddenN = hiddenN
-    this.outputN = outputN
-    this.enabledChance = enabledChance
+    this.popSize = neat.size
+    this.inputN = neat.topology.inputSize
+    this.hiddenN = neat.topology.hiddenSize
+    this.outputN = neat.topology.outputSize
+    this.enabledChance = neat.topology.enableChance
   }
 
   /**
