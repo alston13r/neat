@@ -25,12 +25,9 @@ class Brain {
   isElite = false
 
   /**
-   * Initializes the brain's topology to contain the specified number of input nodes,
-   * hidden nodes, output nodes, and enabled chance.
-   * @param inputN the number of input nodes
-   * @param hiddenN the number of hidden nodes
-   * @param outputN the number of output nodes
-   * @param enabledChance the chance for connections to start enabled, defaults to 100%
+   * Initializes the brain's topology to the config specified in the Neat instance.
+   * Initialization includes the  creation of nodes and connections between them.
+   * @param neat the Neat instance
    * @returns a reference to this Brain
    */
   initialize(neat: Neat) {

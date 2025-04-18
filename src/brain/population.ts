@@ -27,13 +27,9 @@ class Population {
   speciesList: Species[] = []
 
   /**
-   * Constructs a population with the specified size, input nodes, hidden nodes, output nodes,
-   * and chance for connections to start enabled.
-   * @param popSize the population size
-   * @param inputN the number of input nodes
-   * @param hiddenN the number of hidden nodes
-   * @param outputN the number of output nodes
-   * @param enabledChance the chance for connections to start enabled
+   * Constructs a Population with the configs specified in the Neat instance.
+   * The configs used include Brain topology and Population size.
+   * @param neat the Neat instance
    */
   constructor(neat: Neat) {
     this.neat = neat
