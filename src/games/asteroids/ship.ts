@@ -24,7 +24,9 @@ class Ship {
   /** The maximum speed of a Ship */
   static MaxSpeed = 3
   /** The delay between shots that a Ship can take */
-  static ShootDelay = 33
+  static ReloadSpeed = 33
+  /** The Ship's turning speed */
+  static TurnSpeed = 0.05
 
   /** The angle of the top point of a Ship */
   static TopAngle = 0
@@ -64,7 +66,7 @@ class Ship {
   rays: Ray2[]
 
   /** The current remaining time until the Ship can shoot again */
-  shootTimer = 0
+  reloadTimer = 0
 
   constructor(game: Asteroids) {
     this.game = game
@@ -91,6 +93,7 @@ class Ship {
     this.updateTopLeftRight()
     this.fixRays()
     this.updateRays()
+    this.reloadTimer = 0
   }
 
   fixRays() {
@@ -122,8 +125,8 @@ class Ship {
   }
 
   update(): void {
-    if (this.shootTimer > 0) this.shootTimer--
-    if (this.shootTimer < 0) this.shootTimer = 0
+    if (this.reloadTimer > 0) this.reloadTimer--
+    if (this.reloadTimer < 0) this.reloadTimer = 0
     vec2.add(this.pos, this.pos, this.velocity)
     vec2.scale(this.velocity, this.velocity, 0.999)
     this.wrap()
@@ -173,14 +176,14 @@ class Ship {
 
   turn(direction: number): void {
     if (direction == 0) return
-    this.heading += direction * 0.05
+    this.heading += direction * Ship.TurnSpeed
     this.heading %= 2 * Math.PI
   }
 
   shoot(): void {
-    if (this.shootTimer <= 0) {
+    if (this.reloadTimer <= 0) {
       LaserPool.acquire(this)
-      this.shootTimer = Ship.ShootDelay
+      this.reloadTimer = Ship.ReloadSpeed
     }
   }
 
@@ -200,7 +203,7 @@ class Ship {
       this.velocity[0] / Ship.MaxSpeed,
       this.velocity[1] / Ship.MaxSpeed,
       this.heading / TwoPi,
-      this.shootTimer == 0 ? 1 : 0,
+      this.reloadTimer == 0 ? 1 : 0,
       ...this.getRayInfo()
     ]
   }
@@ -212,7 +215,7 @@ class Ship {
       this.velocity[0] / Ship.MaxSpeed,
       this.velocity[1] / Ship.MaxSpeed,
       this.heading / TwoPi,
-      this.shootTimer <= 0 ? 1 : 0,
+      this.reloadTimer <= 0 ? 1 : 0,
       ...this.getRayInfo()
     ])
   }

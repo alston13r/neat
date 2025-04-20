@@ -27,7 +27,9 @@ const fittestRecords: Brain[] = []
 let pairings: GameBrainPair[] = []
 
 let lastTimestamp = 0
-function loop(timestamp: number) {
+let lastFrame = null
+let running = false
+function asteroidsNeatLoop(timestamp: number) {
   const delta = clamp(timestamp - lastTimestamp, 0, 1000)
   lastTimestamp = timestamp
 
@@ -80,7 +82,52 @@ function loop(timestamp: number) {
     })
   }
 
-  window.requestAnimationFrame(loop)
+  lastFrame = window.requestAnimationFrame(asteroidsNeatLoop)
 }
 
-window.requestAnimationFrame(loop)
+{
+  const optionsWindow = new Options()
+    .appendAfter(asteroidsGraphics.canvas)
+
+    .appendButton('Start game', () => {
+      if (!running) {
+        lastFrame = window.requestAnimationFrame(asteroidsNeatLoop)
+        running = true
+      }
+    })
+
+    .appendButton('Stop game', () => {
+      if (running) {
+        window.cancelAnimationFrame(lastFrame)
+        running = false
+      }
+    })
+
+    .appendButton('Reset game', () => {
+      neat.initializePopulation()
+      currentGenerationTimeAlive = 0
+      pairings.length = 0
+    })
+
+    .appendSlider('Asteroid min velocity', speed => {
+      Asteroid.MinInitialVelocity = speed
+    }, 1, 5, Asteroid.MinInitialVelocity, 0.1)
+
+    .appendSlider('Asteroid max velocity', speed => {
+      Asteroid.MaxInitialVelocity = speed
+    }, 1, 5, Asteroid.MaxInitialVelocity, 0.1)
+
+    .appendSlider('Ship max speed', speed => {
+      Ship.MaxSpeed = speed
+    }, 1, 10, Ship.MaxSpeed)
+
+    .appendSlider('Ship turn speed', speed => {
+      Ship.TurnSpeed = speed / 100
+    }, 1, 10, Ship.TurnSpeed * 100)
+
+    .appendSlider('Laser reload speed', speed => {
+      Ship.ReloadSpeed = speed
+    }, 1, 50, Ship.ReloadSpeed)
+
+  asteroidsGraphics.bg('#000')
+}

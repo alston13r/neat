@@ -14,12 +14,22 @@ class Options {
     if (parent) this.appendTo(parent)
   }
 
-  appendTo(element: HTMLElement) {
+  appendTo(element: HTMLElement): Options {
     element.appendChild(this.container)
+
+    return this
   }
 
-  appendAfter(element: HTMLElement) {
+  appendBefore(element: HTMLElement): Options {
+    element.insertAdjacentElement('beforebegin', this.container)
+
+    return this
+  }
+
+  appendAfter(element: HTMLElement): Options {
     element.insertAdjacentElement('afterend', this.container)
+
+    return this
   }
 
   appendCheckbox(title: string, callback: (toggled: boolean) => void, initial = false): Options {
@@ -48,10 +58,10 @@ class Options {
     const slider = document.createElement('input')
     slider.style.display = 'inline'
     slider.type = 'range'
-    slider.value = initial.toString()
     slider.min = min.toString()
     slider.max = max.toString()
     slider.step = step.toString()
+    slider.value = initial.toString()
     sliderContainer.appendChild(slider)
 
     const label = document.createElement('p')

@@ -25,10 +25,11 @@ class Asteroid {
 
   static SizeCutoff = 10
 
-  static MaxInitialRadius = 50
   static MinInitialRadius = 25
-  static MaxInitialVelocity = 1.5
+  static MaxInitialRadius = 50
+
   static MinInitialVelocity = 1
+  static MaxInitialVelocity = 1.5
 
   game: Asteroids
   pos: Vec2
