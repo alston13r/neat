@@ -31,7 +31,6 @@ function loop(timestamp: number) {
   const delta = clamp(timestamp - lastTimestamp, 0, 1000)
   lastTimestamp = timestamp
 
-  // for (let i = 0; i < gameScale; i++) {
   currentGenerationTimeAlive += delta / 1000
 
   const stillAlive = pairings.filter(pair => pair.game.ship.alive)
@@ -54,11 +53,13 @@ function loop(timestamp: number) {
     fittest.game.draw(asteroidsGraphics)
 
     asteroidsGraphics.fillStyle = '#fff'
-    asteroidsGraphics.fillText(`Generation: ${neat.getCurrentGeneration()}`, 5, asteroidsGraphics.height - 5)
-    asteroidsGraphics.fillText(`Alive: ${stillAlive.length} / ${neat.getPopulationSize()}`, 5, asteroidsGraphics.height - 15)
-    asteroidsGraphics.fillText(`Asteroids destroyed: ${fittest.game.asteroidCounter}`, 5, asteroidsGraphics.height - 25)
-    asteroidsGraphics.fillText(`Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`, 5, asteroidsGraphics.height - 35)
-    // asteroidsGraphics.fillText(`Updates per frame: ${gameScale}`, 5, asteroidsGraphics.height - 45)
+    asteroidsGraphics.fillListText([
+      `Generation: ${neat.getCurrentGeneration()}`,
+      `Alive: ${stillAlive.length} / ${neat.getPopulationSize()}`,
+      `Asteroids destroyed: ${fittest.game.asteroidCounter}`,
+      `Alive for: ${Math.round(currentGenerationTimeAlive)} / ${maxTimeAlive} seconds`,
+      /*`Updates per frame: ${gameScale}`*/
+    ], 5, asteroidsGraphics.height - 5, 0, -10)
   } else {
     currentGenerationTimeAlive = 0
     if (neat.getCurrentGeneration() > 0) fittestRecords.push(neat.updateFittestEver())
