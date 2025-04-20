@@ -9,6 +9,7 @@ class Options {
     this.container.style.width = 'fit-content'
     this.container.style.height = 'fit-content'
     this.container.style.fontFamily = 'arial'
+    this.container.style.userSelect = 'none'
 
     if (parent) this.appendTo(parent)
   }
