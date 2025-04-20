@@ -180,6 +180,18 @@ class Graphics {
     this.context.strokeText(text, x, y)
   }
 
+  fillListText(text: string[], x: number, y: number, dx: number, dy: number) {
+    for (let i = 0; i < text.length; i++) {
+      this.fillText(text[i], x + dx * i, y + dy * i)
+    }
+  }
+
+  strokeListText(text: string[], x: number, y: number, dx: number, dy: number) {
+    for (let i = 0; i < text.length; i++) {
+      this.strokeText(text[i], x + dx * i, y + dy * i)
+    }
+  }
+
   bg(color = '#000') {
     this.context.fillStyle = color
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
