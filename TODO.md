@@ -1,26 +1,26 @@
-[ ] Optimize Brain
-    [ ] Create a list of preallocated objects
+- [ ] Optimize Brain
+    - [ ] Create a list of preallocated objects
         that you can request an object for and
         release to
-[x] Optimize Asteroids
-    [x] Same list of objects
+- [x] Optimize Asteroids
+    - [x] Same list of objects
 
-[ ] Documentation
-    [ ] utils
-        [ ] math.ts
-            [ ] roundNicely
-            [x] setVec2FromRadian
-        [ ] matrix.ts
-        [ ] ray.ts
-        [ ] drawing
-            [ ] graphics.ts
-            [ ] types.d.ts
-            [ ] shapes
-                [ ] circle.ts
-                [ ] line.ts
-                [ ] polygon.ts
-                [ ] rectangle.ts
-                [ ] triangle.ts
+- [ ] Documentation
+    - [ ] utils
+        - [ ] math.ts
+            - [ ] roundNicely
+            - [x] setVec2FromRadian
+        - [ ] matrix.ts
+        - [ ] ray.ts
+        - [ ] drawing
+            - [ ] graphics.ts
+            - [ ] types.d.ts
+            - [ ] shapes
+                - [ ] circle.ts
+                - [ ] line.ts
+                - [ ] polygon.ts
+                - [ ] rectangle.ts
+                - [ ] triangle.ts
 
 Implement different aggregation functions
 Allow saving and loading of Brain and NeuralNetwork
