@@ -1,41 +1,88 @@
+/**
+ * This class represents an arbitrarily sized matrix in row-major order.
+ * See {@link https://en.wikipedia.org/wiki/Row-_and_column-major_order}
+ * for the difference between row-major and column-major. This differs
+ * from how gl-matrix does it, where matrices are laid out in column-major
+ * order.
+ */
 class Matrix {
+  /** The number of rows in this matrix. */
   rows: number
+  /** The number of columns in this matrix. */
   cols: number
+  /** Internal 2D array representation of this matrix. This holds all data. */
   mat: number[][]
 
-  // TODO
+  /**
+   * Constructs a new matrix of specified size. All values are
+   * intialized to 0.
+   * @param rows the number of rows to make, defaults to 4
+   * @param cols the number of columns to make, defaults to 4
+   */
   constructor(rows: number = 4, cols: number = 4) {
     this.rows = rows
     this.cols = cols
     this.mat = new Array(rows).fill(0).map(() => new Array(cols).fill(0))
   }
 
-  // TODO
-  static Map(matrix: Matrix, fn: (element?: number, i?: number, j?: number, mat?: Matrix) => number): Matrix {
+  /**
+   * Runs the callback function over all elements. The callback function
+   * takes a parameter for the element, the row index, the column index,
+   * and the matrix. The callback function should return the new data for
+   * each cell.
+   * @param matrix the matrix to run the callback function on
+   * @param callback the callback function
+   * @returns a reference to this Matrix
+   */
+  static Map(matrix: Matrix, callback: MatrixCallback): Matrix {
     for (let i = 0; i < matrix.rows; i++) {
       for (let j = 0; j < matrix.cols; j++) {
-        matrix.mat[i][j] = fn(matrix.mat[i][j], i, j, matrix)
+        matrix.mat[i][j] = callback(matrix.mat[i][j], i, j, matrix)
       }
     }
     return matrix
   }
 
-  // TODO
-  static Copy(matrix: Matrix): Matrix {
+  /**
+   * Creates a clone of the specified matrix, copying the dimenions
+   * and data.
+   * @param matrix the matrix to clone
+   * @returns the new matrix
+   */
+  static Clone(matrix: Matrix): Matrix {
     return Matrix.Map(new Matrix(matrix.rows, matrix.cols), (e, i, j) => matrix.mat[i][j])
   }
 
-  // TODO
-  copy(): Matrix {
-    return Matrix.Copy(this)
+  /**
+   * Creates a clone of this matrix, copying the dimenions and data.
+   * @returns the new matrix
+   */
+  clone(): Matrix {
+    return Matrix.Clone(this)
   }
 
-  // TODO
-  map(fn: (element: number, i: number, j: number, mat: Matrix) => number): Matrix {
-    return Matrix.Map(this.copy(), fn)
+  /**
+   * Creates a clone of this matrix and runs the callback function
+   * over all elements. The callback function takes a parameter for
+   * the element, the row index, the column index, and the matrix.
+   * The callback function should return the new data for each cell.
+   * @param fn the callback function
+   * @returns the new matrix
+   */
+  map(fn: MatrixCallback): Matrix {
+    return Matrix.Map(this.clone(), fn)
   }
 
-  // TODO
+  /**
+   * Computes the matrix-matrix dot product of the two specified
+   * matrices: `matrixA * matrixB`. The number of columns in matrixA
+   * must equal the number of columns in matrixB, and the resulting
+   * matrix will have matrixA's number of rows and matrixB's number
+   * of columns.
+   * @param matrixA the first matrix
+   * @param matrixB the second matrix
+   * @returns a new matrix holding the dot product
+   */
   static Dot(matrixA: Matrix, matrixB: Matrix): Matrix {
     return Matrix.Map(new Matrix(matrixA.rows, matrixB.cols), (e, i, j) => {
       let s: number = 0
@@ -43,7 +90,15 @@ class Matrix {
       return s
     })
   }
-  // TODO
+  /**
+   * Computs the matrix-matrix dot product of this matrix and the
+   * specified matrix: `this * matrix`. The number of columns in this
+   * matrix must equal the number of columns in the other matrix, and
+   * the resulting matrix will have this matrix's number of rows and
+   * the other matrix's number of columns.
+   * @param matrix the other matrix
+   * @returns a new matrix holding the dot product
+   */
   dot(matrix: Matrix): Matrix {
     return Matrix.Dot(this, matrix)
   }
@@ -63,7 +118,7 @@ class Matrix {
   add(x: number): Matrix
   add(other: Matrix | number): Matrix {
     // @ts-ignore
-    return Matrix.Add(this.copy(), other)
+    return Matrix.Add(this.clone(), other)
   }
 
   // TODO
@@ -72,7 +127,7 @@ class Matrix {
   }
   // TODO
   scale(x: number): Matrix {
-    return Matrix.Scale(this.copy(), x)
+    return Matrix.Scale(this.clone(), x)
   }
 
   // TODO
@@ -81,7 +136,7 @@ class Matrix {
   }
   // TODO
   mul(matrix: Matrix): Matrix {
-    return Matrix.Mul(this.copy(), matrix)
+    return Matrix.Mul(this.clone(), matrix)
   }
 
 
@@ -99,7 +154,7 @@ class Matrix {
   sub(x: number): Matrix
   sub(other: Matrix | number): Matrix {
     // @ts-ignore
-    return Matrix.Sub(this.copy(), other)
+    return Matrix.Sub(this.clone(), other)
   }
 
   // TODO
@@ -113,7 +168,7 @@ class Matrix {
   // TODO
   div(a: Matrix | number): Matrix {
     // @ts-ignore
-    return Matrix.Div(this.copy(), a)
+    return Matrix.Div(this.clone(), a)
   }
 
   // TODO
@@ -206,6 +261,17 @@ class Matrix {
   }
   // TODO
   transpose(): Matrix {
-    return Matrix.Transpose(this.copy())
+    return Matrix.Transpose(this.clone())
   }
 }
+
+/**
+ * A callback function used to modify a Matrix's data.
+ * This is similar to JavaScript's {@link Array.prototype.forEach}.
+ * @param element the current cell's data
+ * @param i the row index
+ * @param j the column index
+ * @param matrix reference to the matrix
+ * @returns the new value for the cell
+ */
+type MatrixCallback = (element?: number, i?: number, j?: number, matrix?: Matrix) => number
