@@ -6,3 +6,8 @@ This implementation follows [Neat AI](https://www.youtube.com/@neatai6702)'s [wa
 This project is available for anyone to look at, use, and modify however they choose. It will undergo numerous changes so be sure to check back every once in a while if it seems like I'm still here. :)
 
 There are demo pages available through the navigation site which feature some usage of the Neat algorithm as well as some other pieces that will be incorporated later.
+
+## Installing
+This project uses TypeScript and TypeDoc and I figured out later that I shouldn't push the node_modules directory. TypeDoc is installed locally, so it's included in the package.json. To install TypeDoc (if you want to contribute docs), run `npm install` in the root folder of the project.
+
+There's 2 scripts included in the package.json, `generateDocs` and `build`.
