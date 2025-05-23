@@ -103,10 +103,27 @@ class Matrix {
     return Matrix.Dot(this, matrix)
   }
 
-  // TODO
+  /**
+   * Adds each cell from matrixB to matrixA, modifying matrixA.
+   * @param matrixA the first matrix
+   * @param matrixB the second matrix
+   * @returns a reference to matrixA
+   */
   static Add(matrixA: Matrix, matrixB: Matrix): Matrix
-  // TODO
+  /**
+   * Adds the constant value `x` to every cell of the matrix, modifying it.
+   * @param matrix the matrix
+   * @param x the constant value
+   * @returns a reference to the matrix
+   */
   static Add(matrix: Matrix, x: number): Matrix
+  /**
+   * Adds either two matrices together or a constant value
+   * to every cell in a matrix.
+   * @param matrix the matrix
+   * @param other either a matrix or a constant value
+   * @returns a reference to the matrix being modified
+   */
   static Add(matrix: Matrix, other: Matrix | number): Matrix {
     if (other instanceof Matrix) return Matrix.Map(matrix, (e, i, j) => e + other.mat[i][j])
     return Matrix.Map(matrix, e => e + other)

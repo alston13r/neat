@@ -11,8 +11,8 @@
             - [ ] roundNicely
             - [x] setVec2FromRadian
         - [ ] matrix.ts
-            -[ ] Add
-            -[ ] add
+            -[x] Add
+            -[x] add
             -[ ] Scale
             -[ ] scale
             -[ ] Mul
