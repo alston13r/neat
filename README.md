@@ -8,7 +8,7 @@ This project is available for anyone to look at, use, and modify however they ch
 There are demo pages available through the navigation site which feature some usage of the Neat algorithm as well as some other pieces that will be incorporated later.
 
 ## Installing
-There's 2 scripts included in the package.json, `generateDocs` and `build`. You will need to run `npm run-script build` in order to generate all the JavaScript used in the project. You should also run `npm run-script generateDocs` if you plan on looking at the documentation through the navigator site, rather than the source code.
+There's 2 scripts included in the package.json, `doc` and `build`. You will need to run `npm run build` in order to generate all the JavaScript used in the project. You should also run `npm run doc` if you plan on looking at the documentation through the navigator site, rather than the source code.
 
 ## Contributing
 This project uses TypeDoc for documentation. If you want to contribute documentation, make sure to run `npm install` in the root diretory.
