@@ -284,7 +284,6 @@ class Matrix {
 
 /**
  * A callback function used to modify a Matrix's data.
- * This is similar to JavaScript's {@link Array.prototype.forEach}.
  * @param element the current cell's data
  * @param i the row index
  * @param j the column index
