@@ -218,3 +218,4 @@ build/demos/asteroids-personal/index.js.map
 build
 node_modules
 docs
+docs/*
